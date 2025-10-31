@@ -1,0 +1,109 @@
+.pxl-pricing1 {
+	background-color: #fff;
+	@include border-radius(10px);
+	overflow: hidden;
+	@include transition(all 0.3s);
+	&.is-popular {
+		.pxl-price-heading {
+			background-color: $gradient_color_to;
+		}
+	}
+	.pxl-price-heading {
+		color: #f8f9fa;
+		background-color: $primary_color;
+		font-size: 20px;
+		font-weight: 500;
+		padding: 1rem;
+		line-height: 1.2;
+		@include transition(all 0.3s);
+	}
+	.pxl-content {
+		padding: 26px 25px 40px 25px;
+		.pxl-item--meta {
+			.pxl-item-style {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				margin-bottom: 14px;
+				@media (max-width: 991px) {
+					display: block;
+				}
+				.pxl-item--imgprimary {
+					width: 80px;
+					min-width: 80px;
+					height: 80px;
+					@include border-radius(50%);
+					overflow: hidden;
+					box-shadow: 0px 10px 30px 0px rgba(#000, 0.2);
+					@media (max-width: 991px) {
+						margin-top: 15px;
+					}
+				}
+				.pxl-item--price {
+					.pxl-price-title {
+						font-weight: 500;
+	                    font-size: 14px;
+	                    color: #212529;
+	                    margin-bottom: 2px;
+					}
+					.pxl-number-text-price {
+						display: flex;
+                    	align-items: baseline;
+                    	.pxl-price-number {
+                    		font-size: 42px;
+	                        margin-bottom: 0px;
+	                        line-height: 1.1em;
+	                        letter-spacing: -1.25px;
+	                        color: $gradient_color_to;
+	                        font-weight: 500;
+                    	}
+                    	.pxl-text-price {
+                    		font-size: 14px;
+                    	}
+					}
+				}
+			}
+		}
+		.pxl-item--feature {
+			margin-top: 19px;
+			margin-bottom: 18px;
+			.pxl-feature-list {
+				position: relative;
+				padding-left: 30px;
+				margin-bottom: 8px;
+				&:last-child {
+					margin-bottom: 0;
+				}
+				&:before {
+					content: "\f00c";
+					font-family: "Font Awesome 5 Pro";
+					font-weight: 900;
+					position: absolute;
+					top: 5px;
+					left: 3px;
+					line-height: 1;
+					font-size: 14px;
+					color: $gradient_color_to;
+				}
+				.pxl-feature-text {
+					font-size: 15px;
+  					line-height: 1.6em;
+  					color: #212529;
+  					font-weight: 600;
+				}
+			}
+		}
+		.pxl-item--button {
+			.btn-shape-primary {
+				display: block;
+				font-weight: bold;
+				background-color: #e9ebec;
+				color: $link_color;
+				&:hover {
+					color: #fff;
+  					background-color: $primary_color;
+				}
+			}
+		}
+	}
+}

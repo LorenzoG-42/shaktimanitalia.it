@@ -1,0 +1,90 @@
+.de-menu-reveal {
+    float: right;
+    width: 36px;
+    height: 36px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    &:hover {
+        .lt, .lm, .lb {
+            background: $link_color_hover; 
+        }
+    }
+    .lt, .lm, .lb {
+        display: block;
+        position: absolute;
+        width: 36px;
+        height: 2px;
+        background: #fff;
+        outline: none;
+        @include transition(all 0.5s ease);
+    }
+    .lm {
+        top: 15px;
+    }
+    .lt {
+        top: 5px;
+    }
+    .lb {
+        top: 25px;
+    }
+}
+
+.de-menu-reveal2 {
+    float: right;
+    width: 36px;
+    height: 36px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    &:hover {
+        .lt, .lm, .lb {
+            background: $link_color; 
+        }
+    }
+    .lt, .lm, .lb {
+        display: block;
+        position: absolute;
+        width: 36px;
+        height: 2px;
+        background: #fff;
+        outline: none;
+        @include transition(all 0.5s ease);
+    }
+    .lm {
+        top: 15px;
+    }
+    .lt {
+        top: 5px;
+    }
+    .lb {
+        top: 25px;
+    }
+    &.pxl-hidden-meta {
+        position: absolute;
+        top: 10%;
+        right: 5%;
+    }
+}
+.pxl-menu-open{
+    .lt{
+        top: 15px !important;
+        -webkit-transform: rotate(-45deg);
+        -moz-transform: rotate(-45deg);
+        -o-transform: rotate(-45deg);
+        transform: rotate(-45deg);
+    }
+    .lm{
+        opacity: 0;
+        width: 0;
+    }
+    .lb {
+        top: 15px !important;
+        -webkit-transform: rotate(45deg);
+        -moz-transform: rotate(45deg);
+        -o-transform: rotate(45deg);
+        transform: rotate(45deg);
+    }
+}
+
+

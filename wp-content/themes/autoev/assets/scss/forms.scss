@@ -1,0 +1,750 @@
+input::-moz-placeholder, textarea::-moz-placeholder {
+    color: inherit;
+    opacity: 1;
+    text-overflow: ellipsis;
+}
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+    color: inherit;
+    opacity: 1;
+    text-overflow: ellipsis;
+}
+input::-o-placeholder, textarea::-o-placeholder {
+    color: inherit;
+    opacity: 1;
+    text-overflow: ellipsis;
+}
+input::-ms-placeholder, textarea::-ms-placeholder {
+    color: inherit;
+    opacity: 1;
+    text-overflow: ellipsis;
+}
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0; 
+}
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="number"],
+input[type="range"],
+input[type="date"],
+input[type="month"],
+input[type="week"],
+input[type="time"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="color"],
+textarea, select, .pxl-select-higthlight, .nice-select {
+    background: rgba(#000, .025);
+    border: none;
+    color: $link_color;
+    padding: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    height: 46px;
+    font-weight: 400;
+    @include transition(all .25s cubic-bezier(.645,.045,.355,1));
+    @include box-shadow(none);
+    @include border-radius(6px);
+    width: 100%;
+    outline: none;
+    font-family: inherit;
+    border: 1px solid rgba(#000, 0.25);
+    // margin-bottom: 20px;
+    &:focus {
+        outline: 0;
+        border-color: $link_color_hover;
+        color: $link_color;
+        box-shadow: 0px 0px 0px 4px rgba(#71ca00, 0.3);
+        background-color: rgba(#71ca00, 0.1);
+    }
+}
+input[type="range"] {
+    padding: 0;
+    background-color: transparent;
+    height: auto;
+    border: none;
+}
+select {
+    height: 50px;
+}
+textarea {
+    height: 253px;
+    margin: 0;
+}
+
+// Comment Form
+//--------------------------------------------------
+.comment-form {
+    display: grid;
+    .comment-title-name {
+        margin-bottom: 3px;
+    }
+    .row {
+        margin: 0;
+    }
+    .comment-form-author {
+        order: 1;
+        padding-left: 0;
+        @media (max-width: 991px) {
+            padding: 0;
+        }
+    }
+    .comment-form-email {
+        order: 1;
+        padding-right: 0;
+        @media (max-width: 991px) {
+            padding: 0;
+        }
+    }
+    .comment-form-comment {
+        order: 2;
+        width: 100%;
+    }
+    .form-submit {
+        order: 3;
+    }
+}
+
+.comments-area {
+    margin-top: 91px;
+    margin-bottom: 100px;
+    margin-right: 35px;
+    @media (max-width: 1024px) {
+        margin: 50px;
+    }
+    @media (max-width: 991px) {
+        margin-top: 30px;
+    }
+    @media (max-width: 475px) {
+        margin: 15px;
+    }
+    .comment-respond {
+        .logged-in-as {
+            margin-bottom: 9px;
+            font-size: 14px;
+            font-weight: bold;
+            @media (max-width: 767px) {
+                font-size: 14px;
+            }
+            a {
+                color: inherit;
+                &:hover {
+                    color: $link_color_hover;
+                }
+                &:nth-child(2) {
+                    font-weight: 700;
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+    .no-comments {
+        display: none;
+    }
+}
+.comment-title {
+    color: $link_color;
+    font-size: 16px;
+    text-transform: capitalize;
+    margin-bottom: 0px;
+    a {
+        color: inherit;
+        &:hover {
+            color: $link_color_hover;
+        }
+    }
+}
+.comment-list {
+    padding: 0;
+    list-style: none;
+    margin-bottom: 50px;
+    @media #{$max-lg} {
+        padding-right: 0;
+    }
+    .comment-reply-title {
+        font-size: 22px;
+        display: inline-flex;
+        align-items: center;
+        padding-bottom: 0;
+        line-height: 1;
+        flex-wrap: wrap;
+        &:before {
+            display: none;
+        }
+    }
+    li {
+        border-bottom: solid 1px #ccc;
+        .children {
+            margin: 0;
+            margin-left: 55px;
+            @media (max-width: 991px) {
+                padding-left: 40px;
+            }
+            @media #{$max-xs} {
+                padding-left: 0px;
+            }
+            @media (max-width: 360px) {
+                margin-left: 25px;
+            }
+            li {
+                list-style: none;
+                padding-bottom: 0px;
+                margin-top: 20px;
+                padding-top: 20px;
+                border-bottom: none;
+                border-top: solid 1px #ccc;
+            }
+        }
+        .comment-respond {
+            margin-top: 35px;
+            margin-bottom: 50px;
+            margin-left: 92px;
+            @media #{$max-sm} {
+                margin-left: 78px;
+                margin-top: 0;
+            }
+            @media #{$max-xs} {
+                margin-left: 0;
+                margin-top: 20px;
+            }
+        }
+    }
+    > li {
+        margin-bottom: 20px;
+        padding-bottom: 40px;
+        &:last-child {
+            padding-bottom: 20px;
+        }
+        > .children > li > .children > li > .children > li > .children {
+            padding-left: 0;
+            .children {
+                padding-left: 0;
+            }
+        }
+    }
+    @media #{$min-md} {
+        .comment-form {
+            .comment-form-author, .comment-form-email {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+            .comment-form-website {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+    }
+    #respond {
+        padding: 0;
+    }
+}
+.comment-content {
+    position: relative;
+    flex-grow: 1;
+    a {
+        word-wrap: break-word;
+    }
+    .comment-text {
+        color: inherit;
+        color: $secondary_color;
+        
+        p {
+            br {
+                display: none;
+            }
+        }
+        @media #{$max-sm} {
+            font-size: 14px;
+        }
+        p:last-child {
+            margin-bottom: 0;
+        }
+        ol, ul {
+            margin-bottom: 32px;
+            ul, ol {
+                margin-bottom: 0;
+            }
+        }
+        ul li {
+            list-style: outside;
+        }
+        img {
+            margin: 6px 0;
+        }
+    }
+}
+.comment-form {
+    .row {
+        > div {
+            margin-top: 20px;
+        }
+    }
+    .form-submit {
+        margin-top: 20px;
+        margin-bottom: 0;
+        position: relative;
+        @include transition(all .3s);
+    }
+    .comment-form-comment {
+        display: flex;
+        flex-wrap: wrap;
+    }
+}
+.comment-inner {
+    display: flex;
+    @media (max-width: 575px) {
+        display: block;
+    }
+    .comment-image {
+        width: 70px;
+        min-width: 70px;
+        overflow: hidden;
+        @media (max-width: 575px) {
+            width: 60px;
+            min-width: 60px;
+            margin-bottom: 20px;
+        }
+        img {
+            width: 100%;
+            @include border-radius(10px);
+        }
+    }
+    .comment-title {
+        display: block;
+        font-weight: 700;
+        color: #555555;
+        word-spacing: 0px;
+        font-size: 15px;
+        line-height: 1.6em;
+        margin-bottom: 0px;
+        font-family: "Manrope", Helvetica, Arial, sans-serif;
+    }
+    .comment-meta {
+        margin-bottom: 10px;
+        margin-top: 4px;
+        line-height: 1;
+        
+        .comment-reply {
+            color: $primary_color;
+            a {
+                color: $primary_color;
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+        span {
+            font-size: 12px;
+            color: $primary_color;
+            border-right: 1px solid #ddd;
+            padding-right: 20px;
+            margin-right: 20px;
+            &:last-child {
+                padding-right: 0;
+                margin-right: 0;
+                border: none;
+            }
+        }
+    }
+    .comment-text {
+        font-size: 15px;
+        line-height: 1.6em;
+    }
+}
+.comment-form-cookies-consent {
+    font-size: 14px;
+    line-height: 1.6;
+    padding-left: 32px;
+    position: relative;
+    input, label:before, label:after {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        left: 0;
+        top: 0;
+        cursor: pointer;
+    }
+    label {
+        cursor: pointer;
+        &:before {
+            content: '';
+            z-index: 1;
+            background-color: #f6f6f6;
+        }
+    }
+    label:after {
+        content: "\f135";
+        font-family: "Caseicon";
+        font-weight: 400;
+        z-index: 2;
+        font-size: 10px;
+        color: #000;
+        opacity: 0;
+        line-height: 12px;
+        text-align: center;
+        top: 8px;
+    }
+    input {
+        z-index: 99;
+        opacity: 0;
+        &:checked + label:after {
+            opacity: 1;
+        }
+    }
+}
+
+/* Select Style */
+.pxl-select {
+    width: 100%;
+    position: relative;
+    .pxl-select-hidden {
+        display: none !important;
+    }
+    .pxl-select-options {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        list-style: none;
+        margin: 10px 0 0;
+        padding: 12px 18px;
+        background-color: #fff;
+        z-index: 99;
+        font-size: 14px;
+        color: #666;
+        font-family: inherit;
+        box-shadow: 0 3px 65px rgba(0,0,0,0.08);
+        @include border-radius(0px);
+        @include transition(all .25s cubic-bezier(.645,.045,.355,1));
+        opacity: 0;
+        margin-top: 30px;
+        visibility: hidden;
+        li {
+            padding: 9px 8px;
+            cursor: pointer;
+            @include transition(all .25s cubic-bezier(.645,.045,.355,1));
+            line-height: normal !important;
+            &:hover {
+                color: $link_color;
+            }
+        }
+    }
+    .pxl-select-higthlight {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        position: relative;
+        &:before {
+            content: "\f107";
+            font-family: Caseicon;
+            width: 28px;
+            height: 28px;
+            border-radius: 28px;
+            color: #737879;
+            line-height: 28px;
+            text-align: center;
+            font-size: 10px;
+            font-family: Caseicon;
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            @include transform(translate(0, -50%));
+            @include transition(all .25s cubic-bezier(.645,.045,.355,1));
+        }
+        &.active {
+            + .pxl-select-options {
+                opacity: 1;
+                margin-top: 10px;
+                visibility: visible;
+            }
+            &:before {
+                transform: translate(0, -50%) scaleY(-1);
+            }
+        }
+    }
+}
+
+.nice-select {
+    position: relative;
+    padding-right: 44px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    &:before {
+        content: "\eab2";;
+        width: 28px;
+        height: 28px;
+        border-radius: 28px;
+        color: #737879;
+        line-height: 28px;
+        text-align: center;
+        font-size: 10px;
+        font-family: 'IcoFont';
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        @include transform(translate(0, -50%));
+        @include transition(all .25s cubic-bezier(.645,.045,.355,1));
+    }
+    ul.list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        list-style: none;
+        margin: 10px 0 0;
+        padding: 12px 18px;
+        background-color: #fff;
+        z-index: 99;
+        font-size: 14px;
+        color: #666;
+        font-weight: 700;
+        font-family: inherit;
+        box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+        @include border-radius(0px);
+        @include transition(all .25s cubic-bezier(.645,.045,.355,1));
+        opacity: 0;
+        margin-top: 30px;
+        visibility: hidden;
+        max-width: 270px;
+        li {
+            padding: 9px 8px;
+            cursor: pointer;
+            @include transition(all .25s cubic-bezier(.645,.045,.355,1));
+            line-height: normal !important;
+            &:hover {
+                color: #101010;
+                background-color: #f8f8f8;
+            }
+        }
+    }
+    &.open {
+        &:before {
+            transform: translate(0, -50%) scaleY(-1);
+        }
+        ul.list {
+            opacity: 1;
+            margin-top: 10px;
+            visibility: visible;
+        }
+    }
+}
+
+.comment-reply-title small {
+    display: inline-block;
+    vertical-align: top;
+    a {
+        line-height: 25px;
+        font-size: 12px;
+        padding: 0 12px;
+        background-color: $link_color_hover;
+        color: #fff;
+        font-weight: 700;
+        display: inline-flex !important;
+        letter-spacing: 0;
+        @include border-radius(10px);
+        i {
+            display: none;
+        }
+        &:hover {
+          background-color: $primary_color;
+        }
+    }
+}
+
+.post-password-form {
+    input[type="password"] {
+        margin-top: 6px;
+    }
+    input[type="submit"] {
+        margin-top: 10px;
+    }
+}
+
+/* Select 2 */
+.select2 {
+    .select2-selection--single {
+        border: 1px solid #2d2d2d;
+        height: 51px;
+        .select2-selection__rendered {
+            padding-left: 15px;
+            line-height: 51px;
+        }
+        .select2-selection__arrow {
+            right: 8px;
+            top: 50%;
+            @include transform(translate(0px, -50%));
+        }
+    }
+}
+
+form .select2-container--default {
+    width: 100% !important;
+    .select2-selection {
+        border: 1px solid #ececec;
+        height: 50px;
+        background-color: #fff;
+        @include border-radius(0px);
+        .select2-selection__rendered {
+            line-height: 50px;
+            padding-left: 22px;
+            font-size: 15px;
+            color: #888888;
+        }
+        .select2-selection__arrow {
+            right: 10px;
+            top: 50%;
+            color: #5d5d60;
+        }
+        .select2-selection__clear {
+            height: 20px;
+            line-height: 20px;
+            position: absolute;
+            right: 30px;
+            text-align: center;
+            top: 50%;
+            @include transform(translate(0px, -50%));
+            width: 20px;
+            color: #5d5d60;
+        }
+        .select2-selection__placeholder {
+            color: #5d5d60;
+        }
+    }
+}
+.select2-container.select2-container--open {
+    .select2-dropdown {
+        border-color: #e7e8e9;
+        .select2-search__field {
+            border: 1px solid #e7e8e9;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+    }
+    .select2-results {
+        .select2-results__option {
+            font-size: 15px;
+        }
+        li.select2-results__option--highlighted {
+            background-color: $link_color;
+        }
+    }
+}
+
+/* Date Time */
+body .xdsoft_datetimepicker .xdsoft_calendar td.xdsoft_today {
+    color: $primary_color !important;
+}
+body .xdsoft_datetimepicker .xdsoft_label > .xdsoft_select > div > .xdsoft_option:hover,
+body .xdsoft_datetimepicker .xdsoft_calendar td:hover,
+body .xdsoft_datetimepicker .xdsoft_timepicker .xdsoft_time_box >div >div:hover {
+    background: $secondary_color !important;
+    @include box-shadow(none !important);
+    color: $primary_color !important;
+}
+body .xdsoft_datetimepicker .xdsoft_calendar td.xdsoft_today,
+body .xdsoft_datetimepicker .xdsoft_calendar td.xdsoft_default,
+body .xdsoft_datetimepicker .xdsoft_calendar td.xdsoft_current,
+body .xdsoft_datetimepicker .xdsoft_calendar td.xdsoft_current.xdsoft_disabled:hover,
+body .xdsoft_datetimepicker .xdsoft_timepicker .xdsoft_time_box>div>div.xdsoft_current.xdsoft_disabled:hover
+body .xdsoft_datetimepicker .xdsoft_timepicker .xdsoft_time_box >div >div.xdsoft_current
+body .xdsoft_datetimepicker .xdsoft_label > .xdsoft_select > div > .xdsoft_option.xdsoft_current,
+body .xdsoft_timepicker .xdsoft_time_variant .xdsoft_current {
+    background-color: $link_color !important;
+    @include box-shadow(none !important);
+    color: $primary_color !important;
+}
+body {
+    .xdsoft_datetimepicker {
+        font-family: inherit;
+        border: none;
+        @include box-shadow(0 5px 20px -5px rgba(0,0,0,0.12));
+        .xdsoft_calendar {
+            th {
+                background-color: #f3f3f3;
+                color: #444;
+            }
+            td {
+                border-color: #ebebeb;
+                height: 30px;
+                background-color: #f7f7f7;
+                > div {
+                    padding: 0;
+                    text-align: center;
+                }
+            }
+        }
+        .xdsoft_datepicker {
+            width: 230px;
+        }
+        .xdsoft_label > .xdsoft_select > div > .xdsoft_option.xdsoft_current {
+            background-color: $link_color;
+            @include box-shadow(none);
+        }
+    }
+}
+
+.search-no-results {
+    #pxl-main {
+        min-height: calc(100vh - 308px);
+    }
+    .pxl-content-wrap.no-sidebar .no-results.not-found {
+        max-width: 780px;
+        margin: auto;
+    }
+    .search-form .searchform-wrap {
+        position: relative;
+        .search-submit {
+            padding: 0;
+            background-color: transparent;
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            &:hover {
+                color: $link_color;
+            }
+        }
+    }
+}
+
+body.rtl {
+    .comment-list {
+        padding-right: 0;
+        padding-left: 30px;
+        @media #{$max-lg} {
+            padding-left: 0;
+        }
+        .comment-list li .children {
+            padding-left: 0;
+            padding-right: 92px;
+            @media #{$max-sm} {
+                padding-left: 0;
+                padding-right: 30px;
+            }
+        }
+    }
+    @media #{$max-sm} {
+        .comment-image.pxl-mr-28 {
+            margin-right: 0;
+            margin-left: 18px;
+        }
+    }
+    form {
+        input, textarea, select {
+            text-align: right;
+        }
+    }
+    .pxl-contact-form .pxl--form-icon {
+        right: auto;
+        left: 0;
+    }
+}

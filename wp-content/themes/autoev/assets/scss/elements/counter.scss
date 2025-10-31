@@ -1,0 +1,240 @@
+
+
+.pxl-counterslide {
+	display: -moz-inline-box;
+	-moz-box-orient: vertical;
+	display: inline-flex;
+	vertical-align: middle;
+	*vertical-align: auto;
+	position: relative;
+
+	.pxl-counterslide-inside {
+		display: inline-flex;
+	}
+
+	.pxl-counterslide-digit-spacer {
+		visibility: hidden;
+	}
+
+	.pxl-counterslide-digit,
+	.pxl-counterslide-digit-spacer {
+		display: -moz-inline-box;
+		-moz-box-orient: vertical;
+		display: inline-flex;
+		vertical-align: middle;
+		*vertical-align: auto;
+		position: relative;
+	}
+
+	.pxl-counterslide-digit-inner {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		overflow: hidden;
+	}
+
+	.pxl-counterslide-ribbon {
+		display: block;
+	}
+
+	.pxl-counterslide-ribbon-inner {
+		display: block;
+		-webkit-backface-visibility: hidden;
+	}
+
+	.pxl-counterslide-value {
+		display: block;
+		-webkit-transform: translateZ(0);
+	}
+
+	.pxl-counterslide-value.pxl-counterslide-last-value {
+		position: absolute;
+	}
+
+	&.pxl-counterslide-animating-up .pxl-counterslide-ribbon-inner {
+		-webkit-transition: -webkit-transform 2s;
+		-moz-transition: -moz-transform 2s;
+		-ms-transition: -ms-transform 2s;
+		-o-transition: -o-transform 2s;
+		transition: transform 2s;
+	}
+
+	&.pxl-counterslide-animating-up.pxl-counterslide-animating .pxl-counterslide-ribbon-inner {
+		-webkit-transform: translateY(-100%);
+		-moz-transform: translateY(-100%);
+		-ms-transform: translateY(-100%);
+		-o-transform: translateY(-100%);
+		transform: translateY(-100%);
+	}
+
+	&.pxl-counterslide-animating-down .pxl-counterslide-ribbon-inner {
+		-webkit-transform: translateY(-100%);
+		-moz-transform: translateY(-100%);
+		-ms-transform: translateY(-100%);
+		-o-transform: translateY(-100%);
+		transform: translateY(-100%);
+	}
+
+	&.pxl-counterslide-animating-down.pxl-counterslide-animating .pxl-counterslide-ribbon-inner {
+		-webkit-transition: -webkit-transform 2s;
+		-moz-transition: -moz-transform 2s;
+		-ms-transition: -ms-transform 2s;
+		-o-transition: -o-transform 2s;
+		transition: transform 2s;
+		-webkit-transform: translateY(0);
+		-moz-transform: translateY(0);
+		-ms-transform: translateY(0);
+		-o-transform: translateY(0);
+		transform: translateY(0);
+	}
+}
+
+.pxl-counter1 {
+	.pxl--item-inner {
+		&.style-1 {
+			text-align: center;
+
+			.pxl--counter-meta {
+				display: flex;
+				@media (max-width: 480px) {
+					justify-content: center;
+				}
+				.pxl-counter--icon {
+					
+					i {
+						font-size: 30px;
+					}
+				}
+			}
+		}
+
+		.pxl--counter-number {
+			font-size: 40px;
+			line-height: 1.2;
+			margin-bottom: 0;
+			color: #fff;
+			font-weight: 500;
+			.pxl--counter-suffix{
+				margin-left: -8px;
+				@media (max-width: 480px) {
+					margin-left: 0;
+				}
+			}
+			.pxl-counter-meta{
+				@media (max-width: 480px) {
+					margin-left: 10px;
+					margin-bottom: 10px;
+					display: flex;
+					justify-content: flex-start;
+				}
+			}
+
+		}
+
+		.pxl--item-title {
+			font-size: 16px;
+			margin-top: 0;
+			margin-bottom: 0px;
+			color: #f8f9fa;
+			font-weight: 500;
+			margin-top: 7px;
+		}
+
+		.pxl-dot {
+			margin-top: 5px;
+		}
+	}
+
+	&.style2 {
+		.pxl-dot {
+			display: none;
+		}
+	}
+}
+
+.pxl-image-counter1 {
+	.pxl--item-inner {
+		position: relative;
+		text-align: center;
+
+		.pxl-counter-meta {
+			display: inline-flex;
+			margin-bottom: 12px;
+			.pxl--counter-number{
+				.pxl-counter-meta{
+					.pxl--counter-suffix{
+						margin-left: -10px;
+					}
+				}
+			}
+		}
+
+		.pxl-video--holder {
+			img {
+				border-radius: 20px;
+			}
+		}
+
+		.pxl-content {
+			display: flex;
+			justify-content: center;
+
+			.pxl--counter-meta {
+				position: absolute;
+				bottom: -63px;
+				display: flex;
+				text-align: start;
+				width: 80%;
+				align-items: center;
+				padding: 22px;
+				background: #71ca00;
+				border-radius: 10px;
+				@media (max-width: 475px) {
+					padding: 5px;
+				}
+			}
+		}
+
+		.pxl--counter-number {
+			font-size: 40px;
+			line-height: 1.2;
+			margin-bottom: 0;
+			font-weight: 500;
+			padding-right: 15px;
+			flex: 2;
+			@media (max-width: 475px) {
+				flex: 1;
+			}
+			.pxl-counter-meta {
+				margin-left: 7px;
+				margin-bottom: 6px;
+			}
+		}
+
+		.pxl--item-des {
+			flex: 3;
+			margin-left: 10px;
+		}
+
+		.pxl--item-title {
+			font-size: 16px;
+			margin-top: 0;
+			margin-bottom: 0px;
+			font-weight: 500;
+			margin-left: 18px;
+		}
+
+		.pxl-dot {
+			margin-top: 5px;
+		}
+	}
+
+
+	&.style2 {
+		.pxl-dot {
+			display: none;
+		}
+	}
+}

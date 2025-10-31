@@ -1,0 +1,137 @@
+/*--------------------------------------------------------------
+POST CAROUSEL
+----------------------------------------------------------------
+# Carousel Reset
+# Blog
+# Portfolio
+# Service
+--------------------------------------------------------------*/
+
+.pxl--hide-arrow .pxl-swiper-arrow:not(.pxl-swiper-arrow-custom) {
+	opacity: 0 !important;
+	visibility: hidden !important;
+}
+
+.swiper-filter-active {
+	.non-swiper-slide {
+		display: none;
+	}
+}
+
+.swiper-filter-wrap {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	.filter-item {
+		display: inline-block;
+		font-size: 13px;
+		text-transform: uppercase;
+		font-weight: 700;
+		@extend .ft-theme-default;
+		margin: 10px 24px;
+		cursor: pointer;
+		position: relative;
+		z-index: 1;
+		&:before {
+			content: '';
+			width: 11px;
+			height: 41px;
+			@include border-radius(11px);
+			background-color: #f4f4f4;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			@include transform(translate(-50%, -50%) scaleY(0));
+			opacity: 0;
+			@include transition(all .25s cubic-bezier(.645,.045,.355,1));
+			z-index: -1;
+		}
+		span {
+			color: #010927;
+			@include transition(all .25s cubic-bezier(.645,.045,.355,1));
+		}
+		&.active {
+			color: $link_color;
+			span {
+				@extend .text-gradient;
+			}
+			&:before {
+				opacity: 1;
+				@include transform(translate(-50%, -50%) scaleY(1));
+			}
+		}
+	}
+}
+
+.pxl-swiper-sliders .pxl-item--image img {
+	width: 100%;
+}
+
+.pxl-swiper-sliders {
+	.pxl-item--title, .pxl-item--category {
+		a {
+			color: inherit;
+			&:hover {
+				color: inherit;
+			}
+		}
+	}
+}
+
+.pxl-swiperarrow--middle {
+	.pxl-swiper-arrow {
+		margin: 0;
+		position: absolute;
+		top: 50%;
+		transform: translate(0, -50%);
+		@media #{$max-xl} {
+			@include transition(all 220ms linear 0ms);
+			width: 56px;
+			height: 56px;
+			font-size: 15px;
+			line-height: 56px;
+		}
+		&.pxl-swiper-arrow-prev {
+			left: -120px;
+			@media #{$max-xl} {
+				left: -28px;
+			}
+			@media #{$max-lg} {
+				left: 20px;
+			}
+		}
+		&.pxl-swiper-arrow-next {
+			right: -120px;
+			@media #{$max-xl} {
+				right: -28px;
+			}
+			@media #{$max-lg} {
+				right: 20px;
+			}
+		}
+	}
+	.pxl-swiper-arrow-wrap {
+		margin: 0;
+	}
+	&:hover .pxl-swiper-arrow {
+		opacity: 1;
+	}
+}
+
+// Start Blog
+//--------------------------------------------------
+
+// End Blog
+//--------------------------------------------------
+
+// Start Portfolio
+//--------------------------------------------------
+
+// End Portfolio
+//--------------------------------------------------
+
+// Start Service
+//--------------------------------------------------
+// End Service
+//--------------------------------------------------

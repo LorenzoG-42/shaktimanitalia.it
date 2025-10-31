@@ -1,0 +1,112 @@
+body:not(.elementor-editor-active) .pxl-element-slider {
+    opacity: 0;
+}
+.pxl-element-slider {
+    position: relative;
+    @include transition(all 250ms linear 0ms);
+    border-radius: inherit;
+    .pxl-slider-progressbar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        background-color: $link_color;
+        height: 2px;
+        z-index: 100;
+        width: 0;
+        @include transition(all 100ms linear 0ms);
+    }
+    .pxl-slider--image {
+        background-repeat: no-repeat;
+        background-size: cover;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        position: absolute;
+        @include transition(all 300ms linear 0ms);
+    }
+    .pxl-slider--mainimage {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+        @include transition(all 600ms linear 0ms);
+        overflow: hidden;
+        &.wow {
+            visibility: visible;
+        }
+        &.pxl-image--kenburns.animated {
+            animation-name: pxl_kenburns;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+            animation-duration: 40s;
+            transform: scale(1.2);
+        }
+    }
+    .pxl-slider--overlay {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+    }
+    .pxl-slider--inner {
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+        @media #{$max-lg} {
+            height: auto !important;
+        }
+    }
+    .pxl-slider--mainimage, .pxl-slider--image, .pxl-slider--inner, .pxl-swiper-slide, .pxl-swiper-wrapper, .pxl-swiper-container, .pxl-carousel-inner {
+        border-radius: inherit;
+    }
+
+    &.style-1 {
+        .pxl-swiper-arrow-wrap {
+            margin: 0;
+            .pxl-swiper-arrow {
+                margin: 0;
+                position: absolute;
+                top: 50%;
+                @include transform(translate(0, -50%));
+                color: $link_color;
+                background-color: #fff;
+                @include box-shadow(0 10px 60px rgba(#8997BA, 0.15));
+                opacity: 0;
+                @media #{$max-lg} {
+                    font-size: 14px;
+                    width: 56px;
+                    height: 56px;
+                    line-height: 56px;
+                }
+                &:hover {
+                    background-color: $link_color;
+                    color: #fff;
+                    @include box-shadow(none);
+                }
+            }
+            .pxl-swiper-arrow-prev {
+                left: 60px;
+                @media #{$max-lg} {
+                    left: 30px;
+                }
+            }
+            .pxl-swiper-arrow-next {
+                right: 60px;
+                @media #{$max-lg} {
+                    right: 30px;
+                }
+            }
+        }
+        &:hover .pxl-swiper-arrow-wrap { 
+           .pxl-swiper-arrow {
+                opacity: 1;
+           }
+        }
+    }
+}

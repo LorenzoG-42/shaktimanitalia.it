@@ -1,0 +1,41 @@
+@import "options";
+.chat-closed, .chat-open {
+	#button-body {
+		background: -webkit-gradient(linear, right top, left top, from($gradient_from_hex), to($gradient_to_hex)) !important;
+		background: -webkit-linear-gradient(to right, $gradient_from_hex, $gradient_to_hex) !important;
+		background: -moz-linear-gradient(to right, $gradient_from_hex, $gradient_to_hex) !important;
+		background: -ms-linear-gradient(to right, $gradient_from_hex, $gradient_to_hex) !important;
+		background: -o-linear-gradient(to right, $gradient_from_hex, $gradient_to_hex) !important;
+		background: linear-gradient(to right, $gradient_from_hex, $gradient_to_hex) !important;
+		box-shadow: rgba($link_color_hex, 0.4) 0px 2px 16px !important;
+		color: $link_color_hex;
+	}
+}
+.frame-content .chat {
+	.user-data-modal .user-data-modal-submit {
+		box-shadow: rgba($link_color_hex, 0.12) 0px 2px 16px !important;
+	}
+	.chat-header, .offline-message, #conversation-group .message-visitor,
+	.user-data-modal .user-data-modal-submit, .user-data-modal {
+		background: -webkit-gradient(linear, right top, left top, from($gradient_from_hex), to($gradient_to_hex)) !important;
+		background: -webkit-linear-gradient(to right, $gradient_from_hex, $gradient_to_hex) !important;
+		background: -moz-linear-gradient(to right, $gradient_from_hex, $gradient_to_hex) !important;
+		background: -ms-linear-gradient(to right, $gradient_from_hex, $gradient_to_hex) !important;
+		background: -o-linear-gradient(to right, $gradient_from_hex, $gradient_to_hex) !important;
+		background: linear-gradient(to right, $gradient_from_hex, $gradient_to_hex) !important;
+	}
+	.message-operator.message-with-buttons button, .message-operator .message-with-buttons button, .message-operator.bots-quick-replies button {
+		color: $link_color_hex;
+	}
+	.footer-icons-wrapper + div {
+		display: none;
+	}
+	.user-data-modal .user-data-modal-fields #ic_arrow {
+		fill: $link_color_hex;
+	}
+}
+.frame-content .flyMessage {
+	.button-wrapper button, .button-wrapper .button-url {
+		color: $link_color_hex;
+	}
+}

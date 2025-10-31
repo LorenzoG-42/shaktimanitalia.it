@@ -1,0 +1,106 @@
+.pxl-hidden-button {
+	text-align: center;
+	display: flex;
+	cursor: pointer;
+	@include transition(200ms all linear 0ms);
+
+}
+.hide-1500 {
+	@media (max-width: 1500px) {
+		display: none;
+	}
+}
+
+.pxl-hidden-sidebar  {
+	@include transition(transform .8s ease .0s);
+	&.active {
+		.pxl-item--overlay {
+			transition-delay: 0s;
+			-webkit-transition-delay: 0s;
+
+		}
+		.pxl-item--conent {
+			opacity: 1;
+			transform: scale(1);
+			overflow-y: scroll;
+			width: 100%;
+			height: 100%;
+		}
+	}
+}
+
+.pxl-hidden-sidebar {
+	position: relative;
+	.elementor-section{
+		left: 0 ;
+		right: 0; 
+	}
+	.pxl-item--overlay {
+		&.pxl-menu-open{
+		    .lt{
+		        top: 15px !important;
+		        -webkit-transform: rotate(-45deg);
+		        -moz-transform: rotate(-45deg);
+		        -o-transform: rotate(-45deg);
+		        transform: rotate(-45deg);
+		    }
+		    .lm{
+		        opacity: 0;
+		        width: 0;
+		    }
+		    .lb {
+		        top: 15px !important;
+		        -webkit-transform: rotate(45deg);
+		        -moz-transform: rotate(45deg);
+		        -o-transform: rotate(45deg);
+		        transform: rotate(45deg);
+		    }
+		}
+		background-color: rgba(#1b2336, 0.8);
+		height: 100%;
+		width: 100%;
+		right: 0;
+		top: 0;
+		position: fixed;
+		z-index: 1026;
+		@include transform(scaleX(0));
+		transform-origin: 100% 50%;
+		-webkit-transform-origin: 100% 50%;
+		-ms-transform-origin: 100% 50%;
+		-o-transform-origin: 100% 50%;
+		@include transition(transform .8s ease .0s);
+		transition-delay: .2s;
+		-webkit-transition-delay: .2s;
+	}
+	.pxl-item--conent {
+		overflow-y:scroll; 
+		position: fixed;
+		z-index: 1029;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		overflow: hidden;
+		@include transition(transform .8s ease .0s);
+		opacity: 0;
+		transform: scale(0);
+		transition-delay: 0s;
+		-webkit-transition-delay: 0s;
+		&:hover {
+			.pxl-close {
+				top: 40px;
+				opacity: 1;
+			}
+		}
+	}
+}
+.pxl-widget-cart-wrap:hover {
+	.pxl-close {
+		background-color: $secondary_color !important;
+		top: 10px;
+		opacity: 1;
+		&:before,&:after {
+			background-color: #fff !important;
+		}
+	}
+}
