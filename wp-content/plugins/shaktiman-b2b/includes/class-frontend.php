@@ -1,0 +1,390 @@
+<?php
+/**
+ * Gestione Frontend
+ *
+ * @package ShaktimanB2B
+ */
+
+// Se questo file viene chiamato direttamente, esce
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+/**
+ * Classe per il Frontend
+ */
+class Shaktiman_B2B_Frontend {
+    
+    /**
+     * Istanza singleton
+     */
+    private static $instance = null;
+    
+    /**
+     * Restituisce l'istanza singleton
+     */
+    public static function get_instance() {
+        if ( null === self::$instance ) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+    
+    /**
+     * Costruttore
+     */
+    private function __construct() {
+        // Template loader
+        add_filter( 'template_include', array( $this, 'template_loader' ) );
+        
+        // Shortcode per visualizzare la griglia
+        add_shortcode( 'mezzi_agricoli_grid', array( $this, 'render_grid_shortcode' ) );
+        
+        // AJAX per i filtri
+        add_action( 'wp_ajax_filter_mezzi_agricoli', array( $this, 'ajax_filter_mezzi' ) );
+        add_action( 'wp_ajax_nopriv_filter_mezzi_agricoli', array( $this, 'ajax_filter_mezzi' ) );
+        
+        // AJAX per cambiare stato
+        add_action( 'wp_ajax_cambia_stato_mezzo', array( $this, 'ajax_cambia_stato' ) );
+        
+        // AJAX per cambiare ubicazione
+        add_action( 'wp_ajax_cambia_ubicazione_mezzo', array( $this, 'ajax_cambia_ubicazione' ) );
+        
+        // AJAX per generare contratto
+        add_action( 'wp_ajax_genera_contratto_mezzo', array( $this, 'ajax_genera_contratto' ) );
+    }
+    
+    /**
+     * Carica i template personalizzati
+     */
+    public function template_loader( $template ) {
+        // Archivio mezzi agricoli
+        if ( is_post_type_archive( 'mezzo_agricolo' ) ) {
+            $custom_template = $this->locate_template( 'archive-mezzo_agricolo.php' );
+            if ( $custom_template ) {
+                return $custom_template;
+            }
+        }
+        
+        // Singolo mezzo agricolo
+        if ( is_singular( 'mezzo_agricolo' ) ) {
+            $custom_template = $this->locate_template( 'single-mezzo_agricolo.php' );
+            if ( $custom_template ) {
+                return $custom_template;
+            }
+        }
+        
+        // Archivi tassonomie
+        if ( is_tax( array( 'disponibilita', 'categoria_mezzo', 'marchio', 'ubicazione', 'stato_magazzino' ) ) ) {
+            $custom_template = $this->locate_template( 'archive-mezzo_agricolo.php' );
+            if ( $custom_template ) {
+                return $custom_template;
+            }
+        }
+        
+        return $template;
+    }
+    
+    /**
+     * Localizza il template
+     */
+    private function locate_template( $template_name ) {
+        // Cerca nel tema child
+        $child_theme_template = get_stylesheet_directory() . '/shaktiman-b2b/' . $template_name;
+        if ( file_exists( $child_theme_template ) ) {
+            return $child_theme_template;
+        }
+        
+        // Cerca nel tema parent
+        $parent_theme_template = get_template_directory() . '/shaktiman-b2b/' . $template_name;
+        if ( file_exists( $parent_theme_template ) ) {
+            return $parent_theme_template;
+        }
+        
+        // Usa il template del plugin
+        $plugin_template = SHAKTIMAN_B2B_PLUGIN_DIR . 'templates/' . $template_name;
+        if ( file_exists( $plugin_template ) ) {
+            return $plugin_template;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Shortcode per visualizzare la griglia
+     */
+    public function render_grid_shortcode( $atts ) {
+        // Se l'utente non è loggato o non ha permessi, non mostra nulla
+        if ( ! is_user_logged_in() || ! Shaktiman_B2B_Roles::is_rivenditore() ) {
+            return '<p>' . __( 'Devi essere autenticato come rivenditore per visualizzare questa sezione.', 'shaktiman-b2b' ) . '</p>';
+        }
+        
+        $atts = shortcode_atts( array(
+            'per_page' => 12,
+            'columns' => 3,
+            'orderby' => 'date',
+            'order' => 'DESC',
+        ), $atts, 'mezzi_agricoli_grid' );
+        
+        ob_start();
+        
+        // Include il template della griglia
+        $grid_template = $this->locate_template( 'mezzi-grid.php' );
+        if ( $grid_template ) {
+            include $grid_template;
+        }
+        
+        return ob_get_clean();
+    }
+    
+    /**
+     * AJAX per filtrare i mezzi agricoli
+     */
+    public function ajax_filter_mezzi() {
+        check_ajax_referer( 'shaktiman_b2b_nonce', 'nonce' );
+        
+        if ( ! is_user_logged_in() || ! Shaktiman_B2B_Roles::is_rivenditore() ) {
+            wp_send_json_error( array( 'message' => __( 'Accesso negato', 'shaktiman-b2b' ) ) );
+        }
+        
+        $args = array(
+            'post_type' => 'mezzo_agricolo',
+            'posts_per_page' => isset( $_POST['per_page'] ) ? intval( $_POST['per_page'] ) : 12,
+            'paged' => isset( $_POST['paged'] ) ? intval( $_POST['paged'] ) : 1,
+            'tax_query' => array(),
+        );
+        
+        // Filtri tassonomie
+        $taxonomies = array( 'disponibilita', 'categoria_mezzo', 'marchio', 'ubicazione', 'stato_magazzino' );
+        
+        foreach ( $taxonomies as $taxonomy ) {
+            if ( ! empty( $_POST[ $taxonomy ] ) ) {
+                $args['tax_query'][] = array(
+                    'taxonomy' => $taxonomy,
+                    'field' => 'slug',
+                    'terms' => sanitize_text_field( $_POST[ $taxonomy ] ),
+                );
+            }
+        }
+        
+        // Ricerca per keyword
+        if ( ! empty( $_POST['search'] ) ) {
+            $args['s'] = sanitize_text_field( $_POST['search'] );
+        }
+        
+        $query = new WP_Query( $args );
+        
+        ob_start();
+        
+        if ( $query->have_posts() ) {
+            while ( $query->have_posts() ) {
+                $query->the_post();
+                $content_template = $this->locate_template( 'content-mezzo.php' );
+                if ( $content_template ) {
+                    include $content_template;
+                }
+            }
+            wp_reset_postdata();
+        } else {
+            echo '<p class="no-mezzi">' . __( 'Nessun mezzo trovato.', 'shaktiman-b2b' ) . '</p>';
+        }
+        
+        $html = ob_get_clean();
+        
+        wp_send_json_success( array(
+            'html' => $html,
+            'found_posts' => $query->found_posts,
+            'max_pages' => $query->max_num_pages,
+        ) );
+    }
+    
+    /**
+     * AJAX per cambiare lo stato del mezzo
+     */
+    public function ajax_cambia_stato() {
+        // Verifica nonce
+        check_ajax_referer( 'shaktiman_b2b_nonce', 'nonce' );
+        
+        // Verifica che l'utente sia loggato
+        if ( ! is_user_logged_in() ) {
+            wp_send_json_error( array( 'message' => __( 'Devi essere loggato.', 'shaktiman-b2b' ) ) );
+        }
+        
+        // Sanitizza i dati
+        $post_id = intval( $_POST['post_id'] );
+        $action = sanitize_text_field( $_POST['stato_action'] );
+        
+        // Verifica che il post esista
+        if ( ! get_post( $post_id ) ) {
+            wp_send_json_error( array( 'message' => __( 'Mezzo non trovato.', 'shaktiman-b2b' ) ) );
+        }
+        
+        // Determina il nuovo stato e raccogli dati
+        $nuovo_stato = '';
+        $nome_cliente = '';
+        $current_user = wp_get_current_user();
+        
+        switch ( $action ) {
+            case 'riserva':
+                $nuovo_stato = 'riservato';
+                // Richiedi nome cliente
+                if ( empty( $_POST['nome_cliente'] ) ) {
+                    wp_send_json_error( array( 
+                        'message' => __( 'Nome cliente richiesto.', 'shaktiman-b2b' ),
+                        'richiedi_cliente' => true
+                    ) );
+                }
+                $nome_cliente = sanitize_text_field( $_POST['nome_cliente'] );
+                update_post_meta( $post_id, '_nome_cliente', $nome_cliente );
+                update_post_meta( $post_id, '_data_riservato', current_time( 'Y-m-d H:i:s' ) );
+                update_post_meta( $post_id, '_riservato_da_user_id', $current_user->ID );
+                update_post_meta( $post_id, '_riservato_da_user_name', $current_user->display_name );
+                break;
+                
+            case 'venduto':
+                $nuovo_stato = 'venduto';
+                // Richiedi nome cliente
+                if ( empty( $_POST['nome_cliente'] ) ) {
+                    wp_send_json_error( array( 
+                        'message' => __( 'Nome cliente richiesto.', 'shaktiman-b2b' ),
+                        'richiedi_cliente' => true
+                    ) );
+                }
+                $nome_cliente = sanitize_text_field( $_POST['nome_cliente'] );
+                update_post_meta( $post_id, '_nome_cliente', $nome_cliente );
+                update_post_meta( $post_id, '_data_venduto', current_time( 'Y-m-d H:i:s' ) );
+                update_post_meta( $post_id, '_venduto_da_user_id', $current_user->ID );
+                update_post_meta( $post_id, '_venduto_da_user_name', $current_user->display_name );
+                break;
+                
+            case 'libera':
+                $nuovo_stato = 'disponibile';
+                // Rimuovi i dati cliente e utente
+                delete_post_meta( $post_id, '_nome_cliente' );
+                delete_post_meta( $post_id, '_data_riservato' );
+                delete_post_meta( $post_id, '_data_venduto' );
+                delete_post_meta( $post_id, '_riservato_da_user_id' );
+                delete_post_meta( $post_id, '_riservato_da_user_name' );
+                delete_post_meta( $post_id, '_venduto_da_user_id' );
+                delete_post_meta( $post_id, '_venduto_da_user_name' );
+                break;
+                
+            default:
+                wp_send_json_error( array( 'message' => __( 'Azione non valida.', 'shaktiman-b2b' ) ) );
+        }
+        
+        // Trova il term ID dello stato
+        $term = get_term_by( 'slug', $nuovo_stato, 'disponibilita' );
+        if ( ! $term ) {
+            wp_send_json_error( array( 'message' => __( 'Stato non trovato.', 'shaktiman-b2b' ) ) );
+        }
+        
+        // Aggiorna la tassonomia
+        $result = wp_set_object_terms( $post_id, $term->term_id, 'disponibilita', false );
+        
+        if ( is_wp_error( $result ) ) {
+            wp_send_json_error( array( 'message' => __( 'Errore nell\'aggiornamento dello stato.', 'shaktiman-b2b' ) ) );
+        }
+        
+        wp_send_json_success( array( 
+            'message' => __( 'Stato aggiornato con successo!', 'shaktiman-b2b' ),
+            'nuovo_stato' => $nuovo_stato,
+            'nome_stato' => $term->name
+        ) );
+    }
+    
+    /**
+     * AJAX: Cambia ubicazione mezzo
+     */
+    public function ajax_cambia_ubicazione() {
+        // Verifica nonce
+        check_ajax_referer( 'shaktiman_b2b_nonce', 'nonce' );
+        
+        // Verifica permessi (solo admin)
+        if ( ! current_user_can( 'edit_others_posts' ) ) {
+            wp_send_json_error( array( 'message' => __( 'Non hai i permessi per eseguire questa azione.', 'shaktiman-b2b' ) ) );
+        }
+        
+        // Verifica parametri
+        if ( empty( $_POST['post_id'] ) || empty( $_POST['ubicazione_id'] ) ) {
+            wp_send_json_error( array( 'message' => __( 'Parametri mancanti.', 'shaktiman-b2b' ) ) );
+        }
+        
+        $post_id = intval( $_POST['post_id'] );
+        $ubicazione_id = intval( $_POST['ubicazione_id'] );
+        
+        // Verifica che il post esista
+        if ( get_post_type( $post_id ) !== 'mezzo_agricolo' ) {
+            wp_send_json_error( array( 'message' => __( 'Mezzo non trovato.', 'shaktiman-b2b' ) ) );
+        }
+        
+        // Verifica che l'ubicazione esista
+        $ubicazione = get_term( $ubicazione_id, 'ubicazione' );
+        if ( ! $ubicazione || is_wp_error( $ubicazione ) ) {
+            wp_send_json_error( array( 'message' => __( 'Ubicazione non valida.', 'shaktiman-b2b' ) ) );
+        }
+        
+        // Aggiorna l'ubicazione
+        $result = wp_set_object_terms( $post_id, $ubicazione_id, 'ubicazione', false );
+        
+        if ( is_wp_error( $result ) ) {
+            wp_send_json_error( array( 'message' => __( 'Errore nell\'aggiornamento dell\'ubicazione.', 'shaktiman-b2b' ) ) );
+        }
+        
+        wp_send_json_success( array( 
+            'message' => sprintf( __( 'Ubicazione cambiata in: %s', 'shaktiman-b2b' ), $ubicazione->name ),
+            'ubicazione_name' => $ubicazione->name
+        ) );
+    }
+    
+    /**
+     * AJAX: Genera contratto mezzo
+     */
+    public function ajax_genera_contratto() {
+        // Verifica nonce
+        check_ajax_referer( 'shaktiman_b2b_nonce', 'nonce' );
+        
+        // Verifica permessi (solo admin)
+        if ( ! current_user_can( 'edit_others_posts' ) ) {
+            wp_send_json_error( array( 'message' => __( 'Non hai i permessi per eseguire questa azione.', 'shaktiman-b2b' ) ) );
+        }
+        
+        // Verifica parametri
+        if ( empty( $_POST['post_id'] ) || empty( $_POST['numero_contratto'] ) ) {
+            wp_send_json_error( array( 'message' => __( 'Numero contratto obbligatorio.', 'shaktiman-b2b' ) ) );
+        }
+        
+        $post_id = intval( $_POST['post_id'] );
+        $numero_contratto = sanitize_text_field( $_POST['numero_contratto'] );
+        $ragione_sociale = ! empty( $_POST['ragione_sociale'] ) ? sanitize_text_field( $_POST['ragione_sociale'] ) : '';
+        
+        // Verifica che il post esista
+        if ( get_post_type( $post_id ) !== 'mezzo_agricolo' ) {
+            wp_send_json_error( array( 'message' => __( 'Mezzo non trovato.', 'shaktiman-b2b' ) ) );
+        }
+        
+        // Verifica che il mezzo sia venduto
+        $disponibilita_terms = get_the_terms( $post_id, 'disponibilita' );
+        $stato_attuale = $disponibilita_terms && ! is_wp_error( $disponibilita_terms ) ? $disponibilita_terms[0]->slug : '';
+        
+        if ( $stato_attuale !== 'venduto' ) {
+            wp_send_json_error( array( 'message' => __( 'Il mezzo deve essere venduto per generare un contratto.', 'shaktiman-b2b' ) ) );
+        }
+        
+        // Salva i dati del contratto
+        update_post_meta( $post_id, '_numero_contratto', $numero_contratto );
+        if ( $ragione_sociale ) {
+            update_post_meta( $post_id, '_ragione_sociale', $ragione_sociale );
+        }
+        
+        // TODO: Implementare generazione PDF
+        // Per ora salviamo solo i metadati
+        
+        wp_send_json_success( array( 
+            'message' => __( 'Dati contratto salvati con successo!', 'shaktiman-b2b' ),
+            'numero_contratto' => $numero_contratto,
+            'ragione_sociale' => $ragione_sociale,
+            // 'pdf_url' => '' // URL del PDF quando sarà implementato
+        ) );
+    }
+}

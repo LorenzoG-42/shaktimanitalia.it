@@ -1,0 +1,193 @@
+/**
+ * Stili Admin per Shaktiman B2B
+ */
+
+/* Meta boxes */
+.mezzo-cliente-info,
+.mezzo-contratto-info {
+    padding: 15px 0;
+}
+
+.mezzo-cliente-info label,
+.mezzo-contratto-info label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.mezzo-cliente-info input[type="text"],
+.mezzo-cliente-info input[type="date"],
+.mezzo-contratto-info input[type="text"],
+.mezzo-contratto-info input[type="date"] {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 2;
+}
+
+.mezzo-cliente-info input[disabled],
+.mezzo-contratto-info input[disabled] {
+    background-color: #f6f7f7;
+    color: #8c8f94;
+    cursor: not-allowed;
+}
+
+.mezzo-cliente-info .description,
+.mezzo-contratto-info .description {
+    margin-top: 8px;
+    font-size: 13px;
+    font-style: italic;
+    color: #646970;
+}
+
+.mezzo-cliente-info p,
+.mezzo-contratto-info p {
+    margin: 15px 0;
+}
+
+.mezzo-cliente-info strong,
+.mezzo-contratto-info strong {
+    display: inline-block;
+    margin-right: 5px;
+    color: #1d2327;
+}
+
+/* Colonne admin list */
+.column-disponibilita,
+.column-marchio,
+.column-categoria_mezzo,
+.column-ubicazione,
+.column-stato_magazzino {
+    width: 12%;
+}
+
+/* Badge disponibilità nelle liste */
+.mezzo-disponibilita-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+}
+
+.mezzo-disponibilita-badge.disponibile {
+    background: #00a32a;
+}
+
+.mezzo-disponibilita-badge.riservato {
+    background: #f0b849;
+}
+
+.mezzo-disponibilita-badge.venduto {
+    background: #d63638;
+}
+
+/* Info box contratti */
+.mezzo-contratto-info .description strong {
+    color: #d63638;
+}
+
+/* Highlights per campi obbligatori */
+.mezzo-cliente-info input:required,
+.mezzo-contratto-info input:required {
+    border-left: 3px solid #2271b1;
+}
+
+/* Sezioni meta box */
+.mezzo-info-box h3 {
+    margin-top: 25px;
+    margin-bottom: 15px;
+    padding-top: 20px;
+    border-top: 1px solid #dcdcde;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.mezzo-info-box h3:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+/* Messaggi di avviso */
+.mezzo-cliente-info .notice,
+.mezzo-contratto-info .notice {
+    margin: 15px 0;
+    padding: 10px;
+}
+
+.mezzo-cliente-info .notice.notice-warning {
+    border-left-color: #f0b849;
+}
+
+.mezzo-cliente-info .notice.notice-info {
+    border-left-color: #2271b1;
+}
+
+/* Stati nella lista admin */
+.post-state {
+    font-weight: 600;
+}
+
+.post-state.disponibile {
+    color: #00a32a;
+}
+
+.post-state.riservato {
+    color: #f0b849;
+}
+
+.post-state.venduto {
+    color: #d63638;
+}
+
+/* Quick edit personalizzazioni */
+.inline-edit-col .inline-edit-disponibilita {
+    clear: both;
+    padding: 10px 0;
+}
+
+.inline-edit-col .inline-edit-disponibilita label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+/* Responsive admin */
+@media screen and (max-width: 782px) {
+    .column-disponibilita,
+    .column-marchio,
+    .column-categoria_mezzo,
+    .column-ubicazione,
+    .column-stato_magazzino {
+        display: none;
+    }
+}
+
+/* Menu icon personalizzato */
+#adminmenu .menu-icon-mezzo_agricolo div.wp-menu-image:before {
+    content: "\f318";
+}
+
+/* Help text */
+.mezzo-help-text {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f0f6fc;
+    border-left: 3px solid #2271b1;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.mezzo-help-text ul {
+    margin: 10px 0 0 20px;
+}
+
+.mezzo-help-text li {
+    margin: 5px 0;
+}
