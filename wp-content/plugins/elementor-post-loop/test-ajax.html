@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test AJAX Post Loop</title>
+    <link rel="stylesheet" href="assets/css/elementor-post-loop.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .test-info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-left: 4px solid #2271b1;
+            margin-bottom: 30px;
+        }
+        .elementor-widget-elementor-post-loop {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Test AJAX Navigation - Elementor Post Loop</h1>
+        
+        <div class="test-info">
+            <h3>Istruzioni Test:</h3>
+            <ol>
+                <li>Apri la Console del Browser (F12)</li>
+                <li>Clicca sui numeri della paginazione</li>
+                <li>Osserva i log nella console</li>
+                <li>Verifica che i post vengano sostituiti con animazione</li>
+            </ol>
+            <p><strong>Nota:</strong> Questo è un test statico. Per il test completo, usa il plugin in WordPress.</p>
+        </div>
+
+        <!-- Simulazione Widget -->
+        <div class="elementor-widget-elementor-post-loop" data-id="test-widget-1">
+            <div class="elementor-post-loop elementor-post-loop-container elementor-post-loop-grid elementor-post-loop-columns-3" 
+                 data-post-type="post"
+                 data-posts-per-page="6"
+                 data-layout="grid"
+                 data-orderby="date"
+                 data-order="DESC"
+                 data-settings='{"post_type":"post","posts_per_page":6,"layout":"grid","columns":3,"show_image":"yes","show_title":"yes","show_excerpt":"yes","show_meta":"yes","show_read_more":"yes","template_style":"card"}'>
+                
+                <div class="elementor-post-loop-posts">
+                    <div class="elementor-post-loop-grid elementor-post-loop-columns-3">
+                        
+                        <!-- Post 1 -->
+                        <article class="elementor-post-loop-item elementor-post-loop-card" data-post-id="1">
+                            <div class="elementor-post-loop-thumbnail">
+                                <a href="#"><img src="https://via.placeholder.com/400x300/0073aa/ffffff?text=Post+1" alt="Post 1" class="elementor-post-loop-image"></a>
+                            </div>
+                            <div class="elementor-post-loop-content">
+                                <h3 class="elementor-post-loop-title"><a href="#">Titolo Post di Esempio 1</a></h3>
+                                <div class="elementor-post-loop-meta">
+                                    <span class="elementor-post-loop-meta-item"><i class="far fa-calendar-alt"></i> 6 Nov 2024</span>
+                                    <span class="elementor-post-loop-meta-item"><i class="far fa-user"></i> Admin</span>
+                                </div>
+                                <div class="elementor-post-loop-excerpt">
+                                    Questo è un estratto del post di esempio. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                </div>
+                                <div class="elementor-post-loop-read-more">
+                                    <a href="#" class="elementor-post-loop-read-more-link">Leggi di più</a>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- Post 2 -->
+                        <article class="elementor-post-loop-item elementor-post-loop-card" data-post-id="2">
+                            <div class="elementor-post-loop-thumbnail">
+                                <a href="#"><img src="https://via.placeholder.com/400x300/00a0d2/ffffff?text=Post+2" alt="Post 2" class="elementor-post-loop-image"></a>
+                            </div>
+                            <div class="elementor-post-loop-content">
+                                <h3 class="elementor-post-loop-title"><a href="#">Titolo Post di Esempio 2</a></h3>
+                                <div class="elementor-post-loop-meta">
+                                    <span class="elementor-post-loop-meta-item"><i class="far fa-calendar-alt"></i> 5 Nov 2024</span>
+                                    <span class="elementor-post-loop-meta-item"><i class="far fa-user"></i> Editor</span>
+                                </div>
+                                <div class="elementor-post-loop-excerpt">
+                                    Un altro estratto interessante per testare il layout e la struttura dei contenuti.
+                                </div>
+                                <div class="elementor-post-loop-read-more">
+                                    <a href="#" class="elementor-post-loop-read-more-link">Leggi di più</a>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- Post 3 -->
+                        <article class="elementor-post-loop-item elementor-post-loop-card" data-post-id="3">
+                            <div class="elementor-post-loop-thumbnail">
+                                <a href="#"><img src="https://via.placeholder.com/400x300/46b450/ffffff?text=Post+3" alt="Post 3" class="elementor-post-loop-image"></a>
+                            </div>
+                            <div class="elementor-post-loop-content">
+                                <h3 class="elementor-post-loop-title"><a href="#">Titolo Post di Esempio 3</a></h3>
+                                <div class="elementor-post-loop-meta">
+                                    <span class="elementor-post-loop-meta-item"><i class="far fa-calendar-alt"></i> 4 Nov 2024</span>
+                                    <span class="elementor-post-loop-meta-item"><i class="far fa-user"></i> Autore</span>
+                                </div>
+                                <div class="elementor-post-loop-excerpt">
+                                    Terzo post di esempio con contenuti di test per verificare il funzionamento del plugin.
+                                </div>
+                                <div class="elementor-post-loop-read-more">
+                                    <a href="#" class="elementor-post-loop-read-more-link">Leggi di più</a>
+                                </div>
+                            </div>
+                        </article>
+
+                    </div>
+                </div>
+
+                <!-- Paginazione -->
+                <div class="elementor-post-loop-pagination">
+                    <span class="page-numbers current">1</span>
+                    <a class="page-numbers" href="#page-2" data-page="2">2</a>
+                    <a class="page-numbers" href="#page-3" data-page="3">3</a>
+                    <span class="page-numbers dots">…</span>
+                    <a class="page-numbers" href="#page-5" data-page="5">5</a>
+                    <a class="next page-numbers" href="#page-2" data-page="2">Successivo »</a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Test Load More -->
+        <div class="elementor-widget-elementor-post-loop" data-id="test-widget-2" style="margin-top: 50px;">
+            <h2>Test Load More Button</h2>
+            <div class="elementor-post-loop elementor-post-loop-container elementor-post-loop-list" 
+                 data-post-type="post"
+                 data-posts-per-page="3"
+                 data-layout="list"
+                 data-settings='{"post_type":"post","posts_per_page":3,"layout":"list","show_image":"yes","show_title":"yes","template_style":"card"}'>
+                
+                <div class="elementor-post-loop-posts">
+                    <div class="elementor-post-loop-list">
+                        <article class="elementor-post-loop-item" data-post-id="1">
+                            <div class="elementor-post-loop-thumbnail">
+                                <img src="https://via.placeholder.com/200x150/dc3232/ffffff?text=A" alt="Post A">
+                            </div>
+                            <div class="elementor-post-loop-content">
+                                <h3 class="elementor-post-loop-title">Post Primo</h3>
+                                <div class="elementor-post-loop-excerpt">Contenuto del primo post in layout lista.</div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <!-- Load More Button -->
+                <div class="elementor-post-loop-pagination">
+                    <div class="elementor-post-loop-load-more-container">
+                        <button class="elementor-post-loop-load-more" data-page="1" data-max-pages="5">Carica altri</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Simula l'oggetto globale WordPress
+        window.elementor_post_loop_ajax = {
+            ajax_url: 'test-ajax-handler.php', // In produzione sarà admin-ajax.php
+            nonce: 'test-nonce-12345'
+        };
+
+        // Mock AJAX per test
+        (function($) {
+            const originalAjax = $.ajax;
+            $.ajax = function(options) {
+                console.log('🌐 AJAX Request simulato:', options);
+                
+                // Simula risposta dopo 1 secondo
+                setTimeout(function() {
+                    const page = options.data.page || 1;
+                    const type = options.data.type || 'pagination';
+                    
+                    // HTML di esempio per paginazione
+                    const mockHTML = `
+                        <div class="elementor-post-loop-grid elementor-post-loop-columns-3">
+                            <article class="elementor-post-loop-item elementor-post-loop-card" data-post-id="${page}1">
+                                <div class="elementor-post-loop-thumbnail">
+                                    <img src="https://via.placeholder.com/400x300/ff6900/ffffff?text=Page+${page}+Post+1" alt="Post">
+                                </div>
+                                <div class="elementor-post-loop-content">
+                                    <h3 class="elementor-post-loop-title">Post Pagina ${page} - #1</h3>
+                                    <div class="elementor-post-loop-excerpt">Contenuto caricato via AJAX per pagina ${page}</div>
+                                </div>
+                            </article>
+                            <article class="elementor-post-loop-item elementor-post-loop-card" data-post-id="${page}2">
+                                <div class="elementor-post-loop-thumbnail">
+                                    <img src="https://via.placeholder.com/400x300/9b51e0/ffffff?text=Page+${page}+Post+2" alt="Post">
+                                </div>
+                                <div class="elementor-post-loop-content">
+                                    <h3 class="elementor-post-loop-title">Post Pagina ${page} - #2</h3>
+                                    <div class="elementor-post-loop-excerpt">Secondo contenuto caricato via AJAX</div>
+                                </div>
+                            </article>
+                            <article class="elementor-post-loop-item elementor-post-loop-card" data-post-id="${page}3">
+                                <div class="elementor-post-loop-thumbnail">
+                                    <img src="https://via.placeholder.com/400x300/00d1b2/ffffff?text=Page+${page}+Post+3" alt="Post">
+                                </div>
+                                <div class="elementor-post-loop-content">
+                                    <h3 class="elementor-post-loop-title">Post Pagina ${page} - #3</h3>
+                                    <div class="elementor-post-loop-excerpt">Terzo contenuto caricato dinamicamente</div>
+                                </div>
+                            </article>
+                        </div>
+                    `;
+                    
+                    const response = {
+                        success: true,
+                        data: {
+                            html: mockHTML,
+                            page: page,
+                            found_posts: 15,
+                            max_num_pages: 5,
+                            type: type,
+                            pagination: `<span class="page-numbers">1</span><span class="page-numbers current">${page}</span><a class="page-numbers" href="#page-${parseInt(page)+1}" data-page="${parseInt(page)+1}">${parseInt(page)+1}</a>`
+                        }
+                    };
+                    
+                    console.log('✅ AJAX Response simulata:', response);
+                    options.success(response);
+                }, 1000);
+                
+                // Restituisci un finto oggetto jqXHR
+                return {
+                    done: function(fn) { this.doneCallback = fn; return this; },
+                    fail: function(fn) { this.failCallback = fn; return this; },
+                    always: function(fn) { this.alwaysCallback = fn; return this; }
+                };
+            };
+        })(jQuery);
+    </script>
+    <script src="assets/js/frontend.js"></script>
+
+    <script>
+        // Info di debug
+        console.log('%c🧪 TEST MODE ATTIVO', 'background: #2271b1; color: white; padding: 5px 10px; font-size: 14px; font-weight: bold;');
+        console.log('AJAX è stato simulato. Clicca sulla paginazione per vedere il funzionamento.');
+    </script>
+</body>
+</html>
