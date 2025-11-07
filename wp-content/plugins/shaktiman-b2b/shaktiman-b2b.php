@@ -63,6 +63,8 @@ class Shaktiman_B2B {
         require_once SHAKTIMAN_B2B_PLUGIN_DIR . 'includes/class-taxonomies.php';
         require_once SHAKTIMAN_B2B_PLUGIN_DIR . 'includes/class-meta-boxes.php';
         require_once SHAKTIMAN_B2B_PLUGIN_DIR . 'includes/class-access-control.php';
+        require_once SHAKTIMAN_B2B_PLUGIN_DIR . 'includes/class-logger.php';
+        require_once SHAKTIMAN_B2B_PLUGIN_DIR . 'includes/class-stats.php';
         require_once SHAKTIMAN_B2B_PLUGIN_DIR . 'includes/class-frontend.php';
     }
     
@@ -95,6 +97,8 @@ class Shaktiman_B2B {
         Shaktiman_B2B_Taxonomies::get_instance();
         Shaktiman_B2B_Meta_Boxes::get_instance();
         Shaktiman_B2B_Access_Control::get_instance();
+        Shaktiman_B2B_Logger::get_instance();
+        Shaktiman_B2B_Stats::get_instance();
         Shaktiman_B2B_Frontend::get_instance();
     }
     
@@ -104,6 +108,9 @@ class Shaktiman_B2B {
     public function activate() {
         // Crea i ruoli
         Shaktiman_B2B_Roles::create_roles();
+        
+        // Crea le tabelle del logger
+        Shaktiman_B2B_Logger::create_tables();
         
         // Registra post type e tassonomie
         $post_type = Shaktiman_B2B_Post_Type::get_instance();

@@ -158,6 +158,11 @@ get_header();
                                     </button>
                                 <?php endif; ?>
                             <?php endif; ?>
+                            
+                            <!-- Bottone Storico sempre visibile per utenti loggati -->
+                            <button class="btn-stato btn-storico" data-post-id="<?php echo get_the_ID(); ?>">
+                                <?php _e( '📋 STORICO', 'shaktiman-b2b' ); ?>
+                            </button>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -406,6 +411,27 @@ get_header();
         <div class="modal-footer">
             <button class="modal-btn modal-btn-confirm" id="notify-btn-ok">
                 <?php _e( 'OK', 'shaktiman-b2b' ); ?>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modale Storico Mezzo -->
+<div id="storico-modal" class="shaktiman-modal-overlay">
+    <div class="shaktiman-modal modal-large">
+        <div class="modal-header">
+            <h3><?php _e( 'Storico Attività', 'shaktiman-b2b' ); ?></h3>
+            <button class="modal-close" data-modal="storico">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="storico-loading" class="loading-spinner" style="display: none;">
+                <p><?php _e( 'Caricamento...', 'shaktiman-b2b' ); ?></p>
+            </div>
+            <div id="storico-content"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-cancel" data-modal="storico">
+                <?php _e( 'Chiudi', 'shaktiman-b2b' ); ?>
             </button>
         </div>
     </div>

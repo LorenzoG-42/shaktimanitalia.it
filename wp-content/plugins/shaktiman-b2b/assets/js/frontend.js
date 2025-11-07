@@ -543,6 +543,9 @@
             case 'confirm':
                 ConfirmModal.close();
                 break;
+            case 'storico':
+                StoricoModal.close();
+                break;
         }
     });
     
@@ -563,6 +566,9 @@
             }
             if ($('#confirm-modal').hasClass('active')) {
                 ConfirmModal.close();
+            }
+            if ($('#storico-modal').hasClass('active')) {
+                StoricoModal.close();
             }
         }
     });
@@ -798,6 +804,115 @@
     });
     
     /**
+     * Click handler per pulsante storico
+     */
+    $(document).on('click', '.btn-storico', function(e) {
+        e.preventDefault();
+        const postId = $(this).data('post-id');
+        if (postId) {
+            StoricoModal.open(postId);
+        }
+    });
+    
+    /**
+     * Gestione modale Storico
+     */
+    const StoricoModal = {
+        
+        currentPostId: null,
+        
+        /**
+         * Apri modale e carica storico
+         */
+        open: function(postId) {
+            this.currentPostId = postId;
+            $('#storico-modal').addClass('active');
+            $('#storico-content').html('');
+            $('#storico-loading').show();
+            
+            // Carica storico via AJAX
+            $.ajax({
+                url: shaktimanB2B.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'get_mezzo_history',
+                    nonce: shaktimanB2B.nonce,
+                    mezzo_id: postId
+                },
+                success: function(response) {
+                    $('#storico-loading').hide();
+                    if (response.success && response.data.history) {
+                        StoricoModal.renderHistory(response.data.history);
+                    } else {
+                        $('#storico-content').html('<p class="no-data">Nessuna attività registrata.</p>');
+                    }
+                },
+                error: function() {
+                    $('#storico-loading').hide();
+                    $('#storico-content').html('<p class="error-message">Errore nel caricamento dello storico.</p>');
+                }
+            });
+        },
+        
+        /**
+         * Renderizza lo storico
+         */
+        renderHistory: function(history) {
+            if (!history || history.length === 0) {
+                $('#storico-content').html('<p class="no-data">Nessuna attività registrata.</p>');
+                return;
+            }
+            
+            let html = '<div class="storico-table-wrapper"><table class="storico-table">';
+            html += '<thead><tr>';
+            html += '<th>Data/Ora</th>';
+            html += '<th>Utente</th>';
+            html += '<th>Azione</th>';
+            html += '<th>Cliente</th>';
+            html += '<th>Dettagli</th>';
+            html += '</tr></thead><tbody>';
+            
+            history.forEach(function(log) {
+                html += '<tr>';
+                html += '<td>' + (log.created_at || '-') + '</td>';
+                html += '<td>' + (log.user_name || '-') + '</td>';
+                html += '<td><span class="action-badge">' + (log.action_type || '-') + '</span></td>';
+                html += '<td>' + (log.nome_cliente || '-') + '</td>';
+                
+                // Dettagli azione
+                let dettagli = '';
+                if (log.old_value && log.new_value) {
+                    const oldVal = typeof log.old_value === 'string' ? log.old_value : JSON.stringify(log.old_value);
+                    const newVal = typeof log.new_value === 'string' ? log.new_value : JSON.stringify(log.new_value);
+                    dettagli = '<small>Da: <em>' + oldVal + '</em> → A: <em>' + newVal + '</em></small>';
+                } else if (log.new_value) {
+                    if (typeof log.new_value === 'object') {
+                        dettagli = '<small>' + JSON.stringify(log.new_value) + '</small>';
+                    } else {
+                        dettagli = '<small>' + log.new_value + '</small>';
+                    }
+                }
+                if (log.note) {
+                    dettagli += '<br><small>' + log.note + '</small>';
+                }
+                html += '<td>' + (dettagli || '-') + '</td>';
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table></div>';
+            $('#storico-content').html(html);
+        },
+        
+        /**
+         * Chiudi modale
+         */
+        close: function() {
+            $('#storico-modal').removeClass('active');
+            this.currentPostId = null;
+        }
+    };
+    
+    /**
      * Inizializza quando il documento è pronto
      */
     $(document).ready(function() {
@@ -824,6 +939,128 @@
         if ($.fn.tooltip) {
             $('[data-tooltip]').tooltip();
         }
+        
+        // Inizializza filtri statistiche se presenti
+        if ($('.rivenditore-stats-container').length > 0) {
+            StatsManager.init();
+        }
     });
+    
+    /**
+     * Gestione Statistiche Rivenditori
+     */
+    const StatsManager = {
+        
+        /**
+         * Inizializza i filtri
+         */
+        init: function() {
+            const self = this;
+            
+            // Filtro per stato
+            $('input[name="filter-stato"]').on('change', function() {
+                self.applyFilters();
+            });
+            
+            // Filtro per contratto
+            $('input[name="filter-contratto"], input[name="filter-no-contratto"]').on('change', function() {
+                self.applyFilters();
+            });
+            
+            // Bottone refresh
+            $('.btn-refresh-stats').on('click', function() {
+                const userId = $(this).data('user-id');
+                self.refreshStats(userId);
+            });
+        },
+        
+        /**
+         * Applica i filtri alla tabella
+         */
+        applyFilters: function() {
+            const statoFilter = $('input[name="filter-stato"]:checked').val();
+            const contrattoFilter = $('input[name="filter-contratto"]').is(':checked');
+            const noContrattoFilter = $('input[name="filter-no-contratto"]').is(':checked');
+            
+            $('.stats-table tbody tr').each(function() {
+                let show = true;
+                const $row = $(this);
+                const stato = $row.data('stato');
+                const hasContratto = $row.data('contratto') === 1;
+                
+                // Filtro stato
+                if (statoFilter !== 'all' && stato !== statoFilter) {
+                    show = false;
+                }
+                
+                // Filtro contratto
+                if (contrattoFilter && !hasContratto) {
+                    show = false;
+                }
+                
+                if (noContrattoFilter && hasContratto) {
+                    show = false;
+                }
+                
+                // Mostra/nascondi riga
+                if (show) {
+                    $row.show();
+                } else {
+                    $row.hide();
+                }
+            });
+            
+            // Mostra messaggio se nessun risultato
+            const visibleRows = $('.stats-table tbody tr:visible').length;
+            if (visibleRows === 0) {
+                if (!$('.stats-no-results').length) {
+                    $('.stats-table-wrapper').append('<p class="stats-no-results no-data">Nessun mezzo trovato con i filtri selezionati.</p>');
+                }
+            } else {
+                $('.stats-no-results').remove();
+            }
+        },
+        
+        /**
+         * Ricarica le statistiche
+         */
+        refreshStats: function(userId) {
+            const $btn = $('.btn-refresh-stats');
+            const originalText = $btn.text();
+            
+            $btn.prop('disabled', true).text('⏳ Caricamento...');
+            
+            $.ajax({
+                url: shaktimanB2B.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'get_rivenditore_detailed_stats',
+                    nonce: shaktimanB2B.nonce,
+                    user_id: userId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Ricarica la pagina per aggiornare i dati
+                        location.reload();
+                    } else {
+                        if (typeof NotifyModal !== 'undefined') {
+                            NotifyModal.show(response.data.message || 'Errore durante l\'aggiornamento.', 'Errore');
+                        } else {
+                            alert(response.data.message || 'Errore durante l\'aggiornamento.');
+                        }
+                        $btn.prop('disabled', false).text(originalText);
+                    }
+                },
+                error: function() {
+                    if (typeof NotifyModal !== 'undefined') {
+                        NotifyModal.show('Si è verificato un errore. Riprova.', 'Errore');
+                    } else {
+                        alert('Si è verificato un errore. Riprova.');
+                    }
+                    $btn.prop('disabled', false).text(originalText);
+                }
+            });
+        }
+    };
     
 })(jQuery);

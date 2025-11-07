@@ -226,6 +226,10 @@ class Shaktiman_B2B_Frontend {
             wp_send_json_error( array( 'message' => __( 'Mezzo non trovato.', 'shaktiman-b2b' ) ) );
         }
         
+        // Salva lo stato precedente per il log
+        $disponibilita_terms = get_the_terms( $post_id, 'disponibilita' );
+        $stato_precedente = $disponibilita_terms && ! is_wp_error( $disponibilita_terms ) ? $disponibilita_terms[0]->slug : 'disponibile';
+        
         // Determina il nuovo stato e raccogli dati
         $nuovo_stato = '';
         $nome_cliente = '';
@@ -308,6 +312,16 @@ class Shaktiman_B2B_Frontend {
             wp_send_json_error( array( 'message' => __( 'Errore nell\'aggiornamento dello stato.', 'shaktiman-b2b' ) ) );
         }
         
+        // Log dell'azione
+        $logger = Shaktiman_B2B_Logger::get_instance();
+        $logger->log_action( $post_id, $action, array(
+            'user_id'      => $rivenditore_id,
+            'user_name'    => $utente_ordine->display_name,
+            'nome_cliente' => $nome_cliente,
+            'old_value'    => $stato_precedente,
+            'new_value'    => $nuovo_stato,
+        ) );
+        
         wp_send_json_success( array( 
             'message' => __( 'Stato aggiornato con successo!', 'shaktiman-b2b' ),
             'nuovo_stato' => $nuovo_stato,
@@ -346,12 +360,26 @@ class Shaktiman_B2B_Frontend {
             wp_send_json_error( array( 'message' => __( 'Ubicazione non valida.', 'shaktiman-b2b' ) ) );
         }
         
+        // Salva l'ubicazione precedente per il log
+        $ubicazione_precedente_terms = get_the_terms( $post_id, 'ubicazione' );
+        $ubicazione_precedente = '';
+        if ( $ubicazione_precedente_terms && ! is_wp_error( $ubicazione_precedente_terms ) ) {
+            $ubicazione_precedente = $ubicazione_precedente_terms[0]->name;
+        }
+        
         // Aggiorna l'ubicazione
         $result = wp_set_object_terms( $post_id, $ubicazione_id, 'ubicazione', false );
         
         if ( is_wp_error( $result ) ) {
             wp_send_json_error( array( 'message' => __( 'Errore nell\'aggiornamento dell\'ubicazione.', 'shaktiman-b2b' ) ) );
         }
+        
+        // Log dell'azione
+        $logger = Shaktiman_B2B_Logger::get_instance();
+        $logger->log_action( $post_id, 'cambio_ubicazione', array(
+            'old_value' => $ubicazione_precedente,
+            'new_value' => $ubicazione->name,
+        ) );
         
         wp_send_json_success( array( 
             'message' => sprintf( __( 'Ubicazione cambiata in: %s', 'shaktiman-b2b' ), $ubicazione->name ),
@@ -398,6 +426,15 @@ class Shaktiman_B2B_Frontend {
         if ( $ragione_sociale ) {
             update_post_meta( $post_id, '_ragione_sociale', $ragione_sociale );
         }
+        
+        // Log dell'azione
+        $logger = Shaktiman_B2B_Logger::get_instance();
+        $logger->log_action( $post_id, 'contratto', array(
+            'new_value' => array(
+                'numero_contratto' => $numero_contratto,
+                'ragione_sociale'  => $ragione_sociale,
+            ),
+        ) );
         
         // TODO: Implementare generazione PDF
         // Per ora salviamo solo i metadati
