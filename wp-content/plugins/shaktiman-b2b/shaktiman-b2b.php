@@ -128,19 +128,36 @@ class Shaktiman_B2B {
      * Carica gli asset frontend
      */
     public function enqueue_frontend_assets() {
+        // Select2 CSS
+        wp_enqueue_style(
+            'select2',
+            'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
+            array(),
+            '4.1.0'
+        );
+        
         // CSS
         wp_enqueue_style(
             'shaktiman-b2b-frontend',
             SHAKTIMAN_B2B_PLUGIN_URL . 'assets/css/frontend.css',
-            array(),
+            array( 'select2' ),
             SHAKTIMAN_B2B_VERSION
+        );
+        
+        // Select2 JS
+        wp_enqueue_script(
+            'select2',
+            'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
+            array( 'jquery' ),
+            '4.1.0',
+            true
         );
         
         // JavaScript
         wp_enqueue_script(
             'shaktiman-b2b-frontend',
             SHAKTIMAN_B2B_PLUGIN_URL . 'assets/js/frontend.js',
-            array( 'jquery' ),
+            array( 'jquery', 'select2' ),
             SHAKTIMAN_B2B_VERSION,
             true
         );

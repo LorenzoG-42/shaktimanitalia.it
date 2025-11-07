@@ -25,7 +25,9 @@ $query = new WP_Query( $args );
             <div class="filter-row">
                 <!-- Ricerca -->
                 <div class="filter-item filter-search">
+                    <label for="search-input"><?php _e( 'Ricerca:', 'shaktiman-b2b' ); ?></label>
                     <input type="text" 
+                           id="search-input"
                            name="search" 
                            placeholder="<?php _e( 'Cerca mezzo...', 'shaktiman-b2b' ); ?>"
                            class="filter-input">
@@ -33,15 +35,16 @@ $query = new WP_Query( $args );
                 
                 <!-- Filtro Disponibilità -->
                 <div class="filter-item">
-                    <select name="disponibilita" class="filter-select">
-                        <option value=""><?php _e( 'Tutte le disponibilità', 'shaktiman-b2b' ); ?></option>
+                    <label for="disponibilita-filter"><?php _e( 'Filtra per Disponibilità:', 'shaktiman-b2b' ); ?></label>
+                    <select name="disponibilita" id="disponibilita-filter" class="filter-select">
+                        <option value=""><?php _e( 'Tutte le Disponibilità', 'shaktiman-b2b' ); ?></option>
                         <?php
                         $disponibilita_terms = get_terms( array(
                             'taxonomy' => 'disponibilita',
-                            'hide_empty' => false,
+                            'hide_empty' => true,
                         ) );
                         foreach ( $disponibilita_terms as $term ) {
-                            echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . '</option>';
+                            echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . ' (' . $term->count . ')</option>';
                         }
                         ?>
                     </select>
@@ -49,31 +52,50 @@ $query = new WP_Query( $args );
                 
                 <!-- Filtro Categoria -->
                 <div class="filter-item">
-                    <select name="categoria_mezzo" class="filter-select">
-                        <option value=""><?php _e( 'Tutte le categorie', 'shaktiman-b2b' ); ?></option>
+                    <label for="categoria-filter"><?php _e( 'Filtra per Categoria:', 'shaktiman-b2b' ); ?></label>
+                    <select name="categoria_mezzo" id="categoria-filter" class="filter-select">
+                        <option value=""><?php _e( 'Tutte le Categorie', 'shaktiman-b2b' ); ?></option>
                         <?php
                         $categoria_terms = get_terms( array(
                             'taxonomy' => 'categoria_mezzo',
-                            'hide_empty' => false,
+                            'hide_empty' => true,
                         ) );
                         foreach ( $categoria_terms as $term ) {
-                            echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . '</option>';
+                            echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . ' (' . $term->count . ')</option>';
                         }
                         ?>
                     </select>
                 </div>
                 
-                <!-- Filtro Marchio -->
+                <!-- Filtro Modello -->
                 <div class="filter-item">
-                    <select name="marchio" class="filter-select">
-                        <option value=""><?php _e( 'Tutti i marchi', 'shaktiman-b2b' ); ?></option>
+                    <label for="modello-filter"><?php _e( 'Filtra per Modello:', 'shaktiman-b2b' ); ?></label>
+                    <select name="modello" id="modello-filter" class="filter-select">
+                        <option value=""><?php _e( 'Tutti i Modelli', 'shaktiman-b2b' ); ?></option>
                         <?php
-                        $marchio_terms = get_terms( array(
-                            'taxonomy' => 'marchio',
-                            'hide_empty' => false,
+                        $modello_terms = get_terms( array(
+                            'taxonomy' => 'modello',
+                            'hide_empty' => true,
                         ) );
-                        foreach ( $marchio_terms as $term ) {
-                            echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . '</option>';
+                        foreach ( $modello_terms as $term ) {
+                            echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . ' (' . $term->count . ')</option>';
+                        }
+                        ?>
+                    </select>
+                </div>
+                
+                <!-- Filtro Versione -->
+                <div class="filter-item">
+                    <label for="versione-filter"><?php _e( 'Filtra per Versione:', 'shaktiman-b2b' ); ?></label>
+                    <select name="versione" id="versione-filter" class="filter-select">
+                        <option value=""><?php _e( 'Tutte le Versioni', 'shaktiman-b2b' ); ?></option>
+                        <?php
+                        $versione_terms = get_terms( array(
+                            'taxonomy' => 'versione',
+                            'hide_empty' => true,
+                        ) );
+                        foreach ( $versione_terms as $term ) {
+                            echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . ' (' . $term->count . ')</option>';
                         }
                         ?>
                     </select>

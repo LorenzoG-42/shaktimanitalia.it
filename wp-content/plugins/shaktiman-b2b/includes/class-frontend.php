@@ -44,6 +44,10 @@ class Shaktiman_B2B_Frontend {
         add_action( 'wp_ajax_filter_mezzi_agricoli', array( $this, 'ajax_filter_mezzi' ) );
         add_action( 'wp_ajax_nopriv_filter_mezzi_agricoli', array( $this, 'ajax_filter_mezzi' ) );
         
+        // AJAX per ottenere opzioni filtrate
+        add_action( 'wp_ajax_get_filtered_options', array( $this, 'ajax_get_filtered_options' ) );
+        add_action( 'wp_ajax_nopriv_get_filtered_options', array( $this, 'ajax_get_filtered_options' ) );
+        
         // AJAX per cambiare stato
         add_action( 'wp_ajax_cambia_stato_mezzo', array( $this, 'ajax_cambia_stato' ) );
         
@@ -75,7 +79,7 @@ class Shaktiman_B2B_Frontend {
         }
         
         // Archivi tassonomie
-        if ( is_tax( array( 'disponibilita', 'categoria_mezzo', 'marchio', 'ubicazione', 'stato_magazzino' ) ) ) {
+        if ( is_tax( array( 'disponibilita', 'categoria_mezzo', 'modello', 'versione', 'ubicazione', 'stato_magazzino' ) ) ) {
             $custom_template = $this->locate_template( 'archive-mezzo_agricolo.php' );
             if ( $custom_template ) {
                 return $custom_template;
@@ -155,7 +159,7 @@ class Shaktiman_B2B_Frontend {
         );
         
         // Filtri tassonomie
-        $taxonomies = array( 'disponibilita', 'categoria_mezzo', 'marchio', 'ubicazione', 'stato_magazzino' );
+        $taxonomies = array( 'disponibilita', 'categoria_mezzo', 'modello', 'versione', 'ubicazione', 'stato_magazzino' );
         
         foreach ( $taxonomies as $taxonomy ) {
             if ( ! empty( $_POST[ $taxonomy ] ) ) {
@@ -385,6 +389,95 @@ class Shaktiman_B2B_Frontend {
             'numero_contratto' => $numero_contratto,
             'ragione_sociale' => $ragione_sociale,
             // 'pdf_url' => '' // URL del PDF quando sarà implementato
+        ) );
+    }
+    
+    /**
+     * AJAX: Ottieni opzioni filtrate per le tassonomie
+     */
+    public function ajax_get_filtered_options() {
+        check_ajax_referer( 'shaktiman_b2b_nonce', 'nonce' );
+        
+        if ( ! is_user_logged_in() || ! Shaktiman_B2B_Roles::is_rivenditore() ) {
+            wp_send_json_error( array( 'message' => __( 'Accesso negato', 'shaktiman-b2b' ) ) );
+        }
+        
+        // Costruisci query base con i filtri attuali
+        $args = array(
+            'post_type' => 'mezzo_agricolo',
+            'posts_per_page' => -1,
+            'fields' => 'ids',
+            'tax_query' => array(),
+        );
+        
+        // Applica i filtri esistenti (escluso quello che stiamo aggiornando)
+        $taxonomies = array( 'disponibilita', 'categoria_mezzo', 'modello', 'versione', 'ubicazione', 'stato_magazzino' );
+        
+        foreach ( $taxonomies as $taxonomy ) {
+            if ( ! empty( $_POST[ $taxonomy ] ) ) {
+                $args['tax_query'][] = array(
+                    'taxonomy' => $taxonomy,
+                    'field' => 'slug',
+                    'terms' => sanitize_text_field( $_POST[ $taxonomy ] ),
+                );
+            }
+        }
+        
+        // Esegui la query per ottenere gli ID dei post filtrati
+        $query = new WP_Query( $args );
+        $post_ids = $query->posts;
+        
+        // Ottieni le opzioni disponibili per ogni tassonomia
+        $available_options = array();
+        
+        foreach ( $taxonomies as $taxonomy ) {
+            $terms = get_terms( array(
+                'taxonomy' => $taxonomy,
+                'hide_empty' => false,
+            ) );
+            
+            $available_terms = array();
+            
+            foreach ( $terms as $term ) {
+                // Conta quanti post hanno questo term tra i post filtrati
+                $term_post_count = 0;
+                
+                if ( ! empty( $post_ids ) ) {
+                    $term_args = array(
+                        'post_type' => 'mezzo_agricolo',
+                        'posts_per_page' => -1,
+                        'fields' => 'ids',
+                        'post__in' => $post_ids,
+                        'tax_query' => array(
+                            array(
+                                'taxonomy' => $taxonomy,
+                                'field' => 'term_id',
+                                'terms' => $term->term_id,
+                            ),
+                        ),
+                    );
+                    
+                    $term_query = new WP_Query( $term_args );
+                    $term_post_count = $term_query->found_posts;
+                } else {
+                    // Se non ci sono filtri, usa il count originale
+                    $term_post_count = $term->count;
+                }
+                
+                if ( $term_post_count > 0 ) {
+                    $available_terms[] = array(
+                        'slug' => $term->slug,
+                        'name' => $term->name,
+                        'count' => $term_post_count,
+                    );
+                }
+            }
+            
+            $available_options[ $taxonomy ] = $available_terms;
+        }
+        
+        wp_send_json_success( array(
+            'options' => $available_options,
         ) );
     }
 }

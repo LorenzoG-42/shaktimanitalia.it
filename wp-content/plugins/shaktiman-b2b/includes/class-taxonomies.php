@@ -43,7 +43,8 @@ class Shaktiman_B2B_Taxonomies {
     public function register_taxonomies() {
         $this->register_disponibilita();
         $this->register_categoria();
-        $this->register_marchio();
+        $this->register_modello();
+        $this->register_versione();
         $this->register_ubicazione();
         $this->register_stato_magazzino();
     }
@@ -153,30 +154,30 @@ class Shaktiman_B2B_Taxonomies {
     }
     
     /**
-     * Tassonomia Marchio
+     * Tassonomia Modello
      */
-    private function register_marchio() {
+    private function register_modello() {
         $labels = array(
-            'name'                       => _x( 'Marchi', 'Taxonomy General Name', 'shaktiman-b2b' ),
-            'singular_name'              => _x( 'Marchio', 'Taxonomy Singular Name', 'shaktiman-b2b' ),
-            'menu_name'                  => __( 'Marchi', 'shaktiman-b2b' ),
-            'all_items'                  => __( 'Tutti i Marchi', 'shaktiman-b2b' ),
-            'parent_item'                => __( 'Marchio Padre', 'shaktiman-b2b' ),
-            'parent_item_colon'          => __( 'Marchio Padre:', 'shaktiman-b2b' ),
-            'new_item_name'              => __( 'Nuovo Marchio', 'shaktiman-b2b' ),
-            'add_new_item'               => __( 'Aggiungi Nuovo Marchio', 'shaktiman-b2b' ),
-            'edit_item'                  => __( 'Modifica Marchio', 'shaktiman-b2b' ),
-            'update_item'                => __( 'Aggiorna Marchio', 'shaktiman-b2b' ),
-            'view_item'                  => __( 'Visualizza Marchio', 'shaktiman-b2b' ),
-            'separate_items_with_commas' => __( 'Separa i marchi con virgole', 'shaktiman-b2b' ),
-            'add_or_remove_items'        => __( 'Aggiungi o rimuovi marchi', 'shaktiman-b2b' ),
+            'name'                       => _x( 'Modelli', 'Taxonomy General Name', 'shaktiman-b2b' ),
+            'singular_name'              => _x( 'Modello', 'Taxonomy Singular Name', 'shaktiman-b2b' ),
+            'menu_name'                  => __( 'Modelli', 'shaktiman-b2b' ),
+            'all_items'                  => __( 'Tutti i Modelli', 'shaktiman-b2b' ),
+            'parent_item'                => __( 'Modello Padre', 'shaktiman-b2b' ),
+            'parent_item_colon'          => __( 'Modello Padre:', 'shaktiman-b2b' ),
+            'new_item_name'              => __( 'Nuovo Modello', 'shaktiman-b2b' ),
+            'add_new_item'               => __( 'Aggiungi Nuovo Modello', 'shaktiman-b2b' ),
+            'edit_item'                  => __( 'Modifica Modello', 'shaktiman-b2b' ),
+            'update_item'                => __( 'Aggiorna Modello', 'shaktiman-b2b' ),
+            'view_item'                  => __( 'Visualizza Modello', 'shaktiman-b2b' ),
+            'separate_items_with_commas' => __( 'Separa i modelli con virgole', 'shaktiman-b2b' ),
+            'add_or_remove_items'        => __( 'Aggiungi o rimuovi modelli', 'shaktiman-b2b' ),
             'choose_from_most_used'      => __( 'Scegli dai più usati', 'shaktiman-b2b' ),
-            'popular_items'              => __( 'Marchi Popolari', 'shaktiman-b2b' ),
-            'search_items'               => __( 'Cerca Marchio', 'shaktiman-b2b' ),
+            'popular_items'              => __( 'Modelli Popolari', 'shaktiman-b2b' ),
+            'search_items'               => __( 'Cerca Modello', 'shaktiman-b2b' ),
             'not_found'                  => __( 'Non Trovato', 'shaktiman-b2b' ),
-            'no_terms'                   => __( 'Nessun Marchio', 'shaktiman-b2b' ),
-            'items_list'                 => __( 'Elenco Marchi', 'shaktiman-b2b' ),
-            'items_list_navigation'      => __( 'Navigazione Elenco Marchi', 'shaktiman-b2b' ),
+            'no_terms'                   => __( 'Nessun Modello', 'shaktiman-b2b' ),
+            'items_list'                 => __( 'Elenco Modelli', 'shaktiman-b2b' ),
+            'items_list_navigation'      => __( 'Navigazione Elenco Modelli', 'shaktiman-b2b' ),
         );
         
         $args = array(
@@ -188,10 +189,52 @@ class Shaktiman_B2B_Taxonomies {
             'show_in_nav_menus'          => true,
             'show_tagcloud'              => true,
             'show_in_rest'               => true,
-            'rewrite'                    => array( 'slug' => 'marchio' ),
+            'rewrite'                    => array( 'slug' => 'modello' ),
         );
         
-        register_taxonomy( 'marchio', array( 'mezzo_agricolo' ), $args );
+        register_taxonomy( 'modello', array( 'mezzo_agricolo' ), $args );
+    }
+    
+    /**
+     * Tassonomia Versione
+     */
+    private function register_versione() {
+        $labels = array(
+            'name'                       => _x( 'Versioni', 'Taxonomy General Name', 'shaktiman-b2b' ),
+            'singular_name'              => _x( 'Versione', 'Taxonomy Singular Name', 'shaktiman-b2b' ),
+            'menu_name'                  => __( 'Versioni', 'shaktiman-b2b' ),
+            'all_items'                  => __( 'Tutte le Versioni', 'shaktiman-b2b' ),
+            'parent_item'                => __( 'Versione Padre', 'shaktiman-b2b' ),
+            'parent_item_colon'          => __( 'Versione Padre:', 'shaktiman-b2b' ),
+            'new_item_name'              => __( 'Nuova Versione', 'shaktiman-b2b' ),
+            'add_new_item'               => __( 'Aggiungi Nuova Versione', 'shaktiman-b2b' ),
+            'edit_item'                  => __( 'Modifica Versione', 'shaktiman-b2b' ),
+            'update_item'                => __( 'Aggiorna Versione', 'shaktiman-b2b' ),
+            'view_item'                  => __( 'Visualizza Versione', 'shaktiman-b2b' ),
+            'separate_items_with_commas' => __( 'Separa le versioni con virgole', 'shaktiman-b2b' ),
+            'add_or_remove_items'        => __( 'Aggiungi o rimuovi versioni', 'shaktiman-b2b' ),
+            'choose_from_most_used'      => __( 'Scegli dalle più usate', 'shaktiman-b2b' ),
+            'popular_items'              => __( 'Versioni Popolari', 'shaktiman-b2b' ),
+            'search_items'               => __( 'Cerca Versione', 'shaktiman-b2b' ),
+            'not_found'                  => __( 'Non Trovato', 'shaktiman-b2b' ),
+            'no_terms'                   => __( 'Nessuna Versione', 'shaktiman-b2b' ),
+            'items_list'                 => __( 'Elenco Versioni', 'shaktiman-b2b' ),
+            'items_list_navigation'      => __( 'Navigazione Elenco Versioni', 'shaktiman-b2b' ),
+        );
+        
+        $args = array(
+            'labels'                     => $labels,
+            'hierarchical'               => true,
+            'public'                     => true,
+            'show_ui'                    => true,
+            'show_admin_column'          => true,
+            'show_in_nav_menus'          => true,
+            'show_tagcloud'              => true,
+            'show_in_rest'               => true,
+            'rewrite'                    => array( 'slug' => 'versione' ),
+        );
+        
+        register_taxonomy( 'versione', array( 'mezzo_agricolo' ), $args );
     }
     
     /**

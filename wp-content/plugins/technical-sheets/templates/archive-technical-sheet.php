@@ -7,7 +7,7 @@ get_header(); ?>
 
 <div class="ts-archive-container">
     <header class="ts-archive-header">
-        <h1 class="ts-archive-title"><?php _e('Technical Sheets', 'technical-sheets'); ?></h1>
+        <h1 class="ts-archive-title"><?php _e('Schede Tecniche', 'technical-sheets'); ?></h1>
         
         <?php if (is_tax()): ?>
             <div class="ts-taxonomy-description">
@@ -20,73 +20,101 @@ get_header(); ?>
     <div class="ts-filters-container">
         <form method="get" action="<?php echo get_post_type_archive_link('technical_sheet'); ?>" class="ts-filters-form">
             
+            
             <div class="ts-filter-group">
-                <label for="ts_type_filter"><?php _e('Filter by Type:', 'technical-sheets'); ?></label>
-                <select name="technical_sheet_type" id="ts_type_filter" class="ts-filter-select">
-                    <option value=""><?php _e('All Types', 'technical-sheets'); ?></option>
-                    <?php
-                    $types = get_terms(array(
-                        'taxonomy' => 'technical_sheet_type',
-                        'hide_empty' => true,
-                    ));
-                    
-                    $selected_type = isset($_GET['technical_sheet_type']) ? sanitize_text_field($_GET['technical_sheet_type']) : '';
-                    
-                    if (!is_wp_error($types) && !empty($types)) {
-                        foreach ($types as $type) {
-                            printf(
-                                '<option value="%s"%s>%s (%d)</option>',
-                                esc_attr($type->slug),
-                                selected($selected_type, $type->slug, false),
-                                esc_html($type->name),
-                                $type->count
-                            );
-                        }
-                    }
-                    ?>
-                </select>
-            </div>
-
-            <div class="ts-filter-group">
-                <label for="ts_brand_filter"><?php _e('Filter by Brand:', 'technical-sheets'); ?></label>
-                <select name="technical_sheet_brand" id="ts_brand_filter" class="ts-filter-select">
-                    <option value=""><?php _e('All Brands', 'technical-sheets'); ?></option>
-                    <?php
-                    $brands = get_terms(array(
-                        'taxonomy' => 'technical_sheet_brand',
-                        'hide_empty' => true,
-                    ));
-                    
-                    $selected_brand = isset($_GET['technical_sheet_brand']) ? sanitize_text_field($_GET['technical_sheet_brand']) : '';
-                    
-                    if (!is_wp_error($brands) && !empty($brands)) {
-                        foreach ($brands as $brand) {
-                            printf(
-                                '<option value="%s"%s>%s (%d)</option>',
-                                esc_attr($brand->slug),
-                                selected($selected_brand, $brand->slug, false),
-                                esc_html($brand->name),
-                                $brand->count
-                            );
-                        }
-                    }
-                    ?>
-                </select>
-            </div>
-
-            <div class="ts-filter-group">
-                <label for="ts_search_filter"><?php _e('Search:', 'technical-sheets'); ?></label>
+                <label for="ts_search_filter"><?php _e('Ricerca:', 'technical-sheets'); ?></label>
                 <input type="text" name="s" id="ts_search_filter" class="ts-filter-input" 
                        value="<?php echo get_search_query(); ?>" 
-                       placeholder="<?php _e('Search technical sheets...', 'technical-sheets'); ?>">
+                       placeholder="<?php _e('Cerca schede tecniche...', 'technical-sheets'); ?>">
+            </div>
+            
+            <div class="ts-filter-group">
+                <label for="ts_category_filter"><?php _e('Filtra per Categoria:', 'technical-sheets'); ?></label>
+                <select name="technical_sheet_category" id="ts_category_filter" class="ts-filter-select">
+                    <option value=""><?php _e('Tutte le Categorie', 'technical-sheets'); ?></option>
+                    <?php
+                    $categories = get_terms(array(
+                        'taxonomy' => 'technical_sheet_category',
+                        'hide_empty' => true,
+                    ));
+                    
+                    $selected_category = isset($_GET['technical_sheet_category']) ? sanitize_text_field($_GET['technical_sheet_category']) : '';
+                    
+                    if (!is_wp_error($categories) && !empty($categories)) {
+                        foreach ($categories as $category) {
+                            printf(
+                                '<option value="%s"%s>%s (%d)</option>',
+                                esc_attr($category->slug),
+                                selected($selected_category, $category->slug, false),
+                                esc_html($category->name),
+                                $category->count
+                            );
+                        }
+                    }
+                    ?>
+                </select>
+            </div>
+
+            <div class="ts-filter-group">
+                <label for="ts_model_filter"><?php _e('Filtra per Modello:', 'technical-sheets'); ?></label>
+                <select name="technical_sheet_model" id="ts_model_filter" class="ts-filter-select">
+                    <option value=""><?php _e('Tutti i Modelli', 'technical-sheets'); ?></option>
+                    <?php
+                    $models = get_terms(array(
+                        'taxonomy' => 'technical_sheet_model',
+                        'hide_empty' => true,
+                    ));
+                    
+                    $selected_model = isset($_GET['technical_sheet_model']) ? sanitize_text_field($_GET['technical_sheet_model']) : '';
+                    
+                    if (!is_wp_error($models) && !empty($models)) {
+                        foreach ($models as $model) {
+                            printf(
+                                '<option value="%s"%s>%s (%d)</option>',
+                                esc_attr($model->slug),
+                                selected($selected_model, $model->slug, false),
+                                esc_html($model->name),
+                                $model->count
+                            );
+                        }
+                    }
+                    ?>
+                </select>
+            </div>
+
+            <div class="ts-filter-group">
+                <label for="ts_version_filter"><?php _e('Filtra per Versione:', 'technical-sheets'); ?></label>
+                <select name="technical_sheet_version" id="ts_version_filter" class="ts-filter-select">
+                    <option value=""><?php _e('Tutte le Versioni', 'technical-sheets'); ?></option>
+                    <?php
+                    $versions = get_terms(array(
+                        'taxonomy' => 'technical_sheet_version',
+                        'hide_empty' => true,
+                    ));
+                    
+                    $selected_version = isset($_GET['technical_sheet_version']) ? sanitize_text_field($_GET['technical_sheet_version']) : '';
+                    
+                    if (!is_wp_error($versions) && !empty($versions)) {
+                        foreach ($versions as $version) {
+                            printf(
+                                '<option value="%s"%s>%s (%d)</option>',
+                                esc_attr($version->slug),
+                                selected($selected_version, $version->slug, false),
+                                esc_html($version->name),
+                                $version->count
+                            );
+                        }
+                    }
+                    ?>
+                </select>
             </div>
 
             <div class="ts-filter-actions">
                 <button type="submit" class="ts-filter-button ts-apply-button">
-                    <?php _e('Apply Filters', 'technical-sheets'); ?>
+                    <?php _e('Applica Filtri', 'technical-sheets'); ?>
                 </button>
                 <a href="<?php echo get_post_type_archive_link('technical_sheet'); ?>" class="ts-filter-button ts-clear-button">
-                    <?php _e('Clear Filters', 'technical-sheets'); ?>
+                    <?php _e('Pulisci Filtri', 'technical-sheets'); ?>
                 </a>
             </div>
 
@@ -95,25 +123,31 @@ get_header(); ?>
         <?php
         // Mostra filtri attivi
         $active_filters = array();
-        if (!empty($selected_type)) {
-            $type_term = get_term_by('slug', $selected_type, 'technical_sheet_type');
-            if ($type_term) {
-                $active_filters[] = sprintf(__('Type: %s', 'technical-sheets'), $type_term->name);
+        if (!empty($selected_category)) {
+            $category_term = get_term_by('slug', $selected_category, 'technical_sheet_category');
+            if ($category_term) {
+                $active_filters[] = sprintf(__('Categoria: %s', 'technical-sheets'), $category_term->name);
             }
         }
-        if (!empty($selected_brand)) {
-            $brand_term = get_term_by('slug', $selected_brand, 'technical_sheet_brand');
-            if ($brand_term) {
-                $active_filters[] = sprintf(__('Brand: %s', 'technical-sheets'), $brand_term->name);
+        if (!empty($selected_model)) {
+            $model_term = get_term_by('slug', $selected_model, 'technical_sheet_model');
+            if ($model_term) {
+                $active_filters[] = sprintf(__('Modello: %s', 'technical-sheets'), $model_term->name);
+            }
+        }
+        if (!empty($selected_version)) {
+            $version_term = get_term_by('slug', $selected_version, 'technical_sheet_version');
+            if ($version_term) {
+                $active_filters[] = sprintf(__('Versione: %s', 'technical-sheets'), $version_term->name);
             }
         }
         if (get_search_query()) {
-            $active_filters[] = sprintf(__('Search: "%s"', 'technical-sheets'), get_search_query());
+            $active_filters[] = sprintf(__('Ricerca: "%s"', 'technical-sheets'), get_search_query());
         }
 
         if (!empty($active_filters)): ?>
             <div class="ts-active-filters">
-                <span class="ts-active-filters-label"><?php _e('Active filters:', 'technical-sheets'); ?></span>
+                <span class="ts-active-filters-label"><?php _e('Filtri attivi:', 'technical-sheets'); ?></span>
                 <?php echo implode(' | ', $active_filters); ?>
             </div>
         <?php endif; ?>
@@ -132,7 +166,7 @@ get_header(); ?>
                         <?php else: ?>
                             <div class="ts-no-image">
                                 <a href="<?php the_permalink(); ?>">
-                                    <?php _e('No Image', 'technical-sheets'); ?>
+                                    <?php _e('Nessuna Immagine', 'technical-sheets'); ?>
                                 </a>
                             </div>
                         <?php endif; ?>
@@ -153,7 +187,7 @@ get_header(); ?>
                         
                         <div class="ts-item-actions">
                             <a href="<?php the_permalink(); ?>" class="ts-view-button">
-                                <?php _e('View Details', 'technical-sheets'); ?>
+                                <?php _e('Vedi Dettagli', 'technical-sheets'); ?>
                             </a>
                             
                             <?php if (ts_get_pdf_export_url(get_the_ID())): ?>
@@ -171,16 +205,16 @@ get_header(); ?>
         <div class="ts-pagination">
             <?php
             the_posts_pagination(array(
-                'prev_text' => __('Previous', 'technical-sheets'),
-                'next_text' => __('Next', 'technical-sheets'),
-                'before_page_number' => '<span class="screen-reader-text">' . __('Page', 'technical-sheets') . ' </span>',
+                'prev_text' => __('Precedente', 'technical-sheets'),
+                'next_text' => __('Successivo', 'technical-sheets'),
+                'before_page_number' => '<span class="screen-reader-text">' . __('Pagina', 'technical-sheets') . ' </span>',
             ));
             ?>
         </div>
         
     <?php else: ?>
         <div class="ts-no-posts">
-            <p><?php _e('No technical sheets found.', 'technical-sheets'); ?></p>
+            <p><?php _e('Nessuna scheda tecnica trovata.', 'technical-sheets'); ?></p>
         </div>
     <?php endif; ?>
 </div>

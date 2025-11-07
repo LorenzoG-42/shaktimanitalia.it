@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Technical Sheets
+ * Plugin Name: Schede Tecniche
  * Plugin URI: https://shacktimanitalia.it
  * Description: Plugin per la gestione delle schede tecniche con custom post type, campi personalizzabili, categorie e tassonomie.
  * Version: 1.0.0

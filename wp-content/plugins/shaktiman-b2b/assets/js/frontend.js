@@ -14,7 +14,29 @@
          * Inizializza
          */
         init: function() {
+            this.initSelect2();
             this.bindEvents();
+        },
+        
+        /**
+         * Inizializza Select2
+         */
+        initSelect2: function() {
+            if (typeof $.fn.select2 !== 'undefined') {
+                $('.filter-select').select2({
+                    placeholder: 'Seleziona...',
+                    allowClear: true,
+                    width: '100%',
+                    language: {
+                        noResults: function() {
+                            return 'Nessun risultato trovato';
+                        },
+                        searching: function() {
+                            return 'Ricerca...';
+                        }
+                    }
+                });
+            }
         },
         
         /**
@@ -68,7 +90,8 @@
                 search: form.find('[name="search"]').val(),
                 disponibilita: form.find('[name="disponibilita"]').val(),
                 categoria_mezzo: form.find('[name="categoria_mezzo"]').val(),
-                marchio: form.find('[name="marchio"]').val(),
+                modello: form.find('[name="modello"]').val(),
+                versione: form.find('[name="versione"]').val(),
                 ubicazione: form.find('[name="ubicazione"]').val(),
                 stato_magazzino: form.find('[name="stato_magazzino"]').val(),
                 per_page: 12,
@@ -95,6 +118,9 @@
                                 : response.data.found_posts + ' mezzi trovati';
                             resultsInfo.text(text);
                         }
+                        
+                        // Aggiorna le opzioni dei filtri
+                        MezziFiltri.updateFilterOptions();
                         
                         // Scroll to top risultati
                         $('html, body').animate({
@@ -126,6 +152,75 @@
             
             // Riapplica filtri (che ora sono vuoti)
             this.applyFilters();
+        },
+        
+        /**
+         * Aggiorna le opzioni dei filtri in base ai filtri attuali
+         */
+        updateFilterOptions: function() {
+            const form = $('#mezzi-filter-form, #mezzi-filter-form-shortcode');
+            
+            // Prepara dati dei filtri attuali
+            const data = {
+                action: 'get_filtered_options',
+                nonce: shaktimanB2B.nonce,
+                disponibilita: form.find('[name="disponibilita"]').val(),
+                categoria_mezzo: form.find('[name="categoria_mezzo"]').val(),
+                modello: form.find('[name="modello"]').val(),
+                versione: form.find('[name="versione"]').val(),
+                ubicazione: form.find('[name="ubicazione"]').val(),
+                stato_magazzino: form.find('[name="stato_magazzino"]').val()
+            };
+            
+            $.ajax({
+                url: shaktimanB2B.ajaxUrl,
+                type: 'POST',
+                data: data,
+                success: function(response) {
+                    if (response.success && response.data.options) {
+                        const options = response.data.options;
+                        
+                        // Aggiorna ogni select
+                        $.each(options, function(taxonomy, terms) {
+                            const select = form.find('[name="' + taxonomy + '"]');
+                            if (select.length > 0) {
+                                const currentValue = select.val();
+                                const isSelect2 = select.hasClass('select2-hidden-accessible');
+                                
+                                // Salva la prima opzione (placeholder)
+                                const firstOption = select.find('option:first').clone();
+                                
+                                // Svuota la select
+                                select.empty();
+                                
+                                // Aggiungi la prima opzione
+                                select.append(firstOption);
+                                
+                                // Aggiungi le opzioni disponibili
+                                $.each(terms, function(index, term) {
+                                    const option = $('<option></option>')
+                                        .attr('value', term.slug)
+                                        .text(term.name + ' (' + term.count + ')');
+                                    select.append(option);
+                                });
+                                
+                                // Ripristina il valore se ancora disponibile
+                                if (currentValue && select.find('option[value="' + currentValue + '"]').length > 0) {
+                                    select.val(currentValue);
+                                }
+                                
+                                // Aggiorna Select2 se attivo
+                                if (isSelect2 && typeof $.fn.select2 !== 'undefined') {
+                                    select.trigger('change.select2');
+                                }
+                            }
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Errore aggiornamento opzioni filtri:', error);
+                }
+            });
         }
     };
     

@@ -1721,3 +1721,37 @@ h1.product-title {
         padding: 6px 12px;
     }
 }
+
+/* Select2 Custom Styles for Technical Sheets */
+.select2-container--default .select2-selection--single {
+    height: 45px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 28px;
+    color: #333;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 43px;
+}
+
+
+.select2-dropdown {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    margin-top: -16px !important;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+.ts-filter-select {
+    width: 100%;
+}

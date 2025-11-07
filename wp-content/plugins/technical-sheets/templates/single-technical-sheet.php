@@ -81,10 +81,10 @@ get_header(); ?>
                 
                 <div class="ts-navigation">
                     <div class="ts-nav-previous">
-                        <?php previous_post_link('%link', '<span class="nav-subtitle">' . __('Previous:', 'technical-sheets') . '</span> <span class="nav-title">%title</span>', true, '', 'technical_sheet_type'); ?>
+                        <?php previous_post_link('%link', '<span class="nav-subtitle">' . __('Precedente:', 'technical-sheets') . '</span> <span class="nav-title">%title</span>', true, '', 'technical_sheet_category'); ?>
                     </div>
                     <div class="ts-nav-next">
-                        <?php next_post_link('%link', '<span class="nav-subtitle">' . __('Next:', 'technical-sheets') . '</span> <span class="nav-title">%title</span>', true, '', 'technical_sheet_type'); ?>
+                        <?php next_post_link('%link', '<span class="nav-subtitle">' . __('Successivo:', 'technical-sheets') . '</span> <span class="nav-title">%title</span>', true, '', 'technical_sheet_category'); ?>
                     </div>
                 </div>
             </footer>

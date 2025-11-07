@@ -4,6 +4,23 @@
 
 jQuery(document).ready(function($) {
     
+    // Initialize Select2 for filter selects
+    if (typeof $.fn.select2 !== 'undefined') {
+        $('.ts-filter-select').select2({
+            placeholder: 'Seleziona...',
+            allowClear: true,
+            width: '100%',
+            language: {
+                noResults: function() {
+                    return 'Nessun risultato trovato';
+                },
+                searching: function() {
+                    return 'Ricerca...';
+                }
+            }
+        });
+    }
+    
     // Accordion functionality
     function initAccordion() {
         // NON fare nulla automaticamente - lascia tutto come sta nel markup
@@ -756,8 +773,6 @@ jQuery(document).ready(function($) {
     }
     */
     
-});
-
 // Add CSS for animations and lightbox
 var additionalCSS = `
     <style>
@@ -1015,41 +1030,221 @@ jQuery('head').append(additionalCSS);
         
         console.log('Initializing archive filters...');
         
-        // Auto-submit form when select values change
-        $('.ts-filter-select').on('change', function() {
-            console.log('Filter changed, submitting form...');
-            $(this).closest('form').submit();
-        });
+        // Initialize Select2 for filter dropdowns
+        if (typeof $.fn.select2 !== 'undefined') {
+            $('.ts-filter-select').select2({
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return 'Nessun risultato trovato';
+                    },
+                    searching: function() {
+                        return 'Ricerca...';
+                    }
+                }
+            });
+        }
         
-        // Submit on Enter in search field
-        $('.ts-filter-input').on('keypress', function(e) {
-            if (e.which === 13) { // Enter key
-                e.preventDefault();
-                $(this).closest('form').submit();
+        var isLoading = false;
+        
+        // When select values change or search input changes, load results via AJAX
+        $('.ts-filter-select, .ts-filter-input').on('change keyup', function(e) {
+            // For search input, only trigger on Enter key or after a delay
+            if ($(this).hasClass('ts-filter-input')) {
+                if (e.type === 'keyup' && e.which !== 13) {
+                    clearTimeout(window.tsSearchTimeout);
+                    window.tsSearchTimeout = setTimeout(function() {
+                        loadFilteredResults();
+                    }, 500);
+                    return;
+                } else if (e.type === 'keyup' && e.which === 13) {
+                    e.preventDefault();
+                    loadFilteredResults();
+                    return;
+                }
+                // Skip change event for search input (only use keyup)
+                if (e.type === 'change') {
+                    return;
+                }
+            }
+            
+            // For selects, load immediately on change
+            if ($(this).hasClass('ts-filter-select')) {
+                loadFilteredResults();
             }
         });
         
-        // Add loading state on form submit
-        $('.ts-filters-form').on('submit', function() {
-            var form = $(this);
-            var submitButton = form.find('.ts-apply-button');
-            
-            // Disable submit button and show loading
-            submitButton.prop('disabled', true).text('Loading...');
-            
-            // Show loading overlay if desired
-            if ($('.ts-filters-loading').length === 0) {
-                form.append('<div class="ts-filters-loading" style="position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.8);display:flex;align-items:center;justify-content:center;"><span>Filtering results...</span></div>');
-            }
+        // Submit form via AJAX
+        $('.ts-filters-form').on('submit', function(e) {
+            e.preventDefault();
+            loadFilteredResults();
         });
         
-        // Clear search input when clear button is clicked
+        // Clear filters button
         $('.ts-clear-button').on('click', function(e) {
+            e.preventDefault();
+            $('.ts-filter-select').val('').trigger('change.select2');
             $('.ts-filter-input').val('');
+            loadFilteredResults();
         });
         
-        // Show results count
-        updateResultsCount();
+        // Handle pagination clicks
+        $(document).on('click', '.ts-pagination a.page-numbers', function(e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            var page = 1;
+            
+            // Extract page number from URL
+            var matches = url.match(/paged=(\d+)/);
+            if (matches) {
+                page = parseInt(matches[1]);
+            } else {
+                matches = url.match(/page\/(\d+)/);
+                if (matches) {
+                    page = parseInt(matches[1]);
+                }
+            }
+            
+            loadFilteredResults(page);
+            
+            // Scroll to top of results
+            $('html, body').animate({
+                scrollTop: $('.ts-filters-form').offset().top - 100
+            }, 300);
+        });
+        
+        function loadFilteredResults(page) {
+            if (isLoading) {
+                return;
+            }
+            
+            page = page || 1;
+            isLoading = true;
+            
+            var $form = $('.ts-filters-form');
+            var $resultsContainer = $('.ts-filters-container');
+            var $submitButton = $form.find('.ts-apply-button');
+            
+            // Show loading state
+            $submitButton.prop('disabled', true).text('Caricamento...');
+            $resultsContainer.css('opacity', '0.5');
+            
+            // Get filter values
+            var data = {
+                action: 'get_ts_filtered_results',
+                nonce: ts_ajax.nonce,
+                category: $form.find('[name="technical_sheet_category"]').val(),
+                model: $form.find('[name="technical_sheet_model"]').val(),
+                version: $form.find('[name="technical_sheet_version"]').val(),
+                search: $form.find('[name="s"]').val(),
+                paged: page
+            };
+            
+            // First, update filter options
+            $.ajax({
+                url: ts_ajax.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'get_ts_filtered_options',
+                    nonce: ts_ajax.nonce,
+                    technical_sheet_category: data.category,
+                    technical_sheet_model: data.model,
+                    technical_sheet_version: data.version
+                },
+                success: function(response) {
+                    if (response.success && response.data.options) {
+                        var options = response.data.options;
+                        
+                        // Update each select
+                        $.each(options, function(taxonomy, terms) {
+                            var $sel = $form.find('[name="' + taxonomy + '"]');
+                            if ($sel.length) {
+                                var current = $sel.val();
+                                var isSelect2 = $sel.hasClass('select2-hidden-accessible');
+                                
+                                // Keep placeholder
+                                var firstOpt = $sel.find('option:first').clone();
+                                $sel.empty();
+                                if (firstOpt && firstOpt.length) {
+                                    $sel.append(firstOpt);
+                                }
+                                
+                                // Append terms
+                                $.each(terms, function(i, term) {
+                                    var $opt = $('<option></option>').attr('value', term.slug).text(term.name + ' (' + term.count + ')');
+                                    $sel.append($opt);
+                                });
+                                
+                                // Restore selection
+                                if (current && $sel.find('option[value="' + current + '"]').length) {
+                                    $sel.val(current);
+                                } else {
+                                    $sel.val('');
+                                }
+                                
+                                // Refresh Select2
+                                if (isSelect2 && typeof $.fn.select2 !== 'undefined') {
+                                    $sel.trigger('change.select2');
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+            
+            // Load filtered results
+            $.ajax({
+                url: ts_ajax.ajax_url,
+                type: 'POST',
+                data: data,
+                success: function(response) {
+                    if (response.success) {
+                        // Update active filters
+                        $('.ts-active-filters').remove();
+                        if (response.data.active_filters_html) {
+                            $('.ts-filters-container').append(response.data.active_filters_html);
+                        }
+                        
+                        // Update results
+                        $('.ts-archive-grid').remove();
+                        $('.ts-no-posts').remove();
+                        $('.ts-pagination').remove();
+                        
+                        // Insert new content after filters container
+                        $('.ts-filters-container').after(response.data.results_html);
+                        
+                        // Update pagination
+                        if (response.data.pagination_html) {
+                            $('.ts-archive-grid, .ts-no-posts').last().after('<div class="ts-pagination">' + response.data.pagination_html + '</div>');
+                        }
+                        
+                        // Update URL without reload
+                        var url = new URL(window.location);
+                        url.searchParams.delete('technical_sheet_category');
+                        url.searchParams.delete('technical_sheet_model');
+                        url.searchParams.delete('technical_sheet_version');
+                        url.searchParams.delete('s');
+                        url.searchParams.delete('paged');
+                        
+                        if (data.category) url.searchParams.set('technical_sheet_category', data.category);
+                        if (data.model) url.searchParams.set('technical_sheet_model', data.model);
+                        if (data.version) url.searchParams.set('technical_sheet_version', data.version);
+                        if (data.search) url.searchParams.set('s', data.search);
+                        if (page > 1) url.searchParams.set('paged', page);
+                        
+                        window.history.pushState({}, '', url);
+                    }
+                },
+                error: function() {
+                    alert('Si è verificato un errore durante il caricamento dei risultati.');
+                },
+                complete: function() {
+                    isLoading = false;
+                    $submitButton.prop('disabled', false).text('Applica Filtri');
+                    $resultsContainer.css('opacity', '1');
+                }
+            });
+        }
     }
     
     // Update results count
@@ -1066,7 +1261,7 @@ jQuery('head').append(additionalCSS);
         }
     }
     
-    // Initialize filters if we're on archive page
+    // Initialize filters when DOM is ready
     initArchiveFilters();
 
-
+}); // End jQuery(document).ready

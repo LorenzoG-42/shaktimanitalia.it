@@ -37,6 +37,7 @@ get_header();
                 <div class="filter-row">
                     <!-- Ricerca -->
                     <div class="filter-item filter-search">
+                        <label for="mezzi-search"><?php _e( 'Ricerca:', 'shaktiman-b2b' ); ?></label>
                         <input type="text" 
                                name="search" 
                                id="mezzi-search" 
@@ -46,8 +47,9 @@ get_header();
                     
                     <!-- Filtro Disponibilità -->
                     <div class="filter-item">
+                        <label for="filter-disponibilita"><?php _e( 'Filtra per Disponibilità:', 'shaktiman-b2b' ); ?></label>
                         <select name="disponibilita" id="filter-disponibilita" class="filter-select">
-                            <option value=""><?php _e( 'Tutte le disponibilità', 'shaktiman-b2b' ); ?></option>
+                            <option value=""><?php _e( 'Tutte le Disponibilità', 'shaktiman-b2b' ); ?></option>
                             <?php
                             $disponibilita_terms = get_terms( array(
                                 'taxonomy' => 'disponibilita',
@@ -62,8 +64,9 @@ get_header();
                     
                     <!-- Filtro Categoria -->
                     <div class="filter-item">
+                        <label for="filter-categoria"><?php _e( 'Filtra per Categoria:', 'shaktiman-b2b' ); ?></label>
                         <select name="categoria_mezzo" id="filter-categoria" class="filter-select">
-                            <option value=""><?php _e( 'Tutte le categorie', 'shaktiman-b2b' ); ?></option>
+                            <option value=""><?php _e( 'Tutte le Categorie', 'shaktiman-b2b' ); ?></option>
                             <?php
                             $categoria_terms = get_terms( array(
                                 'taxonomy' => 'categoria_mezzo',
@@ -76,16 +79,34 @@ get_header();
                         </select>
                     </div>
                     
-                    <!-- Filtro Marchio -->
+                    <!-- Filtro Modello -->
                     <div class="filter-item">
-                        <select name="marchio" id="filter-marchio" class="filter-select">
-                            <option value=""><?php _e( 'Tutti i marchi', 'shaktiman-b2b' ); ?></option>
+                        <label for="filter-modello"><?php _e( 'Filtra per Modello:', 'shaktiman-b2b' ); ?></label>
+                        <select name="modello" id="filter-modello" class="filter-select">
+                            <option value=""><?php _e( 'Tutti i Modelli', 'shaktiman-b2b' ); ?></option>
                             <?php
-                            $marchio_terms = get_terms( array(
-                                'taxonomy' => 'marchio',
+                            $modello_terms = get_terms( array(
+                                'taxonomy' => 'modello',
                                 'hide_empty' => false,
                             ) );
-                            foreach ( $marchio_terms as $term ) {
+                            foreach ( $modello_terms as $term ) {
+                                echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . '</option>';
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    
+                    <!-- Filtro Versione -->
+                    <div class="filter-item">
+                        <label for="filter-versione"><?php _e( 'Filtra per Versione:', 'shaktiman-b2b' ); ?></label>
+                        <select name="versione" id="filter-versione" class="filter-select">
+                            <option value=""><?php _e( 'Tutte le Versioni', 'shaktiman-b2b' ); ?></option>
+                            <?php
+                            $versione_terms = get_terms( array(
+                                'taxonomy' => 'versione',
+                                'hide_empty' => false,
+                            ) );
+                            foreach ( $versione_terms as $term ) {
                                 echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . '</option>';
                             }
                             ?>
@@ -94,8 +115,9 @@ get_header();
                     
                     <!-- Filtro Ubicazione -->
                     <div class="filter-item">
+                        <label for="filter-ubicazione"><?php _e( 'Filtra per Ubicazione:', 'shaktiman-b2b' ); ?></label>
                         <select name="ubicazione" id="filter-ubicazione" class="filter-select">
-                            <option value=""><?php _e( 'Tutte le ubicazioni', 'shaktiman-b2b' ); ?></option>
+                            <option value=""><?php _e( 'Tutte le Ubicazioni', 'shaktiman-b2b' ); ?></option>
                             <?php
                             $ubicazione_terms = get_terms( array(
                                 'taxonomy' => 'ubicazione',
@@ -110,8 +132,9 @@ get_header();
                     
                     <!-- Filtro Stato Magazzino -->
                     <div class="filter-item">
+                        <label for="filter-stato-magazzino"><?php _e( 'Filtra per Stato Magazzino:', 'shaktiman-b2b' ); ?></label>
                         <select name="stato_magazzino" id="filter-stato-magazzino" class="filter-select">
-                            <option value=""><?php _e( 'Tutti gli stati', 'shaktiman-b2b' ); ?></option>
+                            <option value=""><?php _e( 'Tutti gli Stati', 'shaktiman-b2b' ); ?></option>
                             <?php
                             $stato_magazzino_terms = get_terms( array(
                                 'taxonomy' => 'stato_magazzino',

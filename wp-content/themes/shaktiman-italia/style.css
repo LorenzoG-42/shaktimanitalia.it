@@ -8,3 +8,10 @@ Text Domain: shaktiman-italia
 */
 
 /* Aggiungi qui i tuoi stili personalizzati */
+input[type="text"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="password"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="number"]:focus, input[type="range"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="week"]:focus, input[type="time"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="color"]:focus, textarea:focus, select:focus, .pxl-select-higthlight:focus, .nice-select:focus {
+    outline: 0;
+    border-color: var(--link-color-hover);
+    color: var(--link-color);
+    box-shadow: 0px 0px 0px 4px rgba(245, 180, 2, 0.3) !important;
+    background-color: rgba(245, 180, 2, 0.1) !important;
+}
