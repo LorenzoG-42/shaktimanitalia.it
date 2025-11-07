@@ -28,6 +28,18 @@ get_header();
                         $stato = $disponibilita_terms && ! is_wp_error( $disponibilita_terms ) ? $disponibilita_terms[0]->slug : 'disponibile';
                         $nome_cliente = get_post_meta( get_the_ID(), '_nome_cliente', true );
                         
+                        // Recupera gli ID degli utenti che hanno riservato/venduto
+                        $riservato_da_user_id = get_post_meta( get_the_ID(), '_riservato_da_user_id', true );
+                        $venduto_da_user_id = get_post_meta( get_the_ID(), '_venduto_da_user_id', true );
+                        $current_user_id = get_current_user_id();
+                        $numero_contratto = get_post_meta( get_the_ID(), '_numero_contratto', true );
+                        
+                        // Verifica se l'utente corrente può liberare (admin o chi ha fatto l'azione)
+                        // Se c'è un numero di contratto, solo gli admin possono liberare
+                        $is_admin = current_user_can( 'edit_others_posts' );
+                        $can_libera_riservato = $is_admin || ( $riservato_da_user_id && $riservato_da_user_id == $current_user_id && ! $numero_contratto );
+                        $can_libera_venduto = $is_admin || ( $venduto_da_user_id && $venduto_da_user_id == $current_user_id && ! $numero_contratto );
+                        
                         if ( $stato === 'disponibile' ) {
                             echo '<h2 class="stato-vendita-title">Stato vendita: <span class="stato-disponibile">Disponibile</span></h2>';
                             
@@ -40,7 +52,6 @@ get_header();
                             $data_riservato = get_post_meta( get_the_ID(), '_data_riservato', true );
                             $data_formatted = $data_riservato ? date_i18n( 'd/m/Y', strtotime( $data_riservato ) ) : '';
                             $riservato_da = get_post_meta( get_the_ID(), '_riservato_da_user_name', true );
-                            $numero_contratto = get_post_meta( get_the_ID(), '_numero_contratto', true );
                             
                             // Formato: Riservato da [Utente] il [Data] A [Cliente] [Numero Protocollo]
                             $testo = 'Riservato';
@@ -66,7 +77,6 @@ get_header();
                             $data_venduto = get_post_meta( get_the_ID(), '_data_venduto', true );
                             $data_formatted = $data_venduto ? date_i18n( 'd/m/Y', strtotime( $data_venduto ) ) : '';
                             $venduto_da = get_post_meta( get_the_ID(), '_venduto_da_user_name', true );
-                            $numero_contratto = get_post_meta( get_the_ID(), '_numero_contratto', true );
                             
                             // Recupera il ragione sociale se esiste
                             $ragione_sociale = get_post_meta( get_the_ID(), '_ragione_sociale', true );
@@ -120,22 +130,26 @@ get_header();
                                     </button>
                                 <?php endif; ?>
                             <?php elseif ( $stato === 'riservato' ) : ?>
-                                <button class="btn-stato btn-libera" data-post-id="<?php echo get_the_ID(); ?>" data-action="libera">
-                                    <?php _e( 'LIBERA', 'shaktiman-b2b' ); ?>
-                                </button>
-                                <button class="btn-stato btn-venduto" data-post-id="<?php echo get_the_ID(); ?>" data-action="venduto" data-cliente-esistente="<?php echo esc_attr( $nome_cliente ); ?>">
-                                    <?php _e( 'VENDUTO', 'shaktiman-b2b' ); ?>
-                                </button>
+                                <?php if ( $can_libera_riservato ) : ?>
+                                    <button class="btn-stato btn-libera" data-post-id="<?php echo get_the_ID(); ?>" data-action="libera">
+                                        <?php _e( 'LIBERA', 'shaktiman-b2b' ); ?>
+                                    </button>
+                                    <button class="btn-stato btn-venduto" data-post-id="<?php echo get_the_ID(); ?>" data-action="venduto" data-cliente-esistente="<?php echo esc_attr( $nome_cliente ); ?>">
+                                        <?php _e( 'VENDUTO', 'shaktiman-b2b' ); ?>
+                                    </button>
+                                <?php endif; ?>
                                 <?php if ( current_user_can( 'edit_others_posts' ) ) : ?>
                                     <button class="btn-stato btn-cambia-ubicazione" data-post-id="<?php echo get_the_ID(); ?>">
                                         <?php _e( 'CAMBIA UBICAZIONE', 'shaktiman-b2b' ); ?>
                                     </button>
                                 <?php endif; ?>
                             <?php elseif ( $stato === 'venduto' ) : ?>
-                                <?php if ( current_user_can( 'edit_others_posts' ) ) : ?>
+                                <?php if ( $can_libera_venduto ) : ?>
                                     <button class="btn-stato btn-libera venduto-state" data-post-id="<?php echo get_the_ID(); ?>" data-action="libera">
                                         <?php _e( 'LIBERA', 'shaktiman-b2b' ); ?>
                                     </button>
+                                <?php endif; ?>
+                                <?php if ( current_user_can( 'edit_others_posts' ) ) : ?>
                                     <button class="btn-stato btn-contratto" data-post-id="<?php echo get_the_ID(); ?>">
                                         <?php _e( 'CONTRATTO', 'shaktiman-b2b' ); ?>
                                     </button>
@@ -247,6 +261,32 @@ get_header();
             <button class="modal-close" data-modal="shaktiman">&times;</button>
         </div>
         <div class="modal-body">
+            <?php if ( current_user_can( 'edit_others_posts' ) ) : ?>
+                <div class="modal-field">
+                    <label for="modal-rivenditore"><?php _e( 'Registra ordine a nome di:', 'shaktiman-b2b' ); ?></label>
+                    <select id="modal-rivenditore" class="rivenditore-select">
+                        <option value=""><?php _e( 'Me stesso', 'shaktiman-b2b' ); ?></option>
+                        <?php
+                        // Ottieni tutti gli utenti rivenditori
+                        $rivenditori = get_users( array(
+                            'role__in' => array( 'rivenditore', 'reparto_vendite' ),
+                            'orderby' => 'display_name',
+                            'order' => 'ASC'
+                        ) );
+                        
+                        foreach ( $rivenditori as $rivenditore ) :
+                            ?>
+                            <option value="<?php echo esc_attr( $rivenditore->ID ); ?>">
+                                <?php echo esc_html( $rivenditore->display_name ); ?> (<?php echo esc_html( $rivenditore->user_email ); ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <small style="display: block; margin-top: 5px; color: #666;">
+                        <?php _e( 'Lascia "Me stesso" per registrare l\'ordine a tuo nome', 'shaktiman-b2b' ); ?>
+                    </small>
+                </div>
+            <?php endif; ?>
+            
             <div class="modal-field">
                 <label for="modal-nome-cliente"><?php _e( 'Nome Cliente:', 'shaktiman-b2b' ); ?> <span class="label-required">*</span></label>
                 <input type="text" id="modal-nome-cliente" placeholder="<?php _e( 'Inserisci il nome del cliente', 'shaktiman-b2b' ); ?>" required>
@@ -326,7 +366,7 @@ get_header();
                 <?php _e( 'Annulla', 'shaktiman-b2b' ); ?>
             </button>
             <button class="modal-btn modal-btn-confirm" id="contratto-confirm-btn">
-                <?php _e( 'Salva e Genera PDF', 'shaktiman-b2b' ); ?>
+                <?php _e( 'Salva', 'shaktiman-b2b' ); ?>
             </button>
         </div>
     </div>

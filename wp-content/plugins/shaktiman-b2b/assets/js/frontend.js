@@ -268,7 +268,7 @@
             const self = this;
             
             // Se l'azione è "venduto" e c'è già un nome cliente (riservato->venduto), usa direttamente quello
-            if (action === 'venduto' && clienteEsistente && clienteEsistente.trim() !== '') {
+            if (action === 'venduto' && clienteEsistente && typeof clienteEsistente === 'string' && clienteEsistente.trim() !== '') {
                 ConfirmModal.show(
                     'Confermi la vendita a: ' + clienteEsistente + '?',
                     function() {
@@ -300,12 +300,16 @@
             const $confirmBtn = $('#modal-confirm-btn');
             $confirmBtn.prop('disabled', true).text('Elaborazione...');
             
+            // Ottieni l'ID del rivenditore selezionato (solo se admin)
+            const rivenditoreId = $('#modal-rivenditore').length ? $('#modal-rivenditore').val() : '';
+            
             const data = {
                 action: 'cambia_stato_mezzo',
                 nonce: shaktimanB2B.nonce,
                 post_id: postId,
                 stato_action: action,
-                nome_cliente: nomeCliente
+                nome_cliente: nomeCliente,
+                rivenditore_id: rivenditoreId
             };
             
             $.ajax({
@@ -354,13 +358,38 @@
             $('#modal-nome-cliente').val('');
             $('#shaktiman-modal').addClass('active');
             
+            // Carica i dati esistenti del mezzo
+            const self = this;
+            $.ajax({
+                url: shaktimanB2B.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'get_mezzo_data',
+                    nonce: shaktimanB2B.nonce,
+                    post_id: postId
+                },
+                success: function(response) {
+                    if (response.success && response.data.nome_cliente) {
+                        $('#modal-nome-cliente').val(response.data.nome_cliente);
+                    }
+                }
+            });
+            
+            // Inizializza Select2 sul campo rivenditore (se presente)
+            if ($('#modal-rivenditore').length && typeof $.fn.select2 !== 'undefined') {
+                $('#modal-rivenditore').select2({
+                    placeholder: 'Cerca rivenditore...',
+                    allowClear: true,
+                    width: '100%'
+                });
+            }
+            
             // Focus sul campo input
             setTimeout(function() {
                 $('#modal-nome-cliente').focus();
             }, 100);
             
             // Bind confirm button
-            const self = this;
             $('#modal-confirm-btn').off('click').on('click', function() {
                 self.confirm();
             });
@@ -378,8 +407,14 @@
          * Chiudi modale
          */
         close: function() {
+            // Distruggi Select2 se presente
+            if ($('#modal-rivenditore').length && $('#modal-rivenditore').hasClass('select2-hidden-accessible')) {
+                $('#modal-rivenditore').select2('destroy');
+            }
+            
             $('#shaktiman-modal').removeClass('active');
             $('#modal-nome-cliente').val('');
+            $('#modal-rivenditore').val('');
             this.currentPostId = null;
             this.currentAction = null;
         },
@@ -547,6 +582,22 @@
             $('#modal-ubicazione').val('');
             $('#ubicazione-modal').addClass('active');
             
+            // Carica i dati esistenti del mezzo
+            $.ajax({
+                url: shaktimanB2B.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'get_mezzo_data',
+                    nonce: shaktimanB2B.nonce,
+                    post_id: postId
+                },
+                success: function(response) {
+                    if (response.success && response.data.ubicazione_id) {
+                        $('#modal-ubicazione').val(response.data.ubicazione_id);
+                    }
+                }
+            });
+            
             // Focus sul select
             setTimeout(function() {
                 $('#modal-ubicazione').focus();
@@ -629,6 +680,27 @@
             $('#modal-ragione-sociale').val('');
             $('#contratto-modal').addClass('active');
             
+            // Carica i dati esistenti del mezzo
+            $.ajax({
+                url: shaktimanB2B.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'get_mezzo_data',
+                    nonce: shaktimanB2B.nonce,
+                    post_id: postId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        if (response.data.numero_contratto) {
+                            $('#modal-numero-contratto').val(response.data.numero_contratto);
+                        }
+                        if (response.data.ragione_sociale) {
+                            $('#modal-ragione-sociale').val(response.data.ragione_sociale);
+                        }
+                    }
+                }
+            });
+            
             // Focus sul campo input
             setTimeout(function() {
                 $('#modal-numero-contratto').focus();
@@ -691,13 +763,13 @@
                         }, 1500);
                     } else {
                         NotifyModal.show(response.data.message || 'Errore durante la generazione del contratto', 'Errore');
-                        $confirmBtn.prop('disabled', false).text('Salva e Genera PDF');
+                        $confirmBtn.prop('disabled', false).text('Salva');
                     }
                 },
                 error: function(xhr, status, error) {
                     console.error('Errore AJAX:', error);
                     NotifyModal.show('Si è verificato un errore. Riprova.', 'Errore');
-                    $confirmBtn.prop('disabled', false).text('Salva e Genera PDF');
+                    $confirmBtn.prop('disabled', false).text('Salva');
                 }
             });
         }

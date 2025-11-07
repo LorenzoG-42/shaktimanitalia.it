@@ -56,6 +56,9 @@ class Shaktiman_B2B_Frontend {
         
         // AJAX per generare contratto
         add_action( 'wp_ajax_genera_contratto_mezzo', array( $this, 'ajax_genera_contratto' ) );
+        
+        // AJAX per ottenere dati mezzo
+        add_action( 'wp_ajax_get_mezzo_data', array( $this, 'ajax_get_mezzo_data' ) );
     }
     
     /**
@@ -228,6 +231,19 @@ class Shaktiman_B2B_Frontend {
         $nome_cliente = '';
         $current_user = wp_get_current_user();
         
+        // Verifica se l'admin ha selezionato un altro utente
+        $rivenditore_id = isset( $_POST['rivenditore_id'] ) && ! empty( $_POST['rivenditore_id'] ) 
+            ? intval( $_POST['rivenditore_id'] ) 
+            : $current_user->ID;
+        
+        // Ottieni le informazioni dell'utente che effettua l'ordine
+        $utente_ordine = get_userdata( $rivenditore_id );
+        if ( ! $utente_ordine ) {
+            // Fallback all'utente corrente se l'ID non è valido
+            $utente_ordine = $current_user;
+            $rivenditore_id = $current_user->ID;
+        }
+        
         switch ( $action ) {
             case 'riserva':
                 $nuovo_stato = 'riservato';
@@ -241,8 +257,8 @@ class Shaktiman_B2B_Frontend {
                 $nome_cliente = sanitize_text_field( $_POST['nome_cliente'] );
                 update_post_meta( $post_id, '_nome_cliente', $nome_cliente );
                 update_post_meta( $post_id, '_data_riservato', current_time( 'Y-m-d H:i:s' ) );
-                update_post_meta( $post_id, '_riservato_da_user_id', $current_user->ID );
-                update_post_meta( $post_id, '_riservato_da_user_name', $current_user->display_name );
+                update_post_meta( $post_id, '_riservato_da_user_id', $rivenditore_id );
+                update_post_meta( $post_id, '_riservato_da_user_name', $utente_ordine->display_name );
                 break;
                 
             case 'venduto':
@@ -257,8 +273,8 @@ class Shaktiman_B2B_Frontend {
                 $nome_cliente = sanitize_text_field( $_POST['nome_cliente'] );
                 update_post_meta( $post_id, '_nome_cliente', $nome_cliente );
                 update_post_meta( $post_id, '_data_venduto', current_time( 'Y-m-d H:i:s' ) );
-                update_post_meta( $post_id, '_venduto_da_user_id', $current_user->ID );
-                update_post_meta( $post_id, '_venduto_da_user_name', $current_user->display_name );
+                update_post_meta( $post_id, '_venduto_da_user_id', $rivenditore_id );
+                update_post_meta( $post_id, '_venduto_da_user_name', $utente_ordine->display_name );
                 break;
                 
             case 'libera':
@@ -271,6 +287,8 @@ class Shaktiman_B2B_Frontend {
                 delete_post_meta( $post_id, '_riservato_da_user_name' );
                 delete_post_meta( $post_id, '_venduto_da_user_id' );
                 delete_post_meta( $post_id, '_venduto_da_user_name' );
+                delete_post_meta( $post_id, '_numero_contratto' );
+                delete_post_meta( $post_id, '_ragione_sociale' );
                 break;
                 
             default:
@@ -478,6 +496,46 @@ class Shaktiman_B2B_Frontend {
         
         wp_send_json_success( array(
             'options' => $available_options,
+        ) );
+    }
+    
+    /**
+     * AJAX: Ottieni dati del mezzo
+     */
+    public function ajax_get_mezzo_data() {
+        // Verifica nonce
+        check_ajax_referer( 'shaktiman_b2b_nonce', 'nonce' );
+        
+        // Verifica che l'utente sia loggato
+        if ( ! is_user_logged_in() ) {
+            wp_send_json_error( array( 'message' => __( 'Devi essere loggato.', 'shaktiman-b2b' ) ) );
+        }
+        
+        // Sanitizza i dati
+        $post_id = intval( $_POST['post_id'] );
+        
+        // Verifica che il post esista
+        if ( ! get_post( $post_id ) ) {
+            wp_send_json_error( array( 'message' => __( 'Mezzo non trovato.', 'shaktiman-b2b' ) ) );
+        }
+        
+        // Recupera i dati
+        $nome_cliente = get_post_meta( $post_id, '_nome_cliente', true );
+        $numero_contratto = get_post_meta( $post_id, '_numero_contratto', true );
+        $ragione_sociale = get_post_meta( $post_id, '_ragione_sociale', true );
+        
+        // Recupera ubicazione corrente
+        $ubicazione_terms = get_the_terms( $post_id, 'ubicazione' );
+        $ubicazione_id = '';
+        if ( $ubicazione_terms && ! is_wp_error( $ubicazione_terms ) ) {
+            $ubicazione_id = $ubicazione_terms[0]->term_id;
+        }
+        
+        wp_send_json_success( array(
+            'nome_cliente' => $nome_cliente ? $nome_cliente : '',
+            'numero_contratto' => $numero_contratto ? $numero_contratto : '',
+            'ragione_sociale' => $ragione_sociale ? $ragione_sociale : '',
+            'ubicazione_id' => $ubicazione_id,
         ) );
     }
 }
