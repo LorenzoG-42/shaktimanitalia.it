@@ -70,18 +70,55 @@
                 e.preventDefault();
                 self.applyFilters();
             });
+            
+            // Gestione click sulla paginazione (struttura WordPress: .navigation.pagination)
+            $(document).on('click', '.navigation.pagination a.page-numbers', function(e) {
+                e.preventDefault();
+                
+                // Estrai il numero di pagina dal link
+                const href = $(this).attr('href');
+                let pageNum = 1;
+                
+                if ($(this).hasClass('next')) {
+                    // Pulsante successivo
+                    const currentPage = $('.navigation.pagination .page-numbers.current').text();
+                    pageNum = parseInt(currentPage) + 1;
+                } else if ($(this).hasClass('prev')) {
+                    // Pulsante precedente
+                    const currentPage = $('.navigation.pagination .page-numbers.current').text();
+                    pageNum = parseInt(currentPage) - 1;
+                } else {
+                    // Numero di pagina specifico
+                    pageNum = parseInt($(this).text());
+                    if (isNaN(pageNum)) {
+                        // Fallback: prova a estrarre dal URL
+                        const match = href.match(/paged=(\d+)/);
+                        if (match) {
+                            pageNum = parseInt(match[1]);
+                        }
+                    }
+                }
+                
+                // Applica i filtri con la nuova pagina
+                self.applyFilters(pageNum);
+            });
         },
         
         /**
          * Applica filtri
          */
-        applyFilters: function() {
+        applyFilters: function(pageNum) {
             const form = $('#mezzi-filter-form, #mezzi-filter-form-shortcode');
             const grid = $('#mezzi-grid, .mezzi-grid');
             const overlay = $('.loading-overlay');
             
             // Mostra loading
             overlay.fadeIn(200);
+            
+            // Se non è specificato un numero di pagina, usa 1
+            if (typeof pageNum === 'undefined' || pageNum < 1) {
+                pageNum = 1;
+            }
             
             // Prepara dati
             const data = {
@@ -95,7 +132,7 @@
                 ubicazione: form.find('[name="ubicazione"]').val(),
                 stato_magazzino: form.find('[name="stato_magazzino"]').val(),
                 per_page: 12,
-                paged: 1
+                paged: pageNum
             };
             
             // AJAX request
@@ -109,6 +146,27 @@
                         grid.fadeOut(200, function() {
                             $(this).html(response.data.html).fadeIn(200);
                         });
+                        
+                        // Aggiorna paginazione (WordPress usa .navigation.pagination)
+                        const paginationWrapper = $('.navigation.pagination');
+                        if (response.data.pagination && response.data.pagination.trim() !== '') {
+                            if (paginationWrapper.length > 0) {
+                                // Sostituisci l'intera paginazione con fade
+                                paginationWrapper.fadeOut(200, function() {
+                                    $(this).replaceWith(response.data.pagination);
+                                    $('.navigation.pagination').fadeIn(200);
+                                });
+                            } else {
+                                // Inserisci la paginazione dopo la griglia
+                                grid.after(response.data.pagination);
+                                $('.navigation.pagination').hide().fadeIn(200);
+                            }
+                        } else {
+                            // Rimuovi la paginazione se non ci sono più pagine
+                            paginationWrapper.fadeOut(200, function() {
+                                $(this).remove();
+                            });
+                        }
                         
                         // Aggiorna contatore risultati
                         const resultsInfo = $('.results-info, #results-info');

@@ -198,10 +198,62 @@ class Shaktiman_B2B_Frontend {
         
         $html = ob_get_clean();
         
+        // Genera HTML paginazione manualmente per AJAX
+        ob_start();
+        if ( $query->max_num_pages > 1 ) {
+            $current_page = $args['paged'];
+            $total_pages = $query->max_num_pages;
+            
+            echo '<nav class="navigation pagination" role="navigation" aria-label="' . esc_attr__( 'Articoli', 'shaktiman-b2b' ) . '">';
+            echo '<h2 class="screen-reader-text">' . __( 'Navigazione articoli', 'shaktiman-b2b' ) . '</h2>';
+            echo '<div class="nav-links">';
+            
+            // Link Precedente
+            if ( $current_page > 1 ) {
+                echo '<a class="prev page-numbers" href="?paged=' . ( $current_page - 1 ) . '">' . __( '&laquo; Precedente', 'shaktiman-b2b' ) . '</a>';
+            }
+            
+            // Prima pagina
+            if ( $current_page > 3 ) {
+                echo '<a class="page-numbers" href="?paged=1"><span class="meta-nav screen-reader-text">' . __( 'Pagina', 'shaktiman-b2b' ) . ' </span>1</a>';
+                if ( $current_page > 4 ) {
+                    echo '<span class="page-numbers dots">&hellip;</span>';
+                }
+            }
+            
+            // Pagine intermedie
+            for ( $i = max( 1, $current_page - 2 ); $i <= min( $total_pages, $current_page + 2 ); $i++ ) {
+                if ( $i == $current_page ) {
+                    echo '<span aria-current="page" class="page-numbers current"><span class="meta-nav screen-reader-text">' . __( 'Pagina', 'shaktiman-b2b' ) . ' </span>' . $i . '</span>';
+                } else {
+                    echo '<a class="page-numbers" href="?paged=' . $i . '"><span class="meta-nav screen-reader-text">' . __( 'Pagina', 'shaktiman-b2b' ) . ' </span>' . $i . '</a>';
+                }
+            }
+            
+            // Ultima pagina
+            if ( $current_page < $total_pages - 2 ) {
+                if ( $current_page < $total_pages - 3 ) {
+                    echo '<span class="page-numbers dots">&hellip;</span>';
+                }
+                echo '<a class="page-numbers" href="?paged=' . $total_pages . '"><span class="meta-nav screen-reader-text">' . __( 'Pagina', 'shaktiman-b2b' ) . ' </span>' . $total_pages . '</a>';
+            }
+            
+            // Link Successivo
+            if ( $current_page < $total_pages ) {
+                echo '<a class="next page-numbers" href="?paged=' . ( $current_page + 1 ) . '">' . __( 'Successivo &raquo;', 'shaktiman-b2b' ) . '</a>';
+            }
+            
+            echo '</div>';
+            echo '</nav>';
+        }
+        $pagination_html = ob_get_clean();
+        
         wp_send_json_success( array(
             'html' => $html,
+            'pagination' => $pagination_html,
             'found_posts' => $query->found_posts,
             'max_pages' => $query->max_num_pages,
+            'current_page' => $args['paged'],
         ) );
     }
     
