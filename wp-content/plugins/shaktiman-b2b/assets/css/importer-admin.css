@@ -1,0 +1,166 @@
+/**
+ * CSV Importer Admin Styles - Shaktiman B2B
+ */
+
+.b2b-import-page {
+    max-width: 1200px;
+}
+
+.b2b-import-instructions {
+    background: #f9f9f9;
+    border-left: 4px solid #607D8B;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+.b2b-import-instructions h2 {
+    margin-top: 0;
+    color: #607D8B;
+}
+
+.b2b-import-instructions h3 {
+    margin-top: 20px;
+    font-size: 1.1em;
+    color: #333;
+}
+
+.b2b-import-instructions ol,
+.b2b-import-instructions ul {
+    margin: 10px 0;
+    padding-left: 30px;
+}
+
+.b2b-import-instructions li {
+    margin: 8px 0;
+}
+
+.b2b-import-instructions pre {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 15px;
+    overflow-x: auto;
+    border-radius: 3px;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.b2b-import-instructions code {
+    background: #fff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    border: 1px solid #ddd;
+}
+
+.b2b-import-form-wrapper {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+.b2b-import-form-wrapper h2 {
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.b2b-import-form .form-table th {
+    width: 200px;
+    padding: 15px 10px 15px 0;
+}
+
+.b2b-import-form .form-table td {
+    padding: 15px 10px;
+}
+
+.b2b-import-form input[type="file"] {
+    padding: 8px;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+    width: 100%;
+    max-width: 400px;
+    cursor: pointer;
+    background: #fafafa;
+}
+
+.b2b-import-form input[type="file"]:hover {
+    border-color: #607D8B;
+    background: #fff;
+}
+
+.b2b-import-form select {
+    min-width: 200px;
+}
+
+.b2b-import-form .description {
+    color: #666;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.b2b-import-tips {
+    background: #fff9e6;
+    border-left: 4px solid #ffb900;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+.b2b-import-tips h2 {
+    margin-top: 0;
+    color: #b87800;
+}
+
+.b2b-import-tips ul {
+    margin: 10px 0;
+    padding-left: 30px;
+}
+
+.b2b-import-tips li {
+    margin: 8px 0;
+    color: #555;
+}
+
+.b2b-import-tips strong {
+    color: #333;
+}
+
+/* Notice styles */
+.notice.notice-success {
+    border-left-color: #46b450;
+}
+
+.notice.notice-error {
+    border-left-color: #dc3232;
+}
+
+.notice ul {
+    margin: 10px 0 0 20px;
+}
+
+.notice li {
+    list-style-type: disc;
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .b2b-import-form .form-table th,
+    .b2b-import-form .form-table td {
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+    }
+    
+    .b2b-import-form .form-table th {
+        border-bottom: none;
+    }
+    
+    .b2b-import-form input[type="file"],
+    .b2b-import-form select {
+        max-width: 100%;
+        width: 100%;
+    }
+}

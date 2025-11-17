@@ -84,6 +84,7 @@ class TechnicalSheets {
         require_once TECHNICAL_SHEETS_PLUGIN_PATH . 'includes/class-ts-shortcodes.php';
         require_once TECHNICAL_SHEETS_PLUGIN_PATH . 'includes/class-ts-widgets.php';
         require_once TECHNICAL_SHEETS_PLUGIN_PATH . 'includes/class-ts-pdf-export.php';
+        require_once TECHNICAL_SHEETS_PLUGIN_PATH . 'includes/class-csv-importer.php';
         require_once TECHNICAL_SHEETS_PLUGIN_PATH . 'includes/ts-functions.php';
         
         // Debug file (remove in production)

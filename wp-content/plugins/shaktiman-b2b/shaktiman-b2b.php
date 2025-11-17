@@ -65,6 +65,7 @@ class Shaktiman_B2B {
         require_once SHAKTIMAN_B2B_PLUGIN_DIR . 'includes/class-access-control.php';
         require_once SHAKTIMAN_B2B_PLUGIN_DIR . 'includes/class-logger.php';
         require_once SHAKTIMAN_B2B_PLUGIN_DIR . 'includes/class-stats.php';
+        require_once SHAKTIMAN_B2B_PLUGIN_DIR . 'includes/class-csv-importer.php';
         require_once SHAKTIMAN_B2B_PLUGIN_DIR . 'includes/class-frontend.php';
     }
     

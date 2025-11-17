@@ -1,0 +1,162 @@
+/**
+ * CSV Importer Admin Styles
+ */
+
+.ts-import-page {
+    max-width: 1200px;
+}
+
+.ts-import-instructions {
+    background: #f9f9f9;
+    border-left: 4px solid #2271b1;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+.ts-import-instructions h2 {
+    margin-top: 0;
+    color: #2271b1;
+}
+
+.ts-import-instructions h3 {
+    margin-top: 20px;
+    font-size: 1.1em;
+    color: #333;
+}
+
+.ts-import-instructions ol,
+.ts-import-instructions ul {
+    margin: 10px 0;
+    padding-left: 30px;
+}
+
+.ts-import-instructions li {
+    margin: 8px 0;
+}
+
+.ts-import-instructions pre {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 15px;
+    overflow-x: auto;
+    border-radius: 3px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.ts-import-instructions code {
+    background: #fff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    border: 1px solid #ddd;
+}
+
+.ts-import-form-wrapper {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+.ts-import-form-wrapper h2 {
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.ts-import-form .form-table th {
+    width: 200px;
+    padding: 15px 10px 15px 0;
+}
+
+.ts-import-form .form-table td {
+    padding: 15px 10px;
+}
+
+.ts-import-form input[type="file"] {
+    padding: 8px;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+    width: 100%;
+    max-width: 400px;
+    cursor: pointer;
+    background: #fafafa;
+}
+
+.ts-import-form input[type="file"]:hover {
+    border-color: #2271b1;
+    background: #fff;
+}
+
+.ts-import-form select {
+    min-width: 200px;
+}
+
+.ts-import-form .description {
+    color: #666;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.ts-import-tips {
+    background: #fff9e6;
+    border-left: 4px solid #ffb900;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+.ts-import-tips h2 {
+    margin-top: 0;
+    color: #b87800;
+}
+
+.ts-import-tips ul {
+    margin: 10px 0;
+    padding-left: 30px;
+}
+
+.ts-import-tips li {
+    margin: 8px 0;
+    color: #555;
+}
+
+/* Notice styles */
+.notice.notice-success {
+    border-left-color: #46b450;
+}
+
+.notice.notice-error {
+    border-left-color: #dc3232;
+}
+
+.notice ul {
+    margin: 10px 0 0 20px;
+}
+
+.notice li {
+    list-style-type: disc;
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .ts-import-form .form-table th,
+    .ts-import-form .form-table td {
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+    }
+    
+    .ts-import-form .form-table th {
+        border-bottom: none;
+    }
+    
+    .ts-import-form input[type="file"],
+    .ts-import-form select {
+        max-width: 100%;
+        width: 100%;
+    }
+}
