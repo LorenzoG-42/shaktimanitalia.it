@@ -203,13 +203,18 @@ function ts_get_pdf_export_url($post_id) {
  * Display PDF export button
  */
 function ts_display_pdf_export_button($post_id, $class = '') {
-    $pdf_attachment_id = get_post_meta($post_id, '_ts_pdf_attachment', true);
+    $pdf_type = get_post_meta($post_id, '_ts_pdf_type', true) ?: 'upload';
+    $pdf_url = '';
     
-    if (!$pdf_attachment_id) {
-        return;
+    if ($pdf_type === 'upload') {
+        $pdf_attachment_id = get_post_meta($post_id, '_ts_pdf_attachment', true);
+        if ($pdf_attachment_id) {
+            $pdf_url = wp_get_attachment_url($pdf_attachment_id);
+        }
+    } elseif ($pdf_type === 'link') {
+        $pdf_url = get_post_meta($post_id, '_ts_pdf_external_link', true);
     }
     
-    $pdf_url = wp_get_attachment_url($pdf_attachment_id);
     if (!$pdf_url) {
         return;
     }
@@ -280,7 +285,17 @@ function ts_display_sheet_meta($post_id, $class = '') {
  * Display download section with print and PDF buttons
  */
 function ts_display_download_section($post_id, $class = '') {
-    $pdf_attachment_id = get_post_meta($post_id, '_ts_pdf_attachment', true);
+    $pdf_type = get_post_meta($post_id, '_ts_pdf_type', true) ?: 'upload';
+    $pdf_url = '';
+    
+    if ($pdf_type === 'upload') {
+        $pdf_attachment_id = get_post_meta($post_id, '_ts_pdf_attachment', true);
+        if ($pdf_attachment_id) {
+            $pdf_url = wp_get_attachment_url($pdf_attachment_id);
+        }
+    } elseif ($pdf_type === 'link') {
+        $pdf_url = get_post_meta($post_id, '_ts_pdf_external_link', true);
+    }
     
     echo '<div class="ts-download-section ' . esc_attr($class) . '">';
     echo '<h3>' . __('Scarica', 'technical-sheets') . '</h3>';
@@ -291,14 +306,11 @@ function ts_display_download_section($post_id, $class = '') {
     echo '<i class="fas fa-print"></i> ' . __('Stampa', 'technical-sheets');
     echo '</button>';
     
-    // PDF download button (only if PDF is attached)
-    if ($pdf_attachment_id) {
-        $pdf_url = wp_get_attachment_url($pdf_attachment_id);
-        if ($pdf_url) {
-            echo '<a href="' . esc_url($pdf_url) . '" class="ts-pdf-export-button" target="_blank" download>';
-            echo '<i class="fas fa-file-pdf"></i> ' . __('Scheda Tecnica', 'technical-sheets');
-            echo '</a>';
-        }
+    // PDF download button (only if PDF is attached or link is provided)
+    if ($pdf_url) {
+        echo '<a href="' . esc_url($pdf_url) . '" class="ts-pdf-export-button" target="_blank" download>';
+        echo '<i class="fas fa-file-pdf"></i> ' . __('Scheda Tecnica', 'technical-sheets');
+        echo '</a>';
     }
     
     echo '</div>';

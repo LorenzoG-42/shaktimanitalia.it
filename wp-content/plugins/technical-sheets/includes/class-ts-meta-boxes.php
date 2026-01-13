@@ -208,34 +208,68 @@ class TS_Meta_Boxes {
         wp_nonce_field('ts_pdf_attachment_meta_box', 'ts_pdf_attachment_meta_box_nonce');
         
         $pdf_attachment_id = get_post_meta($post->ID, '_ts_pdf_attachment', true);
+        $pdf_external_link = get_post_meta($post->ID, '_ts_pdf_external_link', true);
+        $pdf_type = get_post_meta($post->ID, '_ts_pdf_type', true) ?: 'upload';
+        
         $pdf_url = '';
         $pdf_filename = '';
         
-        if ($pdf_attachment_id) {
+        if ($pdf_type === 'upload' && $pdf_attachment_id) {
             $pdf_url = wp_get_attachment_url($pdf_attachment_id);
             $pdf_filename = basename($pdf_url);
+        } elseif ($pdf_type === 'link' && $pdf_external_link) {
+            $pdf_url = $pdf_external_link;
+            $pdf_filename = $pdf_external_link;
         }
         ?>
         <div id="ts-pdf-attachment-container">
-            <input type="hidden" id="ts_pdf_attachment" name="ts_pdf_attachment" value="<?php echo esc_attr($pdf_attachment_id); ?>">
+            <p>
+                <label>
+                    <input type="radio" name="ts_pdf_type" value="upload" <?php checked($pdf_type, 'upload'); ?>>
+                    <?php _e('Upload PDF', 'technical-sheets'); ?>
+                </label>
+                <br>
+                <label>
+                    <input type="radio" name="ts_pdf_type" value="link" <?php checked($pdf_type, 'link'); ?>>
+                    <?php _e('External Link', 'technical-sheets'); ?>
+                </label>
+            </p>
             
-            <div id="ts-pdf-preview">
-                <?php if ($pdf_attachment_id): ?>
-                    <p><strong><?php _e('Current PDF:', 'technical-sheets'); ?></strong></p>
-                    <p>
-                        <a href="<?php echo esc_url($pdf_url); ?>" target="_blank"><?php echo esc_html($pdf_filename); ?></a>
-                    </p>
-                <?php else: ?>
-                    <p><?php _e('No PDF selected', 'technical-sheets'); ?></p>
-                <?php endif; ?>
+            <!-- Upload Section -->
+            <div id="ts-pdf-upload-section" style="<?php echo $pdf_type === 'upload' ? '' : 'display:none;'; ?>">
+                <input type="hidden" id="ts_pdf_attachment" name="ts_pdf_attachment" value="<?php echo esc_attr($pdf_attachment_id); ?>">
+                
+                <div id="ts-pdf-preview">
+                    <?php if ($pdf_type === 'upload' && $pdf_attachment_id): ?>
+                        <p><strong><?php _e('Current PDF:', 'technical-sheets'); ?></strong></p>
+                        <p>
+                            <a href="<?php echo esc_url($pdf_url); ?>" target="_blank"><?php echo esc_html($pdf_filename); ?></a>
+                        </p>
+                    <?php else: ?>
+                        <p><?php _e('No PDF selected', 'technical-sheets'); ?></p>
+                    <?php endif; ?>
+                </div>
+                
+                <p>
+                    <button type="button" id="select-pdf-attachment" class="button"><?php _e('Select PDF', 'technical-sheets'); ?></button>
+                    <?php if ($pdf_attachment_id): ?>
+                        <button type="button" id="remove-pdf-attachment" class="button"><?php _e('Remove PDF', 'technical-sheets'); ?></button>
+                    <?php endif; ?>
+                </p>
             </div>
             
-            <p>
-                <button type="button" id="select-pdf-attachment" class="button"><?php _e('Select PDF', 'technical-sheets'); ?></button>
-                <?php if ($pdf_attachment_id): ?>
-                    <button type="button" id="remove-pdf-attachment" class="button"><?php _e('Remove PDF', 'technical-sheets'); ?></button>
+            <!-- Link Section -->
+            <div id="ts-pdf-link-section" style="<?php echo $pdf_type === 'link' ? '' : 'display:none;'; ?>">
+                <p>
+                    <label><?php _e('PDF URL:', 'technical-sheets'); ?></label>
+                    <input type="url" id="ts_pdf_external_link" name="ts_pdf_external_link" value="<?php echo esc_attr($pdf_external_link); ?>" class="widefat" placeholder="https://example.com/document.pdf">
+                </p>
+                <?php if ($pdf_type === 'link' && $pdf_external_link): ?>
+                    <p>
+                        <a href="<?php echo esc_url($pdf_external_link); ?>" target="_blank"><?php _e('View Link', 'technical-sheets'); ?></a>
+                    </p>
                 <?php endif; ?>
-            </p>
+            </div>
         </div>
         <?php
     }
@@ -312,11 +346,31 @@ class TS_Meta_Boxes {
         }
         
         // Save PDF attachment
-        if (isset($_POST['ts_pdf_attachment'])) {
-            $pdf_attachment_id = intval($_POST['ts_pdf_attachment']);
-            if ($pdf_attachment_id) {
-                update_post_meta($post_id, '_ts_pdf_attachment', $pdf_attachment_id);
-            } else {
+        if (isset($_POST['ts_pdf_type'])) {
+            $pdf_type = sanitize_text_field($_POST['ts_pdf_type']);
+            update_post_meta($post_id, '_ts_pdf_type', $pdf_type);
+            
+            if ($pdf_type === 'upload') {
+                // Save uploaded PDF
+                if (isset($_POST['ts_pdf_attachment'])) {
+                    $pdf_attachment_id = intval($_POST['ts_pdf_attachment']);
+                    if ($pdf_attachment_id) {
+                        update_post_meta($post_id, '_ts_pdf_attachment', $pdf_attachment_id);
+                    } else {
+                        delete_post_meta($post_id, '_ts_pdf_attachment');
+                    }
+                }
+                // Clear external link
+                delete_post_meta($post_id, '_ts_pdf_external_link');
+            } elseif ($pdf_type === 'link') {
+                // Save external link
+                if (isset($_POST['ts_pdf_external_link']) && !empty($_POST['ts_pdf_external_link'])) {
+                    $pdf_external_link = esc_url_raw($_POST['ts_pdf_external_link']);
+                    update_post_meta($post_id, '_ts_pdf_external_link', $pdf_external_link);
+                } else {
+                    delete_post_meta($post_id, '_ts_pdf_external_link');
+                }
+                // Clear uploaded PDF
                 delete_post_meta($post_id, '_ts_pdf_attachment');
             }
         }

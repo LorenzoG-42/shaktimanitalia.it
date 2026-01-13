@@ -1088,37 +1088,14 @@ jQuery('head').append(additionalCSS);
             loadFilteredResults();
         });
         
-        // Handle pagination clicks
-        $(document).on('click', '.ts-pagination a.page-numbers', function(e) {
-            e.preventDefault();
-            var url = $(this).attr('href');
-            var page = 1;
-            
-            // Extract page number from URL
-            var matches = url.match(/paged=(\d+)/);
-            if (matches) {
-                page = parseInt(matches[1]);
-            } else {
-                matches = url.match(/page\/(\d+)/);
-                if (matches) {
-                    page = parseInt(matches[1]);
-                }
-            }
-            
-            loadFilteredResults(page);
-            
-            // Scroll to top of results
-            $('html, body').animate({
-                scrollTop: $('.ts-filters-form').offset().top - 100
-            }, 300);
-        });
+        // PAGINAZIONE AJAX RIMOSSA - usa navigazione standard
+        // La paginazione funzionerà con reload della pagina
         
-        function loadFilteredResults(page) {
+        function loadFilteredResults() {
             if (isLoading) {
                 return;
             }
             
-            page = page || 1;
             isLoading = true;
             
             var $form = $('.ts-filters-form');
@@ -1137,7 +1114,7 @@ jQuery('head').append(additionalCSS);
                 model: $form.find('[name="technical_sheet_model"]').val(),
                 version: $form.find('[name="technical_sheet_version"]').val(),
                 search: $form.find('[name="s"]').val(),
-                paged: page
+                paged: 1  // Sempre pagina 1 quando si filtrano i risultati
             };
             
             // First, update filter options
@@ -1208,15 +1185,9 @@ jQuery('head').append(additionalCSS);
                         // Update results
                         $('.ts-archive-grid').remove();
                         $('.ts-no-posts').remove();
-                        $('.ts-pagination').remove();
                         
                         // Insert new content after filters container
                         $('.ts-filters-container').after(response.data.results_html);
-                        
-                        // Update pagination
-                        if (response.data.pagination_html) {
-                            $('.ts-archive-grid, .ts-no-posts').last().after('<div class="ts-pagination">' + response.data.pagination_html + '</div>');
-                        }
                         
                         // Update URL without reload
                         var url = new URL(window.location);

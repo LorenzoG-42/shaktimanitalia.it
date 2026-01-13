@@ -34,6 +34,9 @@ class Shaktiman_B2B_Frontend {
      * Costruttore
      */
     private function __construct() {
+        // Modifica posts per page per l'archivio mezzi agricoli
+        add_action( 'pre_get_posts', array( $this, 'modify_archive_query' ) );
+        
         // Template loader
         add_filter( 'template_include', array( $this, 'template_loader' ) );
         
@@ -59,6 +62,20 @@ class Shaktiman_B2B_Frontend {
         
         // AJAX per ottenere dati mezzo
         add_action( 'wp_ajax_get_mezzo_data', array( $this, 'ajax_get_mezzo_data' ) );
+    }
+    
+    /**
+     * Modifica la query dell'archivio per mostrare 30 elementi per pagina
+     */
+    public function modify_archive_query( $query ) {
+        // Solo per query principali e non admin
+        if ( ! is_admin() && $query->is_main_query() ) {
+            // Archivio mezzi agricoli o tassonomie correlate
+            if ( is_post_type_archive( 'mezzo_agricolo' ) || 
+                 is_tax( array( 'disponibilita', 'categoria_mezzo', 'modello', 'versione', 'ubicazione', 'stato_magazzino' ) ) ) {
+                $query->set( 'posts_per_page', 30 );
+            }
+        }
     }
     
     /**
@@ -156,7 +173,7 @@ class Shaktiman_B2B_Frontend {
         
         $args = array(
             'post_type' => 'mezzo_agricolo',
-            'posts_per_page' => isset( $_POST['per_page'] ) ? intval( $_POST['per_page'] ) : 12,
+            'posts_per_page' => isset( $_POST['per_page'] ) ? intval( $_POST['per_page'] ) : 30,
             'paged' => isset( $_POST['paged'] ) ? intval( $_POST['paged'] ) : 1,
             'tax_query' => array(),
         );

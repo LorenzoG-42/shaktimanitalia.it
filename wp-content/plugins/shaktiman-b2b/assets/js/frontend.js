@@ -16,6 +16,7 @@
         init: function() {
             this.initSelect2();
             this.bindEvents();
+            this.restoreFilters();
         },
         
         /**
@@ -71,37 +72,13 @@
                 self.applyFilters();
             });
             
-            // Gestione click sulla paginazione (struttura WordPress: .navigation.pagination)
-            $(document).on('click', '.navigation.pagination a.page-numbers', function(e) {
-                e.preventDefault();
-                
-                // Estrai il numero di pagina dal link
-                const href = $(this).attr('href');
-                let pageNum = 1;
-                
-                if ($(this).hasClass('next')) {
-                    // Pulsante successivo
-                    const currentPage = $('.navigation.pagination .page-numbers.current').text();
-                    pageNum = parseInt(currentPage) + 1;
-                } else if ($(this).hasClass('prev')) {
-                    // Pulsante precedente
-                    const currentPage = $('.navigation.pagination .page-numbers.current').text();
-                    pageNum = parseInt(currentPage) - 1;
-                } else {
-                    // Numero di pagina specifico
-                    pageNum = parseInt($(this).text());
-                    if (isNaN(pageNum)) {
-                        // Fallback: prova a estrarre dal URL
-                        const match = href.match(/paged=(\d+)/);
-                        if (match) {
-                            pageNum = parseInt(match[1]);
-                        }
-                    }
-                }
-                
-                // Applica i filtri con la nuova pagina
-                self.applyFilters(pageNum);
+            // Salva i filtri prima di navigare alla pagina prodotto
+            $(document).on('click', '.mezzo-card a, .mezzo-title a, .btn-dettagli', function() {
+                self.saveFilters();
             });
+            
+            // PAGINAZIONE AJAX RIMOSSA - usa navigazione standard
+            // I filtri verranno mantenuti tramite sessionStorage
         },
         
         /**
@@ -115,10 +92,8 @@
             // Mostra loading
             overlay.fadeIn(200);
             
-            // Se non è specificato un numero di pagina, usa 1
-            if (typeof pageNum === 'undefined' || pageNum < 1) {
-                pageNum = 1;
-            }
+            // Usa sempre pagina 1 quando si applicano i filtri
+            pageNum = 1;
             
             // Prepara dati
             const data = {
@@ -131,7 +106,7 @@
                 versione: form.find('[name="versione"]').val(),
                 ubicazione: form.find('[name="ubicazione"]').val(),
                 stato_magazzino: form.find('[name="stato_magazzino"]').val(),
-                per_page: 12,
+                per_page: 30,
                 paged: pageNum
             };
             
@@ -147,27 +122,6 @@
                             $(this).html(response.data.html).fadeIn(200);
                         });
                         
-                        // Aggiorna paginazione (WordPress usa .navigation.pagination)
-                        const paginationWrapper = $('.navigation.pagination');
-                        if (response.data.pagination && response.data.pagination.trim() !== '') {
-                            if (paginationWrapper.length > 0) {
-                                // Sostituisci l'intera paginazione con fade
-                                paginationWrapper.fadeOut(200, function() {
-                                    $(this).replaceWith(response.data.pagination);
-                                    $('.navigation.pagination').fadeIn(200);
-                                });
-                            } else {
-                                // Inserisci la paginazione dopo la griglia
-                                grid.after(response.data.pagination);
-                                $('.navigation.pagination').hide().fadeIn(200);
-                            }
-                        } else {
-                            // Rimuovi la paginazione se non ci sono più pagine
-                            paginationWrapper.fadeOut(200, function() {
-                                $(this).remove();
-                            });
-                        }
-                        
                         // Aggiorna contatore risultati
                         const resultsInfo = $('.results-info, #results-info');
                         if (response.data.found_posts !== undefined) {
@@ -180,10 +134,10 @@
                         // Aggiorna le opzioni dei filtri
                         MezziFiltri.updateFilterOptions();
                         
-                        // Scroll to top risultati
-                        $('html, body').animate({
-                            scrollTop: $('.mezzi-results').offset().top - 100
-                        }, 400);
+                        // Scroll to top risultati - DISABILITATO su richiesta cliente
+                        // $('html, body').animate({
+                        //     scrollTop: $('.mezzi-results').offset().top - 100
+                        // }, 400);
                     }
                 },
                 error: function(xhr, status, error) {
@@ -208,8 +162,65 @@
             form.find('input[type="text"]').val('');
             form.find('select').prop('selectedIndex', 0);
             
+            // Cancella filtri salvati
+            sessionStorage.removeItem('shaktiman_filters');
+            
             // Riapplica filtri (che ora sono vuoti)
             this.applyFilters();
+        },
+        
+        /**
+         * Salva i filtri correnti in sessionStorage
+         */
+        saveFilters: function() {
+            const form = $('#mezzi-filter-form, #mezzi-filter-form-shortcode');
+            if (form.length === 0) return;
+            
+            const filters = {
+                search: form.find('[name="search"]').val(),
+                disponibilita: form.find('[name="disponibilita"]').val(),
+                categoria_mezzo: form.find('[name="categoria_mezzo"]').val(),
+                modello: form.find('[name="modello"]').val(),
+                versione: form.find('[name="versione"]').val(),
+                ubicazione: form.find('[name="ubicazione"]').val(),
+                stato_magazzino: form.find('[name="stato_magazzino"]').val()
+            };
+            
+            sessionStorage.setItem('shaktiman_filters', JSON.stringify(filters));
+        },
+        
+        /**
+         * Ripristina i filtri salvati da sessionStorage
+         */
+        restoreFilters: function() {
+            const savedFilters = sessionStorage.getItem('shaktiman_filters');
+            if (!savedFilters) return;
+            
+            try {
+                const filters = JSON.parse(savedFilters);
+                const form = $('#mezzi-filter-form, #mezzi-filter-form-shortcode');
+                if (form.length === 0) return;
+                
+                // Ripristina i valori dei filtri
+                if (filters.search) form.find('[name="search"]').val(filters.search);
+                if (filters.disponibilita) form.find('[name="disponibilita"]').val(filters.disponibilita);
+                if (filters.categoria_mezzo) form.find('[name="categoria_mezzo"]').val(filters.categoria_mezzo);
+                if (filters.modello) form.find('[name="modello"]').val(filters.modello);
+                if (filters.versione) form.find('[name="versione"]').val(filters.versione);
+                if (filters.ubicazione) form.find('[name="ubicazione"]').val(filters.ubicazione);
+                if (filters.stato_magazzino) form.find('[name="stato_magazzino"]').val(filters.stato_magazzino);
+                
+                // Aggiorna Select2 se attivo
+                if (typeof $.fn.select2 !== 'undefined') {
+                    form.find('.filter-select').trigger('change.select2');
+                }
+                
+                // Applica i filtri automaticamente
+                this.applyFilters();
+            } catch (e) {
+                console.error('Errore nel ripristino dei filtri:', e);
+                sessionStorage.removeItem('shaktiman_filters');
+            }
         },
         
         /**

@@ -22,11 +22,10 @@ h1.product-title {
 
 /* Container */
 .ts-container {
-    /*
-    max-width: 1200px;
+    max-width: 1300px;
     margin: 0 auto;
-    padding: 20px;
-    */
+    padding-top: 20px;
+
 }
 
 /* Grid System */
@@ -91,7 +90,7 @@ h1.product-title {
     gap: 8px;
     padding: 12px 24px;
         z-index: 17;
-    background-color: rgb(40, 111, 48);
+    background-color: rgb(242, 106, 33);
     font-family: Roboto;
     height: auto;
     width: auto;
@@ -148,7 +147,7 @@ h1.product-title {
     font-weight: 600;
     color: #333;
     margin-bottom: 20px;
-    /*border-bottom: 2px solid #286f30;*/
+    /*border-bottom: 2px solid #f26a21;*/
     padding-bottom: 10px;
 }
 
@@ -406,7 +405,7 @@ h1.product-title {
 .ts-accordion-icon {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #286f30;
+    color: #f26a21;
     transition: transform 0.3s ease;
     transform: rotate(0deg);
 }
@@ -465,7 +464,7 @@ h1.product-title {
 
 .ts-sheet-types strong,
 .ts-sheet-brands strong {
-    color: #286f30;
+    color: #f26a21;
 }
 
 /* Navigation */
@@ -494,7 +493,7 @@ h1.product-title {
 .ts-nav-next a {
     display: inline-block;
     text-decoration: none;
-    color: #286f30;
+    color: #f26a21;
     font-weight: 500;
     transition: color 0.3s ease;
 }
@@ -578,8 +577,8 @@ h1.product-title {
 .ts-filter-select:focus,
 .ts-filter-input:focus {
     outline: none;
-    border-color: #286f30;
-    box-shadow: 0 0 0 1px #286f30;
+    border-color: #f26a21;
+    box-shadow: 0 0 0 1px #f26a21;
 }
 
 .ts-filter-actions {
@@ -604,7 +603,7 @@ h1.product-title {
 }
 
 .ts-apply-button {
-    background: #286f30;
+    background: #f26a21;
     color: #fff;
 }
 
@@ -630,7 +629,7 @@ h1.product-title {
     padding: 12px;
     background: #e3f2fd;
     border-radius: 6px;
-    border-left: 4px solid #286f30;
+    border-left: 4px solid #f26a21;
     font-size: 0.9rem;
 }
 
@@ -724,7 +723,7 @@ h1.product-title {
 }
 
 .ts-widget-form .ts-apply-button {
-    background: #286f30;
+    background: #f26a21;
     color: #fff;
 }
 
@@ -748,7 +747,7 @@ h1.product-title {
     background: #e3f2fd;
     border-radius: 4px;
     font-size: 0.8rem;
-    color: #286f30;
+    color: #f26a21;
     text-align: center;
 }
 
@@ -819,7 +818,7 @@ h1.product-title {
 }
 
 .ts-recent-sheet-title a:hover {
-    color: #286f30;
+    color: #f26a21;
 }
 
 .ts-recent-sheet-excerpt {
@@ -842,7 +841,7 @@ h1.product-title {
 }
 
 .ts-view-all-link {
-    color: #286f30;
+    color: #f26a21;
     text-decoration: none;
     font-size: 0.85rem;
     font-weight: 500;
@@ -967,7 +966,7 @@ h1.product-title {
 }
 
 .ts-item-title a:hover {
-    color: #286f30;
+    color: #f26a21;
 }
 
 .ts-item-meta {
@@ -1007,7 +1006,7 @@ h1.product-title {
 }
 
 .ts-view-button {
-    background: #286f30;
+    background: #f26a21;
     color: white;
 }
 
@@ -1080,7 +1079,7 @@ h1.product-title {
     padding: 10px 15px;
     margin: 0 5px;
     background: #f8f9fa;
-    color: #286f30;
+    color: #f26a21;
     text-decoration: none;
     border-radius: 6px;
     font-weight: 500;
@@ -1089,7 +1088,7 @@ h1.product-title {
 
 .ts-pagination .page-numbers:hover,
 .ts-pagination .page-numbers.current {
-    background: #286f30;
+    background: #f26a21;
     color: white;
 }
 
@@ -1143,7 +1142,7 @@ h1.product-title {
     align-items: center;
     gap: 8px;
     padding: 12px 24px;
-    background-color: #286f30;
+    background-color: #f26a21;
     color: #ffffff;
     text-decoration: none;
     border: none;
@@ -1452,7 +1451,7 @@ h1.product-title {
 
 .ts-nav-previous a:hover,
 .ts-nav-next a:hover {
-    color: #286f30;
+    color: #f26a21;
 }
 
 .nav-subtitle {
@@ -1545,7 +1544,7 @@ h1.product-title {
     font-size: 1rem;
     font-weight: 600;
     color: #333;
-    border-bottom: 2px solid #286f30;
+    border-bottom: 2px solid #f26a21;
     padding-bottom: 5px;
 }
 
@@ -1575,7 +1574,7 @@ h1.product-title {
 }
 
 .ts-taxonomy-link:hover {
-    color: #286f30;
+    color: #f26a21;
     background: #f8f9fa;
     text-decoration: none;
     padding-left: 18px;
@@ -1583,7 +1582,7 @@ h1.product-title {
 
 .ts-taxonomy-item.active .ts-taxonomy-link {
     display: block;
-    background: #286f30;
+    background: #f26a21;
     color: #fff;
     font-weight: 600;
 }
@@ -1598,7 +1597,7 @@ h1.product-title {
     padding: 15px;
     background: #e3f2fd;
     border-radius: 6px;
-    border-left: 4px solid #286f30;
+    border-left: 4px solid #f26a21;
 }
 
 .ts-active-filters-summary h5 {
@@ -1616,7 +1615,7 @@ h1.product-title {
 
 .ts-active-filters-summary li {
     font-size: 0.85rem;
-    color: #286f30;
+    color: #f26a21;
     margin-bottom: 5px;
     padding-left: 15px;
     position: relative;
@@ -1626,7 +1625,7 @@ h1.product-title {
     content: '•';
     position: absolute;
     left: 0;
-    color: #286f30;
+    color: #f26a21;
     font-weight: bold;
 }
 
@@ -1668,7 +1667,7 @@ h1.product-title {
 }
 
 .ts-layout-compact .ts-taxonomy-link:hover {
-    background: #286f30;
+    background: #f26a21;
     color: #fff;
     padding-left: 10px;
 }

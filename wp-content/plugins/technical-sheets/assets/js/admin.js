@@ -631,6 +631,19 @@ jQuery(document).ready(function($) {
     // PDF attachment management
     var pdfMediaUploader;
     
+    // Toggle between upload and link sections
+    $('input[name="ts_pdf_type"]').on('change', function() {
+        var selectedType = $(this).val();
+        
+        if (selectedType === 'upload') {
+            $('#ts-pdf-upload-section').show();
+            $('#ts-pdf-link-section').hide();
+        } else if (selectedType === 'link') {
+            $('#ts-pdf-upload-section').hide();
+            $('#ts-pdf-link-section').show();
+        }
+    });
+    
     $('#select-pdf-attachment').on('click', function(e) {
         e.preventDefault();
         

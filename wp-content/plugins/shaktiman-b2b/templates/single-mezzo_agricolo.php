@@ -122,7 +122,7 @@ get_header();
                                     <?php _e( 'RISERVA', 'shaktiman-b2b' ); ?>
                                 </button>
                                 <button class="btn-stato btn-venduto" data-post-id="<?php echo get_the_ID(); ?>" data-action="venduto">
-                                    <?php _e( 'VENDUTO', 'shaktiman-b2b' ); ?>
+                                    <?php _e( 'VENDI', 'shaktiman-b2b' ); ?>
                                 </button>
                                 <?php if ( current_user_can( 'edit_others_posts' ) ) : ?>
                                     <button class="btn-stato btn-cambia-ubicazione" data-post-id="<?php echo get_the_ID(); ?>">
@@ -135,7 +135,7 @@ get_header();
                                         <?php _e( 'LIBERA', 'shaktiman-b2b' ); ?>
                                     </button>
                                     <button class="btn-stato btn-venduto" data-post-id="<?php echo get_the_ID(); ?>" data-action="venduto" data-cliente-esistente="<?php echo esc_attr( $nome_cliente ); ?>">
-                                        <?php _e( 'VENDUTO', 'shaktiman-b2b' ); ?>
+                                        <?php _e( 'VENDI', 'shaktiman-b2b' ); ?>
                                     </button>
                                 <?php endif; ?>
                                 <?php if ( current_user_can( 'edit_others_posts' ) ) : ?>
