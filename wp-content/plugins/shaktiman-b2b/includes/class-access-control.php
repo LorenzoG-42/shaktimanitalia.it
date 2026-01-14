@@ -58,7 +58,7 @@ class Shaktiman_B2B_Access_Control {
         
         // Se l'utente non è loggato, reindirizza al login
         if ( ! is_user_logged_in() ) {
-            auth_redirect();
+            $this->redirect_to_login();
             exit;
         }
         
@@ -70,6 +70,39 @@ class Shaktiman_B2B_Access_Control {
                 array( 'response' => 403 )
             );
         }
+    }
+    
+    /**
+     * Reindirizza l'utente alla pagina di login con redirect alla pagina corrente
+     */
+    private function redirect_to_login() {
+        // Ottieni l'URL corrente completo
+        global $wp;
+        $current_url = home_url( add_query_arg( array(), $wp->request ) );
+        
+        // Aggiungi query string se presente
+        if ( ! empty( $_SERVER['QUERY_STRING'] ) ) {
+            $current_url .= '?' . $_SERVER['QUERY_STRING'];
+        }
+        
+        // Permetti di filtrare l'URL di login
+        $login_url = apply_filters( 'shaktiman_b2b_login_url', '', $current_url );
+        
+        // Se non è stato fornito un URL personalizzato, prova con Ultimate Member
+        if ( empty( $login_url ) && function_exists( 'um_get_core_page' ) ) {
+            $login_url = um_get_core_page( 'login' );
+        }
+        
+        // Fallback a wp-login.php se nessuna alternativa è disponibile
+        if ( empty( $login_url ) ) {
+            $login_url = wp_login_url();
+        }
+        
+        // Aggiungi il parametro redirect_to per tornare alla pagina corrente dopo il login
+        $login_url = add_query_arg( 'redirect_to', urlencode( $current_url ), $login_url );
+        
+        // Reindirizza
+        wp_redirect( $login_url );
     }
     
     /**
