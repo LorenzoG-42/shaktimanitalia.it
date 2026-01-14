@@ -111,10 +111,10 @@ get_header(); ?>
 
             <div class="ts-filter-actions">
                 <button type="submit" class="ts-filter-button ts-apply-button">
-                    <?php _e('Applica Filtri', 'technical-sheets'); ?>
+                    <?php _e('Cerca', 'technical-sheets'); ?>
                 </button>
                 <a href="<?php echo get_post_type_archive_link('technical_sheet'); ?>" class="ts-filter-button ts-clear-button">
-                    <?php _e('Pulisci Filtri', 'technical-sheets'); ?>
+                    <?php _e('Reset', 'technical-sheets'); ?>
                 </a>
             </div>
 

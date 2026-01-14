@@ -261,7 +261,7 @@ function ts_display_sheet_meta($post_id, $class = '') {
     if (!$types && !$brands) {
         return;
     }
-    
+    /*
     echo '<div class="ts-sheet-meta ' . esc_attr($class) . '">';
     
     if ($types) {
@@ -278,7 +278,7 @@ function ts_display_sheet_meta($post_id, $class = '') {
         echo '</div>';
     }
     
-    echo '</div>';
+    echo '</div>';*/
 }
 
 /**

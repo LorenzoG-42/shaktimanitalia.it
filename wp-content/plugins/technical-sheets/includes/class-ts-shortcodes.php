@@ -383,10 +383,10 @@ class TS_Shortcodes {
         
         $output .= '<div class="ts-filter-actions">';
         $output .= '<button type="submit" class="ts-filter-button ts-apply-button">';
-        $output .= __('Applica Filtri', 'technical-sheets');
+        $output .= __('Cerca', 'technical-sheets');
         $output .= '</button>';
         $output .= '<a href="' . esc_url($redirect_url) . '" class="ts-filter-button ts-clear-button">';
-        $output .= __('Pulisci Filtri', 'technical-sheets');
+        $output .= __('Reset', 'technical-sheets');
         $output .= '</a>';
         $output .= '<button type="button" class="ts-filter-button ts-reset-button" onclick="this.closest(\'form\').reset(); this.closest(\'form\').submit();">';
         $output .= __('Reset', 'technical-sheets');

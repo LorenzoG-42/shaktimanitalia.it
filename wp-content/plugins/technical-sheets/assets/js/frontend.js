@@ -1047,33 +1047,6 @@ jQuery('head').append(additionalCSS);
         
         var isLoading = false;
         
-        // When select values change or search input changes, load results via AJAX
-        $('.ts-filter-select, .ts-filter-input').on('change keyup', function(e) {
-            // For search input, only trigger on Enter key or after a delay
-            if ($(this).hasClass('ts-filter-input')) {
-                if (e.type === 'keyup' && e.which !== 13) {
-                    clearTimeout(window.tsSearchTimeout);
-                    window.tsSearchTimeout = setTimeout(function() {
-                        loadFilteredResults();
-                    }, 500);
-                    return;
-                } else if (e.type === 'keyup' && e.which === 13) {
-                    e.preventDefault();
-                    loadFilteredResults();
-                    return;
-                }
-                // Skip change event for search input (only use keyup)
-                if (e.type === 'change') {
-                    return;
-                }
-            }
-            
-            // For selects, load immediately on change
-            if ($(this).hasClass('ts-filter-select')) {
-                loadFilteredResults();
-            }
-        });
-        
         // Submit form via AJAX
         $('.ts-filters-form').on('submit', function(e) {
             e.preventDefault();
@@ -1152,16 +1125,30 @@ jQuery('head').append(additionalCSS);
                                     $sel.append($opt);
                                 });
                                 
-                                // Restore selection
+                                // Restore selection only if it's still valid
                                 if (current && $sel.find('option[value="' + current + '"]').length) {
                                     $sel.val(current);
-                                } else {
+                                } else if (current) {
+                                    // Se il valore selezionato non esiste più, reset a vuoto
                                     $sel.val('');
                                 }
                                 
-                                // Refresh Select2
+                                // Refresh Select2 without triggering change event
                                 if (isSelect2 && typeof $.fn.select2 !== 'undefined') {
-                                    $sel.trigger('change.select2');
+                                    $sel.select2('destroy');
+                                    $sel.select2({
+                                        placeholder: 'Seleziona...',
+                                        allowClear: true,
+                                        width: '100%',
+                                        language: {
+                                            noResults: function() {
+                                                return 'Nessun risultato trovato';
+                                            },
+                                            searching: function() {
+                                                return 'Ricerca...';
+                                            }
+                                        }
+                                    });
                                 }
                             }
                         });
@@ -1201,7 +1188,6 @@ jQuery('head').append(additionalCSS);
                         if (data.model) url.searchParams.set('technical_sheet_model', data.model);
                         if (data.version) url.searchParams.set('technical_sheet_version', data.version);
                         if (data.search) url.searchParams.set('s', data.search);
-                        if (page > 1) url.searchParams.set('paged', page);
                         
                         window.history.pushState({}, '', url);
                     }
@@ -1211,7 +1197,7 @@ jQuery('head').append(additionalCSS);
                 },
                 complete: function() {
                     isLoading = false;
-                    $submitButton.prop('disabled', false).text('Applica Filtri');
+                    $submitButton.prop('disabled', false).text('Cerca');
                     $resultsContainer.css('opacity', '1');
                 }
             });
