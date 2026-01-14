@@ -863,25 +863,22 @@ function um_profile_header_cover_area( $args ) {
 		data-user_id="<?php echo esc_attr( um_profile_id() ); ?>" data-ratio="<?php echo esc_attr( $args['cover_ratio'] ); ?>">
 		<?php
 		/**
-		 * UM hook
+		 * Fires in the User Profile cover wrapper.
 		 *
-		 * @type action
-		 * @title um_cover_area_content
-		 * @description Cover area content change
-		 * @input_vars
-		 * [{"var":"$user_id","type":"int","desc":"User ID"}]
-		 * @change_log
-		 * ["Since: 2.0"]
-		 * @usage add_action( 'um_cover_area_content', 'function_name', 10, 1 );
-		 * @example
-		 * <?php
-		 * add_action( 'um_cover_area_content', 'my_cover_area_content', 10, 1 );
-		 * function my_cover_area_content( $user_id ) {
+		 * @since 1.3.x
+		 * @since 2.11.0 Added $args attribute.
+		 * @hook  um_cover_area_content
+		 *
+		 * @param {int}   $user_id User Profile ID.
+		 * @param {array} $args    User Profile data.
+		 *
+		 * @example <caption>Make any custom action in the User Profile cover wrapper.</caption>
+		 * function my_cover_area_content( $user_id, $args ) {
 		 *     // your code here
 		 * }
-		 * ?>
+		 * add_action( 'um_cover_area_content', 'my_cover_area_content', 10, 2 );
 		 */
-		do_action( 'um_cover_area_content', um_profile_id() );
+		do_action( 'um_cover_area_content', um_profile_id(), $args );
 		if ( true === UM()->fields()->editing ) {
 
 			$hide_remove    = ' style="display:none;"';
@@ -1233,24 +1230,24 @@ function um_profile_header( $args ) {
 				 */
 				do_action( 'um_after_profile_header_name_args', $args, um_user( 'ID' ) );
 				/**
-				 * UM hook
+				 * Fires after profile name in the header of the User Profile.
 				 *
-				 * @type action
-				 * @title um_after_profile_name_inline
-				 * @description Insert after profile name some content
-				 * @change_log
-				 * ["Since: 2.0"]
-				 * @usage add_action( 'um_after_profile_name_inline', 'function_name', 10 );
-				 * @example
-				 * <?php
-				 * add_action( 'um_after_profile_name_inline', 'my_after_profile_name_inline', 10 );
-				 * function my_after_profile_name_inline() {
+				 * @hook um_after_profile_header_name
+				 *
+				 * @since 1.3.x
+				 * @since 2.11.0 Added $args and $user_id attributes.
+				 *
+				 * @param {array} $args    User Profile data.
+				 * @param {int}   $user_id User Profile ID.
+				 *
+				 * @example <caption>Display any custom content after profile name in the header of the User Profile.</caption>
+				 * function my_after_profile_header_name( $args, $user_id ) {
 				 *     // your code here
 				 * }
-				 * ?>
+				 * add_action( 'um_after_profile_header_name', 'my_after_profile_header_name', 10, 2 );
 				 */
-				do_action( 'um_after_profile_header_name' ); ?>
-
+				do_action( 'um_after_profile_header_name', $args, um_user( 'ID' ) );
+				?>
 			</div>
 
 			<?php if ( ! empty( $args['metafields'] ) ) { ?>
@@ -1859,9 +1856,15 @@ function um_profile_menu( $args ) {
 				<?php foreach ( $tab['subnav'] as $id_s => $subtab ) {
 
 					$subnav_link = add_query_arg( 'subnav', $id_s );
-					$subnav_link = apply_filters( 'um_user_profile_subnav_link', $subnav_link, $id_s, $subtab ); ?>
+					$subnav_link = apply_filters( 'um_user_profile_subnav_link', $subnav_link, $id_s, $subtab );
 
-					<a href="<?php echo esc_url( $subnav_link ); ?>" class="<?php echo $active_subnav == $id_s ? 'active' : ''; ?>">
+					$subnav_classes = array( 'um-profile-subnav-' . $id_s . '-link' );
+					if ( $active_subnav === $id_s ) {
+						$subnav_classes[] = 'active';
+					}
+					?>
+
+					<a href="<?php echo esc_url( $subnav_link ); ?>" class="<?php echo esc_attr( implode( ' ', $subnav_classes ) ); ?>">
 						<?php echo $subtab; ?>
 					</a>
 

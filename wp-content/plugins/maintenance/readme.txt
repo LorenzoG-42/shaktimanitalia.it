@@ -2,8 +2,8 @@
 Contributors: WebFactory
 Tags: maintenance, maintenance mode, maintenance page, coming soon, coming soon page
 Requires at least: 4.0
-Tested up to: 6.8
-Stable tag: 4.18
+Tested up to: 6.9
+Stable tag: 4.20
 Requires PHP: 5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -95,6 +95,14 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 
 == Changelog ==
+= v4.20 =
+- 2026/01/03
+- Fixed Bunny Fonts getting loaded even for system fonts
+
+= v4.19 =
+- 2025/11/19
+- WordPress 6.9 compatibility
+
 = v4.18 =
 - 2025/07/31
 - improved mobile resposiveness

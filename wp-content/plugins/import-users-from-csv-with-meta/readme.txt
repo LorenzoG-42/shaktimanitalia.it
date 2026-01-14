@@ -3,8 +3,8 @@ Contributors: carazo
 Donate link: https://codection.com/go/donate-import-users-from-csv-with-meta/
 Tags: csv, import, export, importer, exporter
 Requires at least: 3.4
-Tested up to: 6.8.3
-Stable tag: 1.29.6
+Tested up to: 6.9
+Stable tag: 1.29.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,6 +116,9 @@ Plugin will automatically detect:
 5. Extra profile information (user meta)
 
 == Changelog ==
+
+= 1.29.7 =
+*   Ready for WordPress 6.9
 
 = 1.29.6 =
 *   Fixed a warning

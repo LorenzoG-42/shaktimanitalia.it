@@ -217,23 +217,28 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 			return $args;
 		}
 
-
 		/**
 		 * Emoji support
 		 *
-		 * @param $content
+		 * @param string $content
+		 * @param bool   $stripslashes
 		 *
 		 * @return mixed|string
 		 */
-		function emotize( $content ) {
-			$content = stripslashes( $content );
+		public function emotize( $content, $stripslashes = true ) {
+			if ( $stripslashes ) {
+				$content = stripslashes( $content );
+			}
 			foreach ( $this->emoji as $code => $val ) {
-				$regex = str_replace(array('(', ')'), array("\\" . '(', "\\" . ')'), $code);
-				$content = preg_replace('/(' . $regex . ')(\s|$)/', '<img src="' . $val . '" alt="' . $code . '" title="' . $code . '" class="emoji" />$2', $content);
+				$regex   = str_replace( array( '(', ')' ), array( '\\' . '(', '\\' . ')' ), $code );
+				$content = preg_replace(
+					'/(' . $regex . ')(?=\s|$|<)/',
+					'<img src="' . $val . '" alt="' . $code . '" title="' . $code . '" class="emoji" />',
+					$content
+				);
 			}
 			return $content;
 		}
-
 
 		/**
 		 * Remove wpautop filter for post content if it's UM core page
@@ -522,10 +527,10 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 		 *
 		 * @return string
 		 */
-		function ultimatemember_login( $args = array() ) {
+		public function ultimatemember_login( $args = array() ) {
 			global $wpdb;
 
-			$args = ! empty( $args ) ? $args : array();
+			$args = shortcode_atts( array(), $args, 'ultimatemember_login' );
 
 			$default_login = $wpdb->get_var(
 				"SELECT pm.post_id
@@ -542,23 +547,18 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 				$shortcode_attrs .= " {$key}=\"{$value}\"";
 			}
 
-			if ( version_compare( get_bloginfo('version'),'5.4', '<' ) ) {
-				return do_shortcode( "[ultimatemember {$shortcode_attrs} /]" );
-			} else {
-				return apply_shortcodes( "[ultimatemember {$shortcode_attrs} /]" );
-			}
+			return apply_shortcodes( "[ultimatemember {$shortcode_attrs} /]" );
 		}
-
 
 		/**
 		 * @param array $args
 		 *
 		 * @return string
 		 */
-		function ultimatemember_register( $args = array() ) {
+		public function ultimatemember_register( $args = array() ) {
 			global $wpdb;
 
-			$args = ! empty( $args ) ? $args : array();
+			$args = shortcode_atts( array(), $args, 'ultimatemember_register' );
 
 			$default_register = $wpdb->get_var(
 				"SELECT pm.post_id
@@ -575,23 +575,18 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 				$shortcode_attrs .= " {$key}=\"{$value}\"";
 			}
 
-			if ( version_compare( get_bloginfo('version'),'5.4', '<' ) ) {
-				return do_shortcode( "[ultimatemember {$shortcode_attrs} /]" );
-			} else {
-				return apply_shortcodes( "[ultimatemember {$shortcode_attrs} /]" );
-			}
+			return apply_shortcodes( "[ultimatemember {$shortcode_attrs} /]" );
 		}
-
 
 		/**
 		 * @param array $args
 		 *
 		 * @return string
 		 */
-		function ultimatemember_profile( $args = array() ) {
+		public function ultimatemember_profile( $args = array() ) {
 			global $wpdb;
 
-			$args = ! empty( $args ) ? $args : array();
+			$args = shortcode_atts( array(), $args, 'ultimatemember_profile' );
 
 			$default_profile = $wpdb->get_var(
 				"SELECT pm.post_id
@@ -609,23 +604,18 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 				$shortcode_attrs .= " {$key}=\"{$value}\"";
 			}
 
-			if ( version_compare( get_bloginfo('version'),'5.4', '<' ) ) {
-				return do_shortcode( "[ultimatemember {$shortcode_attrs} /]" );
-			} else {
-				return apply_shortcodes( "[ultimatemember {$shortcode_attrs} /]" );
-			}
+			return apply_shortcodes( "[ultimatemember {$shortcode_attrs} /]" );
 		}
-
 
 		/**
 		 * @param array $args
 		 *
 		 * @return string
 		 */
-		function ultimatemember_directory( $args = array() ) {
+		public function ultimatemember_directory( $args = array() ) {
 			global $wpdb;
 
-			$args = ! empty( $args ) ? $args : array();
+			$args = shortcode_atts( array(), $args, 'ultimatemember_directory' );
 
 			$default_directory = $wpdb->get_var(
 				"SELECT pm.post_id
@@ -643,11 +633,7 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 				$shortcode_attrs .= " {$key}=\"{$value}\"";
 			}
 
-			if ( version_compare( get_bloginfo('version'),'5.4', '<' ) ) {
-				return do_shortcode( "[ultimatemember {$shortcode_attrs} /]" );
-			} else {
-				return apply_shortcodes( "[ultimatemember {$shortcode_attrs} /]" );
-			}
+			return apply_shortcodes( "[ultimatemember {$shortcode_attrs} /]" );
 		}
 
 		/**
@@ -789,6 +775,9 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 			}
 
 			if ( 'directory' === $args['mode'] ) {
+				if ( ! UM()->member_directory()->can_view_directory( $this->form_id ) ) {
+					return ''; // Checking for privacy settings of the member directory
+				}
 				wp_enqueue_script( 'um_members' );
 				wp_enqueue_style( 'um_members' );
 			}

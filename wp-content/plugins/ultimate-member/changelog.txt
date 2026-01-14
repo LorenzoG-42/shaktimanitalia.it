@@ -1,5 +1,43 @@
 ﻿== Changelog ==
 
+= 2.11.1 December 16, 2025 =
+
+* Enhancements:
+
+  - Added: 'Privacy Options' for Member Directory. 'Who can see this member directory' and 'Allowed Roles'.
+  - Added: 'Rate Limit' setting for nopriv AJAX actions.
+
+* Bugfixes:
+
+  - Fixed: Security issue CVE ID: CVE-2025-13220. Used `shortcode_atts()` function to avoid using wrong attributes.
+  - Fixed: Security issue CVE ID: CVE-2025-13217. Implementing proper input sanitization and escaping for iframe URLs in YouTube, Vimeo, and Google Maps embeds.
+  - Fixed: Security issue CVE ID: CVE-2025-14081. Filtering fields based on user permissions during Account form submission.
+  - Fixed: Security issue CVE ID: CVE-2025-12492. Added directory privacy settings and added rate limiting.
+
+* Templates required update:
+
+  - members.php
+  - members-grid.php
+  - members-list.php
+
+= 2.11.0 December 02, 2025 =
+
+* Enhancements:
+
+  - Added: Extra condition for checking the license activation requests.
+  - Added: 2nd `$args` attribute to the action hook 'um_cover_area_content'.
+  - Added: `$args` and `$user_id` attributes to the action hook 'um_after_profile_header_name'.
+  - Added: Class `um-profile-subnav-{$subnav_id}-link` to the sub navigation links in the User Profile page.
+  - Tweak: Updated `Extensions_Updater` class to use Action Scheduler in the upgrade process of the UM extensions.
+
+* Bugfixes:
+
+  - Fixed: User profile links in the comments section on the frontend when the `$comment->user_id` is empty.
+  - Fixed: The `emotize` function regexp for better emoji converting.
+  - Fixed: The conflict between the image uploader and lazy-loading attribute added by 3rd-party plugins.
+  - Fixed: PHP warnings for roles without meta data.
+  - Fixed: Typo in labels.
+
 = 2.10.6 October 02, 2025 =
 
 * Enhancements:
