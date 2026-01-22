@@ -1,96 +1,171 @@
 <?php
 /**
- * Single Technical Sheet Template
+ * Single Technical Sheet Template - New Modern Layout
  */
 
-get_header(); ?>
+get_header(); 
 
-<div class="ts-container">
-    <?php while (have_posts()) : the_post(); ?>
-        <article id="post-<?php the_ID(); ?>" <?php post_class('ts-single-sheet'); ?>>
-            
-            <header class="ts-header">
-                <h1 class="product-title"><?php the_title(); ?></h1>
-                <div class="product-border fusion-separator sep-double sep-solid"></div>
-                <?php ts_display_sheet_meta(get_the_ID(), 'ts-meta-header'); ?>
-            </header>
-            
-            <div class="ts-content-wrapper">
-                <div class="ts-row">
-                    <!-- Sezione 1: Gallery (50%) -->
-                    <div class="ts-column ts-column-50">
-                        <div class="ts -section ts-gallery-section">
-                            <?php if (has_post_thumbnail()): ?>
-                                <div class="ts-featured-image">
-                                    <?php the_post_thumbnail('large'); ?>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <?php ts_display_gallery(get_the_ID()); ?>
-                        </div>
-                    </div>
-                    
-                    <!-- Sezione 2: Basic Information (50%) -->
-                    <div class="ts-column ts-column-50">
+// Get hero background image from settings
+$options = get_option('technical_sheets_options');
+$hero_bg_id = isset($options['hero_background_image']) ? $options['hero_background_image'] : '';
+$hero_bg_url = $hero_bg_id ? wp_get_attachment_image_url($hero_bg_id, 'full') : '';
+?>
 
+<?php while (have_posts()) : the_post(); 
+    $post_id = get_the_ID();
+    $basic_info = ts_get_basic_info($post_id);
+?>
 
-                        <div class="ts-section ts-content-section">
-                            <?php if (get_the_content()): ?>
-                                <h3><?php _e('Descrizione', 'technical-sheets'); ?></h3>
-                                <div class="ts-post-content">
-                                    <?php the_content(); ?>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="ts-section ts-basic-info-section">
-                            <?php ts_display_basic_info(get_the_ID()); ?>
-                        </div>
-
-                        <div class="ts-section ts-accordion-section">
-                            <?php ts_display_accordion(get_the_ID()); ?>
-                        </div>
-
-                        <div class="ts-section ts-download-section-wrapper">
-                            <?php ts_display_download_section(get_the_ID(), 'no-print'); ?>
-                        </div>
-                    </div>
-                </div>
+<!-- Hero Section -->
+<section class="ts-hero-section" <?php if ($hero_bg_url) echo 'style="background-image: url(' . esc_url($hero_bg_url) . ');"'; ?>>
+    <div class="ts-hero-overlay"></div>
+    <div class="ts-hero-container">
+        <div class="ts-hero-content">
+            <div class="ts-hero-text">
+                <h1 class="ts-hero-title"><?php the_title(); ?></h1>
                 
-                <div class="ts-row">
-                    <!-- Sezione 3: Content (50%) -->
-                    <div class="ts-column ts-column-50">
+                <!-- Specifiche chiave -->
+                <?php if (!empty($basic_info) && count($basic_info) > 0) : ?>
+                    <div class="ts-hero-specs">
+                        <?php 
+                        // Mostra le prime 3 specifiche
+                        $specs_to_show = array_slice($basic_info, 0, 3);
+                        foreach ($specs_to_show as $spec) : 
+                            if (!empty($spec['label']) && !empty($spec['value'])) :
+                        ?>
+                            <div class="ts-hero-spec-item">
+                                <div class="ts-hero-spec-label"><?php echo esc_html($spec['label']); ?></div>
+                                <div class="ts-hero-spec-value"><?php echo esc_html($spec['value']); ?></div>
+                            </div>
+                        <?php 
+                            endif;
+                        endforeach; 
+                        ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+            
+            <?php if (has_post_thumbnail()) : ?>
+                <div class="ts-hero-image">
+                    <?php the_post_thumbnail('large'); ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>
 
-                    </div>
-                    
-                    <!-- Sezione 4: Accordion (50%) -->
-                    <div class="ts-column ts-column-50">
-                        
-                    </div>
+<!-- Main Content Section -->
+<div class="ts-main-content-section">
+    <div class="ts-main-container">
+        <div class="ts-content-grid">
+            <!-- Left Column: Gallery Image -->
+            <div class="ts-content-left">
+                <div class="ts-main-image-wrapper">
+                    <?php 
+                    $gallery_images = ts_get_gallery_images($post_id);
+                    if (!empty($gallery_images) && isset($gallery_images[0])) {
+                        echo wp_get_attachment_image($gallery_images[0], 'large', false, array('class' => 'ts-main-image'));
+                    } elseif (has_post_thumbnail()) {
+                        the_post_thumbnail('large', array('class' => 'ts-main-image'));
+                    }
+                    ?>
                 </div>
             </div>
             
-            <footer class="ts-footer">
-                <div class="ts-disclaimer">
-                    <h4><?php _e('Disclaimer', 'technical-sheets'); ?></h4>
-                    <p><?php _e('Le informazioni e le schede tecniche presenti su questo sito sono fornite a titolo puramente gratuito e indicativo. Non viene fornita alcuna garanzia, espressa o implicita, circa l\'accuratezza o l\'aggiornamento dei dati.', 'technical-sheets'); ?></p>
-                    <p><?php _e('La Bruno Agricoltura non si assume alcuna responsabilità per eventuali errori, omissioni o incongruenze nei contenuti. L\'utilizzo delle informazioni è a esclusivo rischio e responsabilità dell\'utente.', 'technical-sheets'); ?></p>
-                    <p><?php _e('Si consiglia di verificare sempre i dati tecnici direttamente con i responsabili commerciali della Bruno Agricoltura prima di qualsiasi utilizzo operativo o decisione d\'acquisto.', 'technical-sheets'); ?></p>
-                    <p><?php _e('Continuando la navigazione o l\'utilizzo dei contenuti, l\'utente accetta espressamente i termini di questa limitazione di responsabilità.', 'technical-sheets'); ?></p>
-                </div>
+            <!-- Right Column: Description and Specs -->
+            <div class="ts-content-right">
+                <?php if (get_the_content()) : ?>
+                    <div class="ts-description-section">
+                        <h2><?php _e('Descrizione', 'technical-sheets'); ?></h2>
+                        <div class="ts-description-content">
+                            <?php the_content(); ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
                 
-                <div class="ts-navigation">
-                    <div class="ts-nav-previous">
-                        <?php previous_post_link('%link', '<span class="nav-subtitle">' . __('Precedente:', 'technical-sheets') . '</span> <span class="nav-title">%title</span>', true, '', 'technical_sheet_category'); ?>
+                <?php if (!empty($basic_info)) : ?>
+                    <div class="ts-specifications-section">
+                        <h2><?php _e('Specifiche Tecniche Principali', 'technical-sheets'); ?></h2>
+                        <table class="ts-specs-table">
+                            <?php foreach ($basic_info as $spec) : 
+                                if (!empty($spec['label']) && !empty($spec['value'])) :
+                            ?>
+                                <tr>
+                                    <th><?php echo esc_html($spec['label']); ?></th>
+                                    <td><?php echo esc_html($spec['value']); ?></td>
+                                </tr>
+                            <?php 
+                                endif;
+                            endforeach; 
+                            ?>
+                        </table>
                     </div>
-                    <div class="ts-nav-next">
-                        <?php next_post_link('%link', '<span class="nav-subtitle">' . __('Successivo:', 'technical-sheets') . '</span> <span class="nav-title">%title</span>', true, '', 'technical_sheet_category'); ?>
-                    </div>
-                </div>
-            </footer>
-            
-        </article>
-    <?php endwhile; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Accordion and Download Section -->
+<div class="ts-details-section">
+    <div class="ts-details-container">
+        <?php 
+        $accordion_sections = ts_get_accordion_sections($post_id);
+        if (!empty($accordion_sections)) : 
+        ?>
+            <div class="ts-accordion-wrapper">
+                <h2><?php _e('Specifiche Dettagliate', 'technical-sheets'); ?></h2>
+                <?php ts_display_accordion($post_id); ?>
+            </div>
+        <?php endif; ?>
+        
+        <!-- Download Buttons -->
+        <div class="ts-download-wrapper">
+            <h2><?php _e('Scarica', 'technical-sheets'); ?></h2>
+            <div class="ts-download-buttons">
+                <?php 
+                // Print button
+                echo '<button class="ts-print-button">';
+                echo '<i class="fas fa-print"></i> ' . __('Stampa', 'technical-sheets');
+                echo '</button>';
+                
+                // PDF download button
+                $pdf_type = get_post_meta($post_id, '_ts_pdf_type', true) ?: 'upload';
+                $pdf_url = '';
+                
+                if ($pdf_type === 'upload') {
+                    $pdf_attachment_id = get_post_meta($post_id, '_ts_pdf_attachment', true);
+                    if ($pdf_attachment_id) {
+                        $pdf_url = wp_get_attachment_url($pdf_attachment_id);
+                    }
+                } elseif ($pdf_type === 'link') {
+                    $pdf_url = get_post_meta($post_id, '_ts_pdf_external_link', true);
+                }
+                
+                if ($pdf_url) {
+                    echo '<a href="' . esc_url($pdf_url) . '" class="ts-pdf-export-button" target="_blank" download>';
+                    echo '<i class="fas fa-file-pdf"></i> ' . __('Scheda Tecnica', 'technical-sheets');
+                    echo '</a>';
+                }
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Disclaimer Section -->
+<div class="ts-disclaimer-section">
+    <div class="ts-disclaimer-container">
+        <h3><?php _e('Disclaimer', 'technical-sheets'); ?></h3>
+        <div class="ts-disclaimer-content">
+            <p><?php _e('Le informazioni e le schede tecniche presenti su questo sito sono fornite a titolo puramente gratuito e indicativo. Non viene fornita alcuna garanzia, espressa o implicita, circa l\'accuratezza o l\'aggiornamento dei dati.', 'technical-sheets'); ?></p>
+            <p><?php _e('La Bruno Agricoltura non si assume alcuna responsabilità per eventuali errori, omissioni o incongruenze nei contenuti. L\'utilizzo delle informazioni è a esclusivo rischio e responsabilità dell\'utente.', 'technical-sheets'); ?></p>
+            <p><?php _e('Si consiglia di verificare sempre i dati tecnici direttamente con i responsabili commerciali della Bruno Agricoltura prima di qualsiasi utilizzo operativo o decisione d\'acquisto.', 'technical-sheets'); ?></p>
+            <p><?php _e('Continuando la navigazione o l\'utilizzo dei contenuti, l\'utente accetta espressamente i termini di questa limitazione di responsabilità.', 'technical-sheets'); ?></p>
+        </div>
+    </div>
+</div>
+
+<?php endwhile; ?>
 
 <?php get_footer(); ?>

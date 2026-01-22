@@ -1,376 +1,254 @@
-/* Technical Sheets Frontend Styles */
+/* Technical Sheets Frontend Styles - New Modern Layout */
 
-h1.product-title {
+/* ================================
+   HERO SECTION
+   ================================ */
 
-    /*font-size: var(--post_title_typography-font-size);*/
-    font-family: var(--post_title_typography-font-family);
-    font-weight: var(--post_title_typography-font-weight);
-    line-height: var(--post_title_typography-line-height);
-    letter-spacing: var(--post_title_typography-letter-spacing);
-    text-transform: var(--post_title_typography-text-transform);
-    font-style: var(--post_title_typography-font-style, normal);
-    font-size: 24px;;
-}
-
-.fusion-body .fusion-content-sep.sep-solid, .fusion-body .fusion-separator.sep-solid {
-    border-color: #ffe500;
-    border-top-width: 5px;
-    border-bottom-width: 0px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* Container */
-.ts-container {
-    max-width: 1300px;
-    margin: 0 auto;
-    padding-top: 20px;
-
-}
-
-/* Grid System */
-.ts-row {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0 -15px;
-}
-
-.ts-column {
-    padding: 0 15px;
-    margin-bottom: 30px;
-}
-
-.ts-column-50 {
-    width: 50%;
-}
-
-.ts-column-33 {
-    width: 33.333%;
-}
-
-.ts-column-25 {
-    width: 25%;
-}
-
-/* Single Technical Sheet */
-.ts-single-sheet {
-    background: #fff;
-    border-radius: 8px;
-    /*box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);*/
+.ts-hero-section {
+    position: relative;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 80px 0;
+    margin: 0;
     overflow: hidden;
 }
 
-.ts-header {
-    padding: 0 30px;
-    /*background: #f8f9fa;*/
-    /*border-bottom: 1px solid #e9ecef;*/
-}
-
-.ts-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #333;
-    margin: 0 0 20px;
-}
-
-.ts-meta-header {
-    margin-bottom: 20px;
-}
-
-.ts-actions {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.ts-pdf-export-button,
-.ts-print-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-        z-index: 17;
-    background-color: rgb(242, 106, 33);
-    font-family: Roboto;
-    height: auto;
-    width: auto;
-    color: rgb(255, 255, 255);
-    text-decoration: none;
-    white-space: nowrap;
-    min-height: 0px;
-    min-width: 0px;
-    max-height: none;
-    max-width: none;
-    text-align: left;
-    line-height: 32px;
-    letter-spacing: 0px;
-    font-weight: 500;
-    font-size: 15px;
-    padding-left: 20px;
-    padding-right: 20px;
-    transform-origin: 50% 50%;
-    opacity: 1;
-    transform: translate(0px, 0px);
-    visibility: visible;
-    border-width: 0px;
-    border-radius: 0px;
-    border: none;
-    cursor: pointer;
-}
-
-.ts-pdf-export-button{
-    background-color: #ffe500;
-    color: white;
-    margin-left: 15px ;
-}
-.ts-pdf-export-button:hover,
-.ts-print-button:hover {
-    background:#333;
-    color: white;
-    text-decoration: none;
-}
-
-
-
-.ts-content-wrapper {
-    padding: 0 30px;
-}
-
-/* Sections */
-.ts-section {
-    margin-bottom: 30px;
-    /* Removed animations for instant loading */
-}
-
-.ts-section h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 20px;
-    /*border-bottom: 2px solid #f26a21;*/
-    padding-bottom: 10px;
-}
-
-/* Gallery Slider */
-.ts-gallery-slider {
-    margin-top: 20px;
-    position: relative;
-}
-
-.ts-slider-container {
-    padding-left: 50PX;
-    padding-right: 50PX;
-    padding-bottom: 30PX;
-    position: relative;
-    max-width: 100%;
-    margin: 0 auto;
-    /*background: #f8f9fa;*/
-    border-radius: 12px;
-    overflow: hidden;
-    /*box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);*/
-}
-
-.ts-slider-wrapper {
-    position: relative;
-    width: 100%;
-    height: 400px;
-    overflow: hidden;
-}
-
-.ts-slide {
+.ts-hero-overlay {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.ts-slide.active {
-    z-index: 2;
-    opacity: 1;
-}
-
-.ts-slide-link {
-    display: block;
-    width: 100%;
-    height: 100%;
-    text-decoration: none;
-}
-
-.ts-slide-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.3s ease;
-}
-
-.ts-slide-link:hover .ts-slide-image {
-    transform: scale(1.05);
-}
-
-.ts-slide-caption {
-    position: absolute;
-    bottom: 0;
-    left: 0;
     right: 0;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-    color: white;
-    padding: 20px;
-    font-size: 14px;
-    line-height: 1.4;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
 }
 
-/* Slider Navigation */
-.ts-slider-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.0);
-    border: none;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    cursor: pointer;
+.ts-hero-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+    position: relative;
+    z-index: 2;
+}
+
+.ts-hero-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.ts-hero-text {
+    color: #fff;
+}
+
+.ts-hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 40px 0;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.ts-hero-specs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.ts-hero-spec-item {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 25px 20px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.ts-hero-spec-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-5px);
+}
+
+.ts-hero-spec-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.ts-hero-spec-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+}
+
+.ts-hero-image {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-    color: #333;
-    transition: all 0.3s ease;
-    z-index: 10;
 }
 
-.ts-slider-btn:hover {
-
-    transform: translateY(-50%) scale(1.1);
-}
-
-.ts-slider-prev {
-    left: 5px;
-}
-
-.ts-slider-next {
-    right: 5px;
-}
-
-/* Slider Dots */
-.ts-slider-dots {
-    position: absolute;
-    bottom: 5px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;
-    z-index: 10;
-}
-
-.ts-slider-dot {
-    aspect-ratio: 1;
-    cursor: pointer;
-    border-radius: 10px;
-    transition: all 0.3s ease;
-    border: solid 1px #d3d3d3;
-}
-
-.ts-slider-dot:hover,
-.ts-slider-dot.active {
-    background: white;
-    transform: scale(1.2);
-}
-
-.ts-featured-image {
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.ts-featured-image img {
+.ts-hero-image img {
     max-width: 100%;
     height: auto;
-    border-radius: 8px;
-    /*box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);*/
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
 }
 
-/* Basic Info Table */
-.ts-basic-info-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+/* ================================
+   MAIN CONTENT SECTION
+   ================================ */
+
+.ts-main-content-section {
+    padding: 80px 0;
     background: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    /*box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);*/
 }
 
-.ts-basic-info-table th,
-.ts-basic-info-table td {
-    padding: 15px;
-    text-align: left;
-    /*border-bottom: 1px solid #e9ecef;*/
+.ts-main-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
 }
 
-.ts-basic-info-table th {
+.ts-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+}
+
+.ts-content-left {
+    position: sticky;
+    top: 80px;
+}
+
+.ts-main-image-wrapper {
     background: #f8f9fa;
-    font-weight: 600;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.ts-main-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.ts-content-right {
+    padding: 20px 0;
+}
+
+.ts-description-section {
+    margin-bottom: 50px;
+}
+
+.ts-description-section h2 {
+    font-size: 2rem;
+    font-weight: 700;
     color: #333;
-    width: 40%;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #f26a21;
 }
 
-.ts-basic-info-table td {
-    
+.ts-description-content {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #555;
 }
 
-.ts-basic-info-table tr:last-child th,
-.ts-basic-info-table tr:last-child td {
+.ts-description-content p {
+    margin-bottom: 15px;
+}
+
+.ts-specifications-section h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #f26a21;
+}
+
+.ts-specs-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 20px;
+}
+
+.ts-specs-table tr {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.ts-specs-table tr:last-child {
     border-bottom: none;
 }
 
-.ts-basic-info-table tr:hover {
+.ts-specs-table th,
+.ts-specs-table td {
+    padding: 18px 15px;
+    text-align: left;
+}
+
+.ts-specs-table th {
+    font-weight: 600;
+    color: #333;
+    width: 40%;
+    font-size: 1rem;
+}
+
+.ts-specs-table td {
+    color: #666;
+    font-size: 1rem;
+}
+
+.ts-specs-table tr:hover {
     background: #f8f9fa;
 }
 
-/* Content */
-.ts-post-content {
-    line-height: 1.6;
+/* ================================
+   DETAILS SECTION (Accordion + Download)
+   ================================ */
+
+.ts-details-section {
+    background: #f8f9fa;
+    padding: 80px 0;
+}
+
+.ts-details-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+.ts-accordion-wrapper {
+    margin-bottom: 60px;
+}
+
+.ts-accordion-wrapper h2 {
+    font-size: 2rem;
+    font-weight: 700;
     color: #333;
+    margin-bottom: 30px;
+    text-align: center;
 }
 
-.ts-post-content p {
-    margin-bottom: 15px;
-}
-
-.ts-post-content h1,
-.ts-post-content h2,
-.ts-post-content h3,
-.ts-post-content h4,
-.ts-post-content h5,
-.ts-post-content h6 {
-    color: #333;
-    margin-bottom: 15px;
-    margin-top: 25px;
-}
-
-.ts-post-content ul,
-.ts-post-content ol {
-    padding-left: 20px;
-    margin-bottom: 15px;
-}
-
-.ts-post-content li {
-    margin-bottom: 8px;
-}
-
-/* Accordion */
+/* Accordion Styles */
 .ts-accordion {
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
+    background: #fff;
+    border-radius: 12px;
     overflow: hidden;
-    margin-top: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .ts-accordion-item {
@@ -385,94 +263,370 @@ h1.product-title {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    background: #f8f9fa;
+    padding: 25px 30px;
+    background: #fff;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .ts-accordion-header:hover {
-    background: #e9ecef;
+    background: #f8f9fa;
+}
+
+.ts-accordion-header.active {
+    background: #f26a21;
 }
 
 .ts-accordion-header h4 {
     margin: 0;
-    font-size: var(--body_typography-font-size);
+    font-size: 1.2rem;
     font-weight: 600;
     color: #333;
+    transition: color 0.3s ease;
+}
+
+.ts-accordion-header.active h4 {
+    color: #fff;
 }
 
 .ts-accordion-icon {
     font-size: 1.5rem;
     font-weight: bold;
     color: #f26a21;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
     transform: rotate(0deg);
 }
 
 .ts-accordion-header.active .ts-accordion-icon {
     transform: rotate(90deg);
+    color: #fff;
 }
 
 .ts-accordion-content {
-    padding: 20px;
+    padding: 0 30px;
     background: #fff;
-    display: none; /* Initially hidden */
+    max-height: 0;
     overflow: hidden;
-}
-
-.ts-accordion-content.collapsed {
-    display: none;
+    transition: all 0.3s ease;
 }
 
 .ts-accordion-content.active {
-    display: block;
+    padding: 30px;
+    max-height: 2000px;
 }
 
 .ts-accordion-image {
     float: left;
     margin: 0 20px 20px 0;
-    max-width: 200px;
+    max-width: 250px;
     border-radius: 8px;
-    /*box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);*/
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .ts-accordion-text {
-    line-height: 1.6;
-
+    line-height: 1.8;
+    color: #555;
+    font-size: 1rem;
 }
 
-.ts-accordion-text p {
-    margin-bottom: 15px;
+/* Download Section */
+.ts-download-wrapper {
+    text-align: center;
 }
 
-/* Meta Information */
-.ts-sheet-meta {
+.ts-download-wrapper h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.ts-download-buttons {
     display: flex;
-    flex-wrap: wrap;
+    justify-content: center;
     gap: 20px;
-    margin-bottom: 20px;
+    flex-wrap: wrap;
 }
 
-.ts-sheet-types,
-.ts-sheet-brands {
-    padding: 8px 16px;
-    background: #f8f9fa;
-    border-radius: 20px;
-    font-size: 0.9rem;
+.ts-print-button,
+.ts-pdf-export-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 18px 40px;
+    background-color: #f26a21;
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    border-radius: 50px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(242, 106, 33, 0.3);
 }
 
-.ts-sheet-types strong,
-.ts-sheet-brands strong {
-    color: #f26a21;
+.ts-print-button:hover,
+.ts-pdf-export-button:hover {
+    background-color: #333;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(51, 51, 51, 0.4);
 }
 
-/* Navigation */
-.ts-footer {
-    padding: 30px;
-    background: #f8f9fa;
+.ts-pdf-export-button {
+    background-color: #ffe500;
+    color: #333;
+    box-shadow: 0 4px 15px rgba(255, 229, 0, 0.3);
+}
+
+.ts-pdf-export-button:hover {
+    background-color: #333;
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(51, 51, 51, 0.4);
+}
+
+/* ================================
+   DISCLAIMER SECTION
+   ================================ */
+
+.ts-disclaimer-section {
+    background: #fff;
+    padding: 60px 0;
     border-top: 1px solid #e9ecef;
 }
+
+.ts-disclaimer-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+.ts-disclaimer-section h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.ts-disclaimer-content {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+    color: #666;
+    line-height: 1.8;
+}
+
+.ts-disclaimer-content p {
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+
+/* ================================
+   RESPONSIVE DESIGN
+   ================================ */
+
+@media (max-width: 1200px) {
+    .ts-hero-title {
+        font-size: 2.8rem;
+    }
+    
+    .ts-hero-specs {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+    
+    .ts-content-grid {
+        gap: 40px;
+    }
+}
+
+@media (max-width: 992px) {
+    .ts-hero-content {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .ts-hero-image {
+        order: -1;
+    }
+    
+    .ts-content-grid {
+        grid-template-columns: 1fr;
+        gap: 50px;
+    }
+    
+    .ts-content-left {
+        position: relative;
+        top: 0;
+    }
+    
+    .ts-hero-specs {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .ts-hero-section {
+        padding: 60px 0;
+    }
+    
+    .ts-hero-container,
+    .ts-main-container,
+    .ts-details-container,
+    .ts-disclaimer-container {
+        padding: 0 20px;
+    }
+    
+    .ts-hero-title {
+        font-size: 2.2rem;
+        margin-bottom: 30px;
+    }
+    
+    .ts-hero-specs {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .ts-hero-spec-item {
+        padding: 20px;
+    }
+    
+    .ts-main-content-section {
+        padding: 50px 0;
+    }
+    
+    .ts-description-section h2,
+    .ts-specifications-section h2 {
+        font-size: 1.6rem;
+    }
+    
+    .ts-specs-table th,
+    .ts-specs-table td {
+        padding: 15px 10px;
+        font-size: 0.95rem;
+    }
+    
+    .ts-specs-table th {
+        width: 45%;
+    }
+    
+    .ts-details-section {
+        padding: 50px 0;
+    }
+    
+    .ts-accordion-header {
+        padding: 20px 15px;
+    }
+    
+    .ts-accordion-header h4 {
+        font-size: 1.05rem;
+    }
+    
+    .ts-accordion-content.active {
+        padding: 20px 15px;
+    }
+    
+    .ts-accordion-image {
+        float: none;
+        margin: 0 auto 20px auto;
+        max-width: 100%;
+        display: block;
+    }
+    
+    .ts-download-buttons {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .ts-print-button,
+    .ts-pdf-export-button {
+        padding: 16px 30px;
+        font-size: 1rem;
+    }
+    
+    .ts-disclaimer-section {
+        padding: 40px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .ts-hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .ts-hero-spec-value {
+        font-size: 1.3rem;
+    }
+    
+    .ts-description-section h2,
+    .ts-specifications-section h2,
+    .ts-accordion-wrapper h2,
+    .ts-download-wrapper h2 {
+        font-size: 1.4rem;
+    }
+    
+    .ts-specs-table th,
+    .ts-specs-table td {
+        padding: 12px 8px;
+        font-size: 0.9rem;
+    }
+}
+
+/* ================================
+   PRINT STYLES
+   ================================ */
+
+@media print {
+    .ts-hero-section {
+        padding: 20px 0;
+        background: #fff !important;
+    }
+    
+    .ts-hero-overlay {
+        display: none;
+    }
+    
+    .ts-hero-title {
+        color: #000 !important;
+        text-shadow: none;
+    }
+    
+    .ts-download-wrapper,
+    .ts-print-button,
+    .ts-pdf-export-button {
+        display: none !important;
+    }
+    
+    .ts-accordion-content {
+        display: block !important;
+        max-height: none !important;
+        padding: 20px 0 !important;
+    }
+    
+    .ts-accordion-header {
+        background: transparent !important;
+    }
+    
+    .ts-accordion-icon {
+        display: none;
+    }
+    
+    .ts-content-left {
+        position: relative;
+        top: 0;
+    }
+}
+
+/* ================================
+   OLD STYLES COMPATIBILITY
+   (Manteniamo solo le parti necessarie per archivio e widget)
+   ================================ */
+
 
 .ts-navigation {
     display: flex;
