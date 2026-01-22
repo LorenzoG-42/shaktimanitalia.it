@@ -168,8 +168,9 @@ class TS_Admin {
         }
         
         wp_enqueue_media();
+        wp_enqueue_script('jquery');
         
-        wp_add_inline_script('media-upload', "
+        wp_add_inline_script('jquery', "
             jQuery(document).ready(function($) {
                 var mediaUploader;
                 

@@ -58,15 +58,19 @@ $hero_bg_url = $hero_bg_id ? wp_get_attachment_image_url($hero_bg_id, 'full') : 
 <div class="ts-main-content-section">
     <div class="ts-main-container">
         <div class="ts-content-grid">
-            <!-- Left Column: Gallery Image -->
+            <!-- Left Column: Gallery -->
             <div class="ts-content-left">
                 <div class="ts-main-image-wrapper">
                     <?php 
+                    // Display gallery with lightbox if available
                     $gallery_images = ts_get_gallery_images($post_id);
-                    if (!empty($gallery_images) && isset($gallery_images[0])) {
-                        echo wp_get_attachment_image($gallery_images[0], 'large', false, array('class' => 'ts-main-image'));
+                    if (!empty($gallery_images)) {
+                        ts_display_gallery($post_id);
                     } elseif (has_post_thumbnail()) {
-                        the_post_thumbnail('large', array('class' => 'ts-main-image'));
+                        // Fallback to featured image
+                        echo '<div class="ts-featured-image">';
+                        the_post_thumbnail('large');
+                        echo '</div>';
                     }
                     ?>
                 </div>

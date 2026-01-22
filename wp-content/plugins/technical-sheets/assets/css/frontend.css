@@ -45,7 +45,7 @@
 }
 
 .ts-hero-title {
-    font-size: 3.5rem;
+    font-size: 46px;
     font-weight: 700;
     color: #fff;
     margin: 0 0 40px 0;
@@ -63,7 +63,7 @@
 .ts-hero-spec-item {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    padding: 25px 20px;
+    padding: 15px 10px;
     border-radius: 12px;
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -76,7 +76,7 @@
 }
 
 .ts-hero-spec-label {
-    font-size: 0.9rem;
+    font-size:11px;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.8);
     margin-bottom: 8px;
@@ -85,7 +85,7 @@
 }
 
 .ts-hero-spec-value {
-    font-size: 1.5rem;
+    font-size: 18px;
     font-weight: 700;
     color: #fff;
     line-height: 1.2;
@@ -139,6 +139,147 @@
 
 .ts-main-image {
     width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Gallery Slider Styles */
+.ts-gallery-slider {
+    position: relative;
+}
+
+.ts-slider-container {
+    position: relative;
+    width: 100%;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.ts-slider-wrapper {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+}
+
+.ts-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ts-slide.active {
+    z-index: 2;
+    opacity: 1;
+}
+
+.ts-slide-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+}
+
+.ts-slide-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.ts-slide-link:hover .ts-slide-image {
+    transform: scale(1.02);
+}
+
+.ts-slide-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    color: white;
+    padding: 20px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* Slider Navigation Buttons */
+.ts-slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #333;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.ts-slider-btn:hover {
+    background: rgba(242, 106, 33, 0.9);
+    color: #fff;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.ts-slider-prev {
+    left: 15px;
+}
+
+.ts-slider-next {
+    right: 15px;
+}
+
+/* Slider Dots */
+.ts-slider-dots {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.ts-slider-dot {
+    width: 12px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.ts-slider-dot:hover,
+.ts-slider-dot.active {
+    background: #f26a21;
+    border-color: #f26a21;
+    transform: scale(1.2);
+}
+
+.ts-featured-image {
+    text-align: center;
+}
+
+.ts-featured-image img {
+    max-width: 100%;
     height: auto;
     display: block;
 }
@@ -745,6 +886,8 @@
     padding: 10px 20px;
     border: none;
     border-radius: 6px;
+    line-height: 1;
+    height: 50px;
     font-size: 0.9rem;
     font-weight: 600;
     text-decoration: none;
@@ -1085,7 +1228,7 @@
 .ts-item-thumbnail img {
     width: 100%;
     height: 200px;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
 }
 
@@ -1178,12 +1321,12 @@ input[type="text"].ts-filter-input {
 
 .ts-view-button {
     background: #f26a21;
-    color: white;
+    color: #fff;
 }
 
 .ts-view-button:hover {
-    background: #005a87;
-    color: white;
+    background: #f26a21;
+    color: #fff;
 }
 
 .ts-pdf-button {
@@ -1309,6 +1452,7 @@ input[type="text"].ts-filter-input {
 
 .ts-download-buttons .ts-print-button,
 .ts-download-buttons .ts-pdf-export-button {
+    border: 1px solid #f26a21;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -1328,7 +1472,8 @@ input[type="text"].ts-filter-input {
 
 .ts-download-buttons .ts-print-button:hover,
 .ts-download-buttons .ts-pdf-export-button:hover {
-    background-color: #1e5a26;
+    background-color: #fff;
+    color: #f26a21;
 }
 
 .ts-download-buttons .ts-print-button i,
