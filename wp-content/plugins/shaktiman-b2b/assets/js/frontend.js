@@ -7,6 +7,7 @@
     
     /**
      * Gestione filtri mezzi agricoli
+     * Ora usa solo GET con permalink, come in technical-sheets
      */
     const MezziFiltri = {
         
@@ -16,7 +17,6 @@
         init: function() {
             this.initSelect2();
             this.bindEvents();
-            this.restoreFilters();
         },
         
         /**
@@ -41,254 +41,38 @@
         },
         
         /**
-         * Associa eventi
+         * Bind eventi
          */
         bindEvents: function() {
-            const self = this;
-            
-            // Filtri su change
-            $(document).on('change', '.filter-select', function() {
-                self.applyFilters();
-            });
-            
-            // Ricerca con debounce
-            let searchTimeout;
-            $(document).on('keyup', '.filter-input', function() {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(function() {
-                    self.applyFilters();
-                }, 500);
-            });
-            
-            // Reset filtri
-            $(document).on('click', '.btn-reset, #reset-filters', function(e) {
-                e.preventDefault();
-                self.resetFilters();
-            });
-            
-            // Gestione form submit (previene invio)
+            // Intercetta il submit del form per rimuovere parametri vuoti
             $(document).on('submit', '#mezzi-filter-form, #mezzi-filter-form-shortcode', function(e) {
                 e.preventDefault();
-                self.applyFilters();
-            });
-            
-            // Salva i filtri prima di navigare alla pagina prodotto
-            $(document).on('click', '.mezzo-card a, .mezzo-title a, .btn-dettagli', function() {
-                self.saveFilters();
-            });
-            
-            // PAGINAZIONE AJAX RIMOSSA - usa navigazione standard
-            // I filtri verranno mantenuti tramite sessionStorage
-        },
-        
-        /**
-         * Applica filtri
-         */
-        applyFilters: function(pageNum) {
-            const form = $('#mezzi-filter-form, #mezzi-filter-form-shortcode');
-            const grid = $('#mezzi-grid, .mezzi-grid');
-            const overlay = $('.loading-overlay');
-            
-            // Mostra loading
-            overlay.fadeIn(200);
-            
-            // Usa sempre pagina 1 quando si applicano i filtri
-            pageNum = 1;
-            
-            // Prepara dati
-            const data = {
-                action: 'filter_mezzi_agricoli',
-                nonce: shaktimanB2B.nonce,
-                search: form.find('[name="search"]').val(),
-                disponibilita: form.find('[name="disponibilita"]').val(),
-                categoria_mezzo: form.find('[name="categoria_mezzo"]').val(),
-                modello: form.find('[name="modello"]').val(),
-                versione: form.find('[name="versione"]').val(),
-                ubicazione: form.find('[name="ubicazione"]').val(),
-                stato_magazzino: form.find('[name="stato_magazzino"]').val(),
-                per_page: 30,
-                paged: pageNum
-            };
-            
-            // AJAX request
-            $.ajax({
-                url: shaktimanB2B.ajaxUrl,
-                type: 'POST',
-                data: data,
-                success: function(response) {
-                    if (response.success) {
-                        // Aggiorna griglia
-                        grid.fadeOut(200, function() {
-                            $(this).html(response.data.html).fadeIn(200);
-                        });
-                        
-                        // Aggiorna contatore risultati
-                        const resultsInfo = $('.results-info, #results-info');
-                        if (response.data.found_posts !== undefined) {
-                            const text = response.data.found_posts === 1 
-                                ? response.data.found_posts + ' mezzo trovato'
-                                : response.data.found_posts + ' mezzi trovati';
-                            resultsInfo.text(text);
-                        }
-                        
-                        // Aggiorna le opzioni dei filtri
-                        MezziFiltri.updateFilterOptions();
-                        
-                        // Scroll to top risultati - DISABILITATO su richiesta cliente
-                        // $('html, body').animate({
-                        //     scrollTop: $('.mezzi-results').offset().top - 100
-                        // }, 400);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Errore nel filtraggio:', error);
-                    if (typeof NotifyModal !== 'undefined') {
-                        NotifyModal.show('Si è verificato un errore durante il filtraggio. Riprova.', 'Errore');
-                    }
-                },
-                complete: function() {
-                    overlay.fadeOut(200);
-                }
-            });
-        },
-        
-        /**
-         * Reset filtri
-         */
-        resetFilters: function() {
-            const form = $('#mezzi-filter-form, #mezzi-filter-form-shortcode');
-            
-            // Reset campi
-            form.find('input[type="text"]').val('');
-            form.find('select').prop('selectedIndex', 0);
-            
-            // Cancella filtri salvati
-            sessionStorage.removeItem('shaktiman_filters');
-            
-            // Riapplica filtri (che ora sono vuoti)
-            this.applyFilters();
-        },
-        
-        /**
-         * Salva i filtri correnti in sessionStorage
-         */
-        saveFilters: function() {
-            const form = $('#mezzi-filter-form, #mezzi-filter-form-shortcode');
-            if (form.length === 0) return;
-            
-            const filters = {
-                search: form.find('[name="search"]').val(),
-                disponibilita: form.find('[name="disponibilita"]').val(),
-                categoria_mezzo: form.find('[name="categoria_mezzo"]').val(),
-                modello: form.find('[name="modello"]').val(),
-                versione: form.find('[name="versione"]').val(),
-                ubicazione: form.find('[name="ubicazione"]').val(),
-                stato_magazzino: form.find('[name="stato_magazzino"]').val()
-            };
-            
-            sessionStorage.setItem('shaktiman_filters', JSON.stringify(filters));
-        },
-        
-        /**
-         * Ripristina i filtri salvati da sessionStorage
-         */
-        restoreFilters: function() {
-            const savedFilters = sessionStorage.getItem('shaktiman_filters');
-            if (!savedFilters) return;
-            
-            try {
-                const filters = JSON.parse(savedFilters);
-                const form = $('#mezzi-filter-form, #mezzi-filter-form-shortcode');
-                if (form.length === 0) return;
                 
-                // Ripristina i valori dei filtri
-                if (filters.search) form.find('[name="search"]').val(filters.search);
-                if (filters.disponibilita) form.find('[name="disponibilita"]').val(filters.disponibilita);
-                if (filters.categoria_mezzo) form.find('[name="categoria_mezzo"]').val(filters.categoria_mezzo);
-                if (filters.modello) form.find('[name="modello"]').val(filters.modello);
-                if (filters.versione) form.find('[name="versione"]').val(filters.versione);
-                if (filters.ubicazione) form.find('[name="ubicazione"]').val(filters.ubicazione);
-                if (filters.stato_magazzino) form.find('[name="stato_magazzino"]').val(filters.stato_magazzino);
+                const form = $(this);
+                const action = form.attr('action') || window.location.pathname;
                 
-                // Aggiorna Select2 se attivo
-                if (typeof $.fn.select2 !== 'undefined') {
-                    form.find('.filter-select').trigger('change.select2');
+                // Raccogli solo i parametri con valori
+                const params = [];
+                
+                form.find('input, select').each(function() {
+                    const input = $(this);
+                    const name = input.attr('name');
+                    const value = input.val();
+                    
+                    // Aggiungi solo se ha un nome e un valore non vuoto
+                    if (name && value && value.trim() !== '') {
+                        params.push(encodeURIComponent(name) + '=' + encodeURIComponent(value));
+                    }
+                });
+                
+                // Costruisci URL pulito
+                let url = action;
+                if (params.length > 0) {
+                    url += '?' + params.join('&');
                 }
                 
-                // Applica i filtri automaticamente
-                this.applyFilters();
-            } catch (e) {
-                console.error('Errore nel ripristino dei filtri:', e);
-                sessionStorage.removeItem('shaktiman_filters');
-            }
-        },
-        
-        /**
-         * Aggiorna le opzioni dei filtri in base ai filtri attuali
-         */
-        updateFilterOptions: function() {
-            const form = $('#mezzi-filter-form, #mezzi-filter-form-shortcode');
-            
-            // Prepara dati dei filtri attuali
-            const data = {
-                action: 'get_filtered_options',
-                nonce: shaktimanB2B.nonce,
-                disponibilita: form.find('[name="disponibilita"]').val(),
-                categoria_mezzo: form.find('[name="categoria_mezzo"]').val(),
-                modello: form.find('[name="modello"]').val(),
-                versione: form.find('[name="versione"]').val(),
-                ubicazione: form.find('[name="ubicazione"]').val(),
-                stato_magazzino: form.find('[name="stato_magazzino"]').val()
-            };
-            
-            $.ajax({
-                url: shaktimanB2B.ajaxUrl,
-                type: 'POST',
-                data: data,
-                success: function(response) {
-                    if (response.success && response.data.options) {
-                        const options = response.data.options;
-                        
-                        // Aggiorna ogni select
-                        $.each(options, function(taxonomy, terms) {
-                            const select = form.find('[name="' + taxonomy + '"]');
-                            if (select.length > 0) {
-                                const currentValue = select.val();
-                                const isSelect2 = select.hasClass('select2-hidden-accessible');
-                                
-                                // Salva la prima opzione (placeholder)
-                                const firstOption = select.find('option:first').clone();
-                                
-                                // Svuota la select
-                                select.empty();
-                                
-                                // Aggiungi la prima opzione
-                                select.append(firstOption);
-                                
-                                // Aggiungi le opzioni disponibili
-                                $.each(terms, function(index, term) {
-                                    const option = $('<option></option>')
-                                        .attr('value', term.slug)
-                                        .text(term.name + ' (' + term.count + ')');
-                                    select.append(option);
-                                });
-                                
-                                // Ripristina il valore se ancora disponibile
-                                if (currentValue && select.find('option[value="' + currentValue + '"]').length > 0) {
-                                    select.val(currentValue);
-                                }
-                                
-                                // Aggiorna Select2 se attivo
-                                if (isSelect2 && typeof $.fn.select2 !== 'undefined') {
-                                    select.trigger('change.select2');
-                                }
-                            }
-                        });
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Errore aggiornamento opzioni filtri:', error);
-                }
+                // Naviga all'URL
+                window.location.href = url;
             });
         }
     };

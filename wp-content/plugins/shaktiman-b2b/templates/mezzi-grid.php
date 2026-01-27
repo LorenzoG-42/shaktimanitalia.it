@@ -7,6 +7,7 @@
 
 $paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
 
+// Prepara args per la query
 $args = array(
     'post_type' => 'mezzo_agricolo',
     'posts_per_page' => $atts['per_page'],
@@ -15,20 +16,68 @@ $args = array(
     'order' => $atts['order'],
 );
 
+// Gestione filtri tassonomie (GET parameters)
+$tax_query = array();
+
+if ( isset( $_GET['disponibilita'] ) && ! empty( $_GET['disponibilita'] ) ) {
+    $tax_query[] = array(
+        'taxonomy' => 'disponibilita',
+        'field'    => 'slug',
+        'terms'    => sanitize_text_field( $_GET['disponibilita'] ),
+    );
+}
+
+if ( isset( $_GET['categoria_mezzo'] ) && ! empty( $_GET['categoria_mezzo'] ) ) {
+    $tax_query[] = array(
+        'taxonomy' => 'categoria_mezzo',
+        'field'    => 'slug',
+        'terms'    => sanitize_text_field( $_GET['categoria_mezzo'] ),
+    );
+}
+
+if ( isset( $_GET['modello'] ) && ! empty( $_GET['modello'] ) ) {
+    $tax_query[] = array(
+        'taxonomy' => 'modello',
+        'field'    => 'slug',
+        'terms'    => sanitize_text_field( $_GET['modello'] ),
+    );
+}
+
+if ( isset( $_GET['versione'] ) && ! empty( $_GET['versione'] ) ) {
+    $tax_query[] = array(
+        'taxonomy' => 'versione',
+        'field'    => 'slug',
+        'terms'    => sanitize_text_field( $_GET['versione'] ),
+    );
+}
+
+if ( ! empty( $tax_query ) ) {
+    if ( count( $tax_query ) > 1 ) {
+        $tax_query['relation'] = 'AND';
+    }
+    $args['tax_query'] = $tax_query;
+}
+
+// Gestione ricerca
+if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) {
+    $args['s'] = sanitize_text_field( $_GET['s'] );
+}
+
 $query = new WP_Query( $args );
 ?>
 
 <div class="shaktiman-b2b-grid-wrapper">
     <!-- Filtri -->
     <div class="mezzi-filters">
-        <form id="mezzi-filter-form-shortcode" class="filter-form">
+        <form method="get" action="" id="mezzi-filter-form-shortcode" class="filter-form">
             <div class="filter-row">
                 <!-- Ricerca -->
                 <div class="filter-item filter-search">
                     <label for="search-input"><?php _e( 'Ricerca:', 'shaktiman-b2b' ); ?></label>
                     <input type="text" 
                            id="search-input"
-                           name="search" 
+                           name="s" 
+                           value="<?php echo isset($_GET['s']) ? esc_attr($_GET['s']) : ''; ?>"
                            placeholder="<?php _e( 'Cerca mezzo...', 'shaktiman-b2b' ); ?>"
                            class="filter-input">
                 </div>
@@ -41,10 +90,17 @@ $query = new WP_Query( $args );
                         <?php
                         $disponibilita_terms = get_terms( array(
                             'taxonomy' => 'disponibilita',
-                            'hide_empty' => true,
+                            'hide_empty' => false,
                         ) );
+                        $selected_disponibilita = isset($_GET['disponibilita']) ? sanitize_text_field($_GET['disponibilita']) : '';
                         foreach ( $disponibilita_terms as $term ) {
-                            echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . ' (' . $term->count . ')</option>';
+                            printf(
+                                '<option value="%s"%s>%s (%d)</option>',
+                                esc_attr($term->slug),
+                                selected($selected_disponibilita, $term->slug, false),
+                                esc_html($term->name),
+                                $term->count
+                            );
                         }
                         ?>
                     </select>
@@ -58,10 +114,17 @@ $query = new WP_Query( $args );
                         <?php
                         $categoria_terms = get_terms( array(
                             'taxonomy' => 'categoria_mezzo',
-                            'hide_empty' => true,
+                            'hide_empty' => false,
                         ) );
+                        $selected_categoria = isset($_GET['categoria_mezzo']) ? sanitize_text_field($_GET['categoria_mezzo']) : '';
                         foreach ( $categoria_terms as $term ) {
-                            echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . ' (' . $term->count . ')</option>';
+                            printf(
+                                '<option value="%s"%s>%s (%d)</option>',
+                                esc_attr($term->slug),
+                                selected($selected_categoria, $term->slug, false),
+                                esc_html($term->name),
+                                $term->count
+                            );
                         }
                         ?>
                     </select>
@@ -75,10 +138,17 @@ $query = new WP_Query( $args );
                         <?php
                         $modello_terms = get_terms( array(
                             'taxonomy' => 'modello',
-                            'hide_empty' => true,
+                            'hide_empty' => false,
                         ) );
+                        $selected_modello = isset($_GET['modello']) ? sanitize_text_field($_GET['modello']) : '';
                         foreach ( $modello_terms as $term ) {
-                            echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . ' (' . $term->count . ')</option>';
+                            printf(
+                                '<option value="%s"%s>%s (%d)</option>',
+                                esc_attr($term->slug),
+                                selected($selected_modello, $term->slug, false),
+                                esc_html($term->name),
+                                $term->count
+                            );
                         }
                         ?>
                     </select>
@@ -92,20 +162,30 @@ $query = new WP_Query( $args );
                         <?php
                         $versione_terms = get_terms( array(
                             'taxonomy' => 'versione',
-                            'hide_empty' => true,
+                            'hide_empty' => false,
                         ) );
+                        $selected_versione = isset($_GET['versione']) ? sanitize_text_field($_GET['versione']) : '';
                         foreach ( $versione_terms as $term ) {
-                            echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . ' (' . $term->count . ')</option>';
+                            printf(
+                                '<option value="%s"%s>%s (%d)</option>',
+                                esc_attr($term->slug),
+                                selected($selected_versione, $term->slug, false),
+                                esc_html($term->name),
+                                $term->count
+                            );
                         }
                         ?>
                     </select>
                 </div>
                 
-                <!-- Bottone Reset -->
-                <div class="filter-item">
-                    <button type="button" class="btn-reset">
-                        <?php _e( 'Resetta', 'shaktiman-b2b' ); ?>
+                <!-- Bottoni azione -->
+                <div class="filter-item filter-actions">
+                    <button type="submit" class="btn-search">
+                        <?php _e( 'Cerca', 'shaktiman-b2b' ); ?>
                     </button>
+                    <a href="<?php echo remove_query_arg( array('s', 'disponibilita', 'categoria_mezzo', 'modello', 'versione', 'paged') ); ?>" class="btn-reset">
+                        <?php _e( 'Reset', 'shaktiman-b2b' ); ?>
+                    </a>
                 </div>
             </div>
         </form>
@@ -140,16 +220,20 @@ $query = new WP_Query( $args );
         
         <!-- Paginazione -->
         <?php
+        // Mantieni i parametri di query per la paginazione
+        $query_args = $_GET;
+        unset($query_args['paged']);
+        $base_url = add_query_arg($query_args, get_permalink());
+        
         echo paginate_links( array(
             'total' => $query->max_num_pages,
             'current' => $paged,
             'prev_text' => __( '&laquo; Precedente', 'shaktiman-b2b' ),
             'next_text' => __( 'Successivo &raquo;', 'shaktiman-b2b' ),
+            'base' => $base_url . '%_%',
+            'format' => '?paged=%#%',
+            'add_args' => false,
         ) );
         ?>
-    </div>
-    
-    <div class="loading-overlay" style="display: none;">
-        <div class="loading-spinner"></div>
     </div>
 </div>

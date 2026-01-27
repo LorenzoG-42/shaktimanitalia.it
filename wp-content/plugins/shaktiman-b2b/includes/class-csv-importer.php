@@ -88,14 +88,17 @@ class Shaktiman_B2B_CSV_Importer {
             
             <?php if (isset($_GET['import_result'])): ?>
                 <div class="notice notice-<?php echo esc_attr($_GET['import_result']); ?> is-dismissible">
-                    <p><?php echo esc_html(urldecode($_GET['message'])); ?></p>
-                    <?php if (isset($_GET['imported']) || isset($_GET['errors'])): ?>
+                    <p><?php echo isset($_GET['message']) ? esc_html(urldecode($_GET['message'])) : ''; ?></p>
+                    <?php if (isset($_GET['imported']) || isset($_GET['updated']) || isset($_GET['errors'])): ?>
                         <ul>
-                            <?php if (isset($_GET['imported'])): ?>
-                                <li>Importati: <?php echo intval($_GET['imported']); ?> mezzi</li>
+                            <?php if (isset($_GET['imported']) && intval($_GET['imported']) > 0): ?>
+                                <li><strong>Nuovi mezzi:</strong> <?php echo intval($_GET['imported']); ?></li>
                             <?php endif; ?>
-                            <?php if (isset($_GET['errors'])): ?>
-                                <li>Errori: <?php echo intval($_GET['errors']); ?> righe</li>
+                            <?php if (isset($_GET['updated']) && intval($_GET['updated']) > 0): ?>
+                                <li><strong>Mezzi aggiornati:</strong> <?php echo intval($_GET['updated']); ?></li>
+                            <?php endif; ?>
+                            <?php if (isset($_GET['errors']) && intval($_GET['errors']) > 0): ?>
+                                <li><strong>Errori:</strong> <?php echo intval($_GET['errors']); ?> righe</li>
                             <?php endif; ?>
                         </ul>
                     <?php endif; ?>
@@ -228,6 +231,7 @@ class Shaktiman_B2B_CSV_Importer {
             $result['success'] ? 'success' : 'error',
             $result['message'],
             $result['imported'],
+            $result['updated'],
             $result['errors']
         );
     }
@@ -237,6 +241,7 @@ class Shaktiman_B2B_CSV_Importer {
      */
     private function process_csv($file_path, $delimiter, $post_status, $update_existing) {
         $imported = 0;
+        $updated = 0;
         $errors = 0;
         $error_messages = array();
         
@@ -247,6 +252,7 @@ class Shaktiman_B2B_CSV_Importer {
                 'success' => false,
                 'message' => 'Impossibile aprire il file CSV',
                 'imported' => 0,
+                'updated' => 0,
                 'errors' => 0
             );
         }
@@ -262,12 +268,15 @@ class Shaktiman_B2B_CSV_Importer {
                 'success' => false,
                 'message' => 'Il file CSV è vuoto o non valido',
                 'imported' => 0,
+                'updated' => 0,
                 'errors' => 0
             );
         }
         
-        // Normalize headers (trim and uppercase)
+        // Normalize headers (trim, remove BOM, uppercase)
         $headers = array_map(function($h) {
+            // Remove BOM if present
+            $h = str_replace("\xEF\xBB\xBF", '', $h);
             return strtoupper(trim($h));
         }, $headers);
         
@@ -280,6 +289,7 @@ class Shaktiman_B2B_CSV_Importer {
                 'success' => false,
                 'message' => 'Colonne obbligatorie mancanti: ' . implode(', ', $missing_headers),
                 'imported' => 0,
+                'updated' => 0,
                 'errors' => 0
             );
         }
@@ -337,8 +347,8 @@ class Shaktiman_B2B_CSV_Importer {
                 continue;
             }
             
-            // Check if post exists
-            $existing_post = get_page_by_title($titolo, OBJECT, 'mezzo_agricolo');
+            // Check if post exists - metodo migliorato (get_page_by_title è deprecato)
+            $existing_post = $this->find_post_by_title($titolo, 'mezzo_agricolo');
             
             if ($existing_post && !$update_existing) {
                 $errors++;
@@ -354,9 +364,17 @@ class Shaktiman_B2B_CSV_Importer {
                 'post_type'    => 'mezzo_agricolo'
             );
             
+            $is_update = false;
             if ($existing_post && $update_existing) {
                 $post_data['ID'] = $existing_post->ID;
                 $post_id = wp_update_post($post_data);
+                $is_update = true;
+                
+                // wp_update_post può restituire 0 in caso di errore (non WP_Error)
+                // In tal caso, usa l'ID del post esistente
+                if ($post_id === 0) {
+                    $post_id = $existing_post->ID;
+                }
             } else {
                 $post_id = wp_insert_post($post_data);
             }
@@ -367,28 +385,25 @@ class Shaktiman_B2B_CSV_Importer {
                 continue;
             }
             
-            // Assign taxonomies
-            if (!empty($categoria)) {
-                $this->assign_term($post_id, $categoria, 'categoria_mezzo');
+            // Se è un aggiornamento, pulisci i meta fields vecchi prima di aggiornare
+            if ($is_update) {
+                $this->clean_post_meta($post_id);
+                $updated++;
+            } else {
+                $imported++;
             }
             
-            if (!empty($modello)) {
-                $this->assign_term($post_id, $modello, 'modello');
-            }
+            // Assign taxonomies - pulisce e assegna
+            $this->assign_term($post_id, $categoria, 'categoria_mezzo', true);
+            $this->assign_term($post_id, $modello, 'modello', true);
+            $this->assign_term($post_id, $versione, 'versione', true);
+            $this->assign_term($post_id, $ubicazione, 'ubicazione', true);
+            $this->assign_term($post_id, $stato, 'disponibilita', true);
             
-            if (!empty($versione)) {
-                $this->assign_term($post_id, $versione, 'versione');
-            }
+            // IMPORTANTE: flush cache tassonomie per questo post
+            clean_object_term_cache($post_id, 'mezzo_agricolo');
             
-            if (!empty($ubicazione)) {
-                $this->assign_term($post_id, $ubicazione, 'ubicazione');
-            }
-            
-            if (!empty($stato)) {
-                $this->assign_term($post_id, $stato, 'disponibilita');
-            }
-            
-            // Save meta fields
+            // Save meta fields - salva solo se non vuoti
             if (!empty($nome_cliente)) {
                 update_post_meta($post_id, '_nome_cliente', sanitize_text_field($nome_cliente));
             }
@@ -409,77 +424,175 @@ class Shaktiman_B2B_CSV_Importer {
                 }
             }
             
-            // Set automatic dates for riservato/venduto if not already set
+            // Gestione date automatiche per stato riservato/venduto
             if ($stato === 'riservato') {
-                $existing_date = get_post_meta($post_id, '_data_riservato', true);
-                if (empty($existing_date)) {
+                // Se è un update e lo stato è cambiato, aggiorna la data
+                if ($is_update) {
+                    $old_stato = wp_get_object_terms($existing_post->ID, 'disponibilita', array('fields' => 'names'));
+                    if (empty($old_stato) || !in_array('riservato', $old_stato)) {
+                        update_post_meta($post_id, '_data_riservato', current_time('mysql'));
+                    }
+                } else {
+                    // Nuovo post
                     update_post_meta($post_id, '_data_riservato', current_time('mysql'));
                 }
             }
             
             if ($stato === 'venduto') {
-                $existing_date = get_post_meta($post_id, '_data_venduto', true);
-                if (empty($existing_date)) {
+                // Se è un update e lo stato è cambiato, aggiorna la data
+                if ($is_update) {
+                    $old_stato = wp_get_object_terms($existing_post->ID, 'disponibilita', array('fields' => 'names'));
+                    if (empty($old_stato) || !in_array('venduto', $old_stato)) {
+                        update_post_meta($post_id, '_data_venduto', current_time('mysql'));
+                    }
+                } else {
+                    // Nuovo post
                     update_post_meta($post_id, '_data_venduto', current_time('mysql'));
                 }
             }
-            
-            $imported++;
         }
         
         fclose($handle);
         
         // Prepare result message
-        $message = "Importazione completata: $imported mezzi importati";
+        $message = "Importazione completata: ";
+        $parts = array();
+        
+        if ($imported > 0) {
+            $parts[] = "$imported nuovi mezzi";
+        }
+        if ($updated > 0) {
+            $parts[] = "$updated mezzi aggiornati";
+        }
         if ($errors > 0) {
-            $message .= ", $errors errori";
+            $parts[] = "$errors errori";
+        }
+        
+        if (empty($parts)) {
+            $message = "Nessuna operazione eseguita";
+        } else {
+            $message .= implode(', ', $parts);
         }
         
         return array(
             'success' => true,
             'message' => $message,
             'imported' => $imported,
+            'updated' => $updated,
             'errors' => $errors,
             'error_messages' => $error_messages
         );
     }
     
     /**
+     * Find post by title (alternativa moderna a get_page_by_title deprecato)
+     */
+    private function find_post_by_title($title, $post_type = 'post') {
+        global $wpdb;
+        
+        $post = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT ID, post_title FROM $wpdb->posts 
+                WHERE post_title = %s 
+                AND post_type = %s 
+                AND post_status != 'trash'
+                LIMIT 1",
+                $title,
+                $post_type
+            )
+        );
+        
+        if ($post) {
+            return get_post($post->ID);
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Clean post meta fields before update
+     */
+    private function clean_post_meta($post_id) {
+        // Lista dei meta fields gestiti dall'import
+        $meta_fields = array(
+            '_nome_cliente',
+            '_numero_contratto',
+            '_ragione_sociale',
+            '_data_contratto'
+            // NON eliminiamo _data_riservato e _data_venduto per preservare lo storico
+        );
+        
+        foreach ($meta_fields as $meta_key) {
+            delete_post_meta($post_id, $meta_key);
+        }
+    }
+    
+    /**
      * Assign term to post (create if doesn't exist)
      */
-    private function assign_term($post_id, $term_name, $taxonomy) {
+    private function assign_term($post_id, $term_name, $taxonomy, $replace = false) {
+        // Trim per sicurezza
+        $term_name = trim($term_name);
+        
         if (empty($term_name)) {
+            // Se term_name è vuoto e replace è true, rimuovi tutti i termini
+            if ($replace) {
+                wp_set_object_terms($post_id, array(), $taxonomy, false);
+            }
             return;
         }
         
-        // Check if term exists
-        $term = get_term_by('name', $term_name, $taxonomy);
-        
-        if (!$term) {
-            // Create term
-            $result = wp_insert_term($term_name, $taxonomy);
-            if (is_wp_error($result)) {
-                return;
-            }
-            $term_id = $result['term_id'];
-        } else {
-            $term_id = $term->term_id;
+        // Verifica se la tassonomia esiste
+        if (!taxonomy_exists($taxonomy)) {
+            return;
         }
         
-        // Assign term to post
-        wp_set_object_terms($post_id, $term_id, $taxonomy, false);
+        // Check if term exists - prova prima per slug, poi per name
+        $term = term_exists($term_name, $taxonomy);
+        
+        if (!$term) {
+            // Il termine non esiste, crealo
+            // Genera uno slug dal nome
+            $slug = sanitize_title($term_name);
+            
+            $result = wp_insert_term(
+                $term_name,  // name
+                $taxonomy,   // taxonomy
+                array(
+                    'slug' => $slug
+                )
+            );
+            
+            if (is_wp_error($result)) {
+                // Potrebbe essere un errore di duplicato, proviamo a recuperarlo
+                if ($result->get_error_code() === 'term_exists') {
+                    $term_id = $result->get_error_data();
+                } else {
+                    return;
+                }
+            } else {
+                $term_id = $result['term_id'];
+            }
+        } else {
+            // Se term_exists restituisce un array, prendi term_id, altrimenti è già il term_id
+            $term_id = is_array($term) ? $term['term_id'] : $term;
+        }
+        
+        // Assign term to post - false = sostituisce, true = aggiunge
+        wp_set_object_terms($post_id, intval($term_id), $taxonomy, false);
     }
     
     /**
      * Redirect with message
      */
-    private function redirect_with_message($type, $message, $imported = 0, $errors = 0) {
+    private function redirect_with_message($type, $message, $imported = 0, $updated = 0, $errors = 0) {
         $redirect_url = add_query_arg(
             array(
                 'page' => 'b2b-import-csv',
                 'import_result' => $type,
                 'message' => urlencode($message),
                 'imported' => $imported,
+                'updated' => $updated,
                 'errors' => $errors
             ),
             admin_url('edit.php?post_type=mezzo_agricolo')

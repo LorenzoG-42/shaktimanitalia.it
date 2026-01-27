@@ -33,14 +33,15 @@ get_header();
         
         <!-- Filtri -->
         <div class="mezzi-filters">
-            <form id="mezzi-filter-form" class="filter-form">
+            <form method="get" action="<?php echo get_post_type_archive_link('mezzo_agricolo'); ?>" id="mezzi-filter-form" class="filter-form">
                 <div class="filter-row">
                     <!-- Ricerca -->
                     <div class="filter-item filter-search">
                         <label for="mezzi-search"><?php _e( 'Ricerca:', 'shaktiman-b2b' ); ?></label>
                         <input type="text" 
-                               name="search" 
+                               name="s" 
                                id="mezzi-search" 
+                               value="<?php echo get_search_query(); ?>"
                                placeholder="<?php _e( 'Cerca mezzo...', 'shaktiman-b2b' ); ?>"
                                class="filter-input">
                     </div>
@@ -55,8 +56,15 @@ get_header();
                                 'taxonomy' => 'disponibilita',
                                 'hide_empty' => false,
                             ) );
+                            $selected_disponibilita = isset($_GET['disponibilita']) ? sanitize_text_field($_GET['disponibilita']) : '';
                             foreach ( $disponibilita_terms as $term ) {
-                                echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . '</option>';
+                                printf(
+                                    '<option value="%s"%s>%s (%d)</option>',
+                                    esc_attr($term->slug),
+                                    selected($selected_disponibilita, $term->slug, false),
+                                    esc_html($term->name),
+                                    $term->count
+                                );
                             }
                             ?>
                         </select>
@@ -72,8 +80,15 @@ get_header();
                                 'taxonomy' => 'categoria_mezzo',
                                 'hide_empty' => false,
                             ) );
+                            $selected_categoria = isset($_GET['categoria_mezzo']) ? sanitize_text_field($_GET['categoria_mezzo']) : '';
                             foreach ( $categoria_terms as $term ) {
-                                echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . '</option>';
+                                printf(
+                                    '<option value="%s"%s>%s (%d)</option>',
+                                    esc_attr($term->slug),
+                                    selected($selected_categoria, $term->slug, false),
+                                    esc_html($term->name),
+                                    $term->count
+                                );
                             }
                             ?>
                         </select>
@@ -89,8 +104,15 @@ get_header();
                                 'taxonomy' => 'modello',
                                 'hide_empty' => false,
                             ) );
+                            $selected_modello = isset($_GET['modello']) ? sanitize_text_field($_GET['modello']) : '';
                             foreach ( $modello_terms as $term ) {
-                                echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . '</option>';
+                                printf(
+                                    '<option value="%s"%s>%s (%d)</option>',
+                                    esc_attr($term->slug),
+                                    selected($selected_modello, $term->slug, false),
+                                    esc_html($term->name),
+                                    $term->count
+                                );
                             }
                             ?>
                         </select>
@@ -106,8 +128,15 @@ get_header();
                                 'taxonomy' => 'versione',
                                 'hide_empty' => false,
                             ) );
+                            $selected_versione = isset($_GET['versione']) ? sanitize_text_field($_GET['versione']) : '';
                             foreach ( $versione_terms as $term ) {
-                                echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . '</option>';
+                                printf(
+                                    '<option value="%s"%s>%s (%d)</option>',
+                                    esc_attr($term->slug),
+                                    selected($selected_versione, $term->slug, false),
+                                    esc_html($term->name),
+                                    $term->count
+                                );
                             }
                             ?>
                         </select>
@@ -123,8 +152,15 @@ get_header();
                                 'taxonomy' => 'ubicazione',
                                 'hide_empty' => false,
                             ) );
+                            $selected_ubicazione = isset($_GET['ubicazione']) ? sanitize_text_field($_GET['ubicazione']) : '';
                             foreach ( $ubicazione_terms as $term ) {
-                                echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . '</option>';
+                                printf(
+                                    '<option value="%s"%s>%s (%d)</option>',
+                                    esc_attr($term->slug),
+                                    selected($selected_ubicazione, $term->slug, false),
+                                    esc_html($term->name),
+                                    $term->count
+                                );
                             }
                             ?>
                         </select>
@@ -140,18 +176,28 @@ get_header();
                                 'taxonomy' => 'stato_magazzino',
                                 'hide_empty' => false,
                             ) );
+                            $selected_stato = isset($_GET['stato_magazzino']) ? sanitize_text_field($_GET['stato_magazzino']) : '';
                             foreach ( $stato_magazzino_terms as $term ) {
-                                echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . '</option>';
+                                printf(
+                                    '<option value="%s"%s>%s (%d)</option>',
+                                    esc_attr($term->slug),
+                                    selected($selected_stato, $term->slug, false),
+                                    esc_html($term->name),
+                                    $term->count
+                                );
                             }
                             ?>
                         </select>
                     </div>
                     
-                    <!-- Bottone Reset -->
-                    <div class="filter-item">
-                        <button type="button" id="reset-filters" class="btn-reset">
-                            <?php _e( 'Resetta Filtri', 'shaktiman-b2b' ); ?>
+                    <!-- Bottoni azione -->
+                    <div class="filter-item filter-actions">
+                        <button type="submit" class="btn-search">
+                            <?php _e( 'Cerca', 'shaktiman-b2b' ); ?>
                         </button>
+                        <a href="<?php echo get_post_type_archive_link('mezzo_agricolo'); ?>" class="btn-reset">
+                            <?php _e( 'Reset', 'shaktiman-b2b' ); ?>
+                        </a>
                     </div>
                 </div>
             </form>
@@ -186,56 +232,20 @@ get_header();
             
             <!-- Paginazione -->
             <?php
-            if ( $wp_query->max_num_pages > 1 ) :
-                $current_page = max( 1, get_query_var( 'paged' ) );
-                $total_pages = $wp_query->max_num_pages;
+            // Mantieni i parametri di query per la paginazione
+            $query_args = $_GET;
+            unset($query_args['paged']);
+            $query_string = http_build_query($query_args);
+            $base_url = get_post_type_archive_link('mezzo_agricolo');
+            $paged_format = ($query_string ? '&' : '?') . 'paged=%#%';
+            
+            the_posts_pagination(array(
+                'mid_size' => 2,
+                'prev_text' => __('&laquo; Precedente', 'shaktiman-b2b'),
+                'next_text' => __('Successivo &raquo;', 'shaktiman-b2b'),
+                'before_page_number' => '<span class="meta-nav screen-reader-text">' . __('Pagina', 'shaktiman-b2b') . ' </span>',
+            ));
             ?>
-            <nav class="navigation pagination" role="navigation" aria-label="<?php esc_attr_e( 'Articoli', 'shaktiman-b2b' ); ?>">
-                <h2 class="screen-reader-text"><?php _e( 'Navigazione articoli', 'shaktiman-b2b' ); ?></h2>
-                <div class="nav-links">
-                    <?php
-                    // Link Precedente
-                    if ( $current_page > 1 ) {
-                        echo '<a class="prev page-numbers" href="?paged=' . ( $current_page - 1 ) . '">' . __( '&laquo; Precedente', 'shaktiman-b2b' ) . '</a>';
-                    }
-                    
-                    // Prima pagina
-                    if ( $current_page > 3 ) {
-                        echo '<a class="page-numbers" href="?paged=1"><span class="meta-nav screen-reader-text">' . __( 'Pagina', 'shaktiman-b2b' ) . ' </span>1</a>';
-                        if ( $current_page > 4 ) {
-                            echo '<span class="page-numbers dots">&hellip;</span>';
-                        }
-                    }
-                    
-                    // Pagine intermedie
-                    for ( $i = max( 1, $current_page - 2 ); $i <= min( $total_pages, $current_page + 2 ); $i++ ) {
-                        if ( $i == $current_page ) {
-                            echo '<span aria-current="page" class="page-numbers current"><span class="meta-nav screen-reader-text">' . __( 'Pagina', 'shaktiman-b2b' ) . ' </span>' . $i . '</span>';
-                        } else {
-                            echo '<a class="page-numbers" href="?paged=' . $i . '"><span class="meta-nav screen-reader-text">' . __( 'Pagina', 'shaktiman-b2b' ) . ' </span>' . $i . '</a>';
-                        }
-                    }
-                    
-                    // Ultima pagina
-                    if ( $current_page < $total_pages - 2 ) {
-                        if ( $current_page < $total_pages - 3 ) {
-                            echo '<span class="page-numbers dots">&hellip;</span>';
-                        }
-                        echo '<a class="page-numbers" href="?paged=' . $total_pages . '"><span class="meta-nav screen-reader-text">' . __( 'Pagina', 'shaktiman-b2b' ) . ' </span>' . $total_pages . '</a>';
-                    }
-                    
-                    // Link Successivo
-                    if ( $current_page < $total_pages ) {
-                        echo '<a class="next page-numbers" href="?paged=' . ( $current_page + 1 ) . '">' . __( 'Successivo &raquo;', 'shaktiman-b2b' ) . '</a>';
-                    }
-                    ?>
-                </div>
-            </nav>
-            <?php endif; ?>
-        </div>
-        
-        <div id="loading-overlay" class="loading-overlay" style="display: none;">
-            <div class="loading-spinner"></div>
         </div>
     </div>
 </div>

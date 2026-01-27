@@ -43,15 +43,15 @@ class Shaktiman_B2B_Frontend {
         // Shortcode per visualizzare la griglia
         add_shortcode( 'mezzi_agricoli_grid', array( $this, 'render_grid_shortcode' ) );
         
-        // AJAX per i filtri
-        add_action( 'wp_ajax_filter_mezzi_agricoli', array( $this, 'ajax_filter_mezzi' ) );
-        add_action( 'wp_ajax_nopriv_filter_mezzi_agricoli', array( $this, 'ajax_filter_mezzi' ) );
+        // AJAX per i filtri - RIMOSSI: ora si usano i permalink
+        // add_action( 'wp_ajax_filter_mezzi_agricoli', array( $this, 'ajax_filter_mezzi' ) );
+        // add_action( 'wp_ajax_nopriv_filter_mezzi_agricoli', array( $this, 'ajax_filter_mezzi' ) );
         
-        // AJAX per ottenere opzioni filtrate
-        add_action( 'wp_ajax_get_filtered_options', array( $this, 'ajax_get_filtered_options' ) );
-        add_action( 'wp_ajax_nopriv_get_filtered_options', array( $this, 'ajax_get_filtered_options' ) );
+        // AJAX per ottenere opzioni filtrate - RIMOSSO: non più necessario
+        // add_action( 'wp_ajax_get_filtered_options', array( $this, 'ajax_get_filtered_options' ) );
+        // add_action( 'wp_ajax_nopriv_get_filtered_options', array( $this, 'ajax_get_filtered_options' ) );
         
-        // AJAX per cambiare stato
+        // AJAX per cambiare stato (manteniamo questa funzionalità)
         add_action( 'wp_ajax_cambia_stato_mezzo', array( $this, 'ajax_cambia_stato' ) );
         
         // AJAX per cambiare ubicazione
@@ -65,15 +65,163 @@ class Shaktiman_B2B_Frontend {
     }
     
     /**
-     * Modifica la query dell'archivio per mostrare 30 elementi per pagina
+     * Modifica la query dell'archivio per mostrare 30 elementi per pagina e gestire i filtri
      */
     public function modify_archive_query( $query ) {
         // Solo per query principali e non admin
-        if ( ! is_admin() && $query->is_main_query() ) {
-            // Archivio mezzi agricoli o tassonomie correlate
-            if ( is_post_type_archive( 'mezzo_agricolo' ) || 
-                 is_tax( array( 'disponibilita', 'categoria_mezzo', 'modello', 'versione', 'ubicazione', 'stato_magazzino' ) ) ) {
-                $query->set( 'posts_per_page', 30 );
+        if ( is_admin() || ! $query->is_main_query() ) {
+            return;
+        }
+        
+        // Archivio mezzi agricoli
+        if ( $query->is_post_type_archive( 'mezzo_agricolo' ) ) {
+            
+            // Imposta numero elementi per pagina
+            $query->set( 'posts_per_page', 30 );
+            
+            // Gestione filtri tassonomie
+            $tax_query = array();
+            
+            // Filtro Disponibilità
+            if ( isset( $_GET['disponibilita'] ) && ! empty( $_GET['disponibilita'] ) ) {
+                $tax_query[] = array(
+                    'taxonomy' => 'disponibilita',
+                    'field'    => 'slug',
+                    'terms'    => sanitize_text_field( $_GET['disponibilita'] ),
+                );
+            }
+            
+            // Filtro Categoria
+            if ( isset( $_GET['categoria_mezzo'] ) && ! empty( $_GET['categoria_mezzo'] ) ) {
+                $tax_query[] = array(
+                    'taxonomy' => 'categoria_mezzo',
+                    'field'    => 'slug',
+                    'terms'    => sanitize_text_field( $_GET['categoria_mezzo'] ),
+                );
+            }
+            
+            // Filtro Modello
+            if ( isset( $_GET['modello'] ) && ! empty( $_GET['modello'] ) ) {
+                $tax_query[] = array(
+                    'taxonomy' => 'modello',
+                    'field'    => 'slug',
+                    'terms'    => sanitize_text_field( $_GET['modello'] ),
+                );
+            }
+            
+            // Filtro Versione
+            if ( isset( $_GET['versione'] ) && ! empty( $_GET['versione'] ) ) {
+                $tax_query[] = array(
+                    'taxonomy' => 'versione',
+                    'field'    => 'slug',
+                    'terms'    => sanitize_text_field( $_GET['versione'] ),
+                );
+            }
+            
+            // Filtro Ubicazione
+            if ( isset( $_GET['ubicazione'] ) && ! empty( $_GET['ubicazione'] ) ) {
+                $tax_query[] = array(
+                    'taxonomy' => 'ubicazione',
+                    'field'    => 'slug',
+                    'terms'    => sanitize_text_field( $_GET['ubicazione'] ),
+                );
+            }
+            
+            // Filtro Stato Magazzino
+            if ( isset( $_GET['stato_magazzino'] ) && ! empty( $_GET['stato_magazzino'] ) ) {
+                $tax_query[] = array(
+                    'taxonomy' => 'stato_magazzino',
+                    'field'    => 'slug',
+                    'terms'    => sanitize_text_field( $_GET['stato_magazzino'] ),
+                );
+            }
+            
+            // Applica tax_query se ci sono filtri
+            if ( ! empty( $tax_query ) ) {
+                if ( count( $tax_query ) > 1 ) {
+                    $tax_query['relation'] = 'AND';
+                }
+                $query->set( 'tax_query', $tax_query );
+            }
+            
+            // Gestione ricerca
+            if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) {
+                $query->set( 's', sanitize_text_field( $_GET['s'] ) );
+            }
+        }
+        
+        // Archivi tassonomie mezzi agricoli
+        if ( $query->is_tax( array( 'disponibilita', 'categoria_mezzo', 'modello', 'versione', 'ubicazione', 'stato_magazzino' ) ) ) {
+            
+            // Imposta numero elementi per pagina
+            $query->set( 'posts_per_page', 30 );
+            
+            // Gli altri filtri vengono gestiti allo stesso modo
+            $tax_query = $query->get( 'tax_query' ) ?: array();
+            
+            // Filtro Disponibilità
+            if ( isset( $_GET['disponibilita'] ) && ! empty( $_GET['disponibilita'] ) ) {
+                $tax_query[] = array(
+                    'taxonomy' => 'disponibilita',
+                    'field'    => 'slug',
+                    'terms'    => sanitize_text_field( $_GET['disponibilita'] ),
+                );
+            }
+            
+            // Filtro Categoria
+            if ( isset( $_GET['categoria_mezzo'] ) && ! empty( $_GET['categoria_mezzo'] ) ) {
+                $tax_query[] = array(
+                    'taxonomy' => 'categoria_mezzo',
+                    'field'    => 'slug',
+                    'terms'    => sanitize_text_field( $_GET['categoria_mezzo'] ),
+                );
+            }
+            
+            // Filtro Modello
+            if ( isset( $_GET['modello'] ) && ! empty( $_GET['modello'] ) ) {
+                $tax_query[] = array(
+                    'taxonomy' => 'modello',
+                    'field'    => 'slug',
+                    'terms'    => sanitize_text_field( $_GET['modello'] ),
+                );
+            }
+            
+            // Filtro Versione
+            if ( isset( $_GET['versione'] ) && ! empty( $_GET['versione'] ) ) {
+                $tax_query[] = array(
+                    'taxonomy' => 'versione',
+                    'field'    => 'slug',
+                    'terms'    => sanitize_text_field( $_GET['versione'] ),
+                );
+            }
+            
+            // Filtro Ubicazione
+            if ( isset( $_GET['ubicazione'] ) && ! empty( $_GET['ubicazione'] ) ) {
+                $tax_query[] = array(
+                    'taxonomy' => 'ubicazione',
+                    'field'    => 'slug',
+                    'terms'    => sanitize_text_field( $_GET['ubicazione'] ),
+                );
+            }
+            
+            // Filtro Stato Magazzino
+            if ( isset( $_GET['stato_magazzino'] ) && ! empty( $_GET['stato_magazzino'] ) ) {
+                $tax_query[] = array(
+                    'taxonomy' => 'stato_magazzino',
+                    'field'    => 'slug',
+                    'terms'    => sanitize_text_field( $_GET['stato_magazzino'] ),
+                );
+            }
+            
+            // Applica tax_query se ci sono filtri
+            if ( ! empty( $tax_query ) && count( $tax_query ) > 1 ) {
+                $tax_query['relation'] = 'AND';
+                $query->set( 'tax_query', $tax_query );
+            }
+            
+            // Gestione ricerca
+            if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) {
+                $query->set( 's', sanitize_text_field( $_GET['s'] ) );
             }
         }
     }
