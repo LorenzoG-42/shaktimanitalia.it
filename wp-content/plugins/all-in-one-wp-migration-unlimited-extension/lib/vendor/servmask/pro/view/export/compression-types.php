@@ -28,46 +28,34 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Kangaroos cannot jump here' );
 }
+?>
 
-class Ai1wm_Import_Check_Decryption_Password {
+<?php if ( ai1wm_has_compression_type( 'gzip' ) || ai1wm_has_compression_type( 'bzip2' ) ) : ?>
+	<li><strong><?php _e( 'Compression Options', AI1WM_PLUGIN_NAME ); ?></strong></li>
+	<li>
+		<label for="ai1wm-compression-type-none">
+			<input type="radio" id="ai1wm-compression-type-none" name="options[compression_type]" value="" checked/>
+			<?php _e( 'None (Fastest, largest file size)', AI1WM_PLUGIN_NAME ); ?>
+		</label>
+	</li>
 
-	public static function execute( $params ) {
-		global $ai1wm_params;
+	<?php if ( ai1wm_has_compression_type( 'gzip' ) ) : ?>
+		<li>
+			<label for="ai1wm-compression-type-gzip">
+				<input type="radio" id="ai1wm-compression-type-gzip" name="options[compression_type]" value="gzip" />
+				<?php _e( 'GZip (Fast, good compression)', AI1WM_PLUGIN_NAME ); ?>
+				<small style="color: red;"><?php _e( 'new', AI1WM_PLUGIN_NAME ); ?></small>
+			</label>
+		</li>
+	<?php endif; ?>
 
-		// Read package.json file
-		$handle = ai1wm_open( ai1wm_package_path( $params ), 'r' );
-
-		// Parse package.json file
-		$package = ai1wm_read( $handle, filesize( ai1wm_package_path( $params ) ) );
-		$package = json_decode( $package, true );
-
-		// Close handle
-		ai1wm_close( $handle );
-
-		if ( ! empty( $params['decryption_password'] ) ) {
-			if ( ai1wm_is_decryption_password_valid( $package['EncryptedSignature'], $params['decryption_password'] ) ) {
-				$params['is_decryption_password_valid'] = true;
-
-				$archive = new Ai1wm_Extractor( ai1wm_archive_path( $params ), $params['decryption_password'] );
-				$archive->extract_by_files_array( ai1wm_storage_path( $params ), array( AI1WM_MULTISITE_NAME, AI1WM_DATABASE_NAME ), array(), array() );
-
-				Ai1wm_Status::info( __( 'Decryption password validated.', 'all-in-one-wp-migration' ) );
-
-				$ai1wm_params = $params;
-
-				return $params;
-			}
-
-			$decryption_password_error = __( 'The decryption password is not valid. The process cannot continue.', 'all-in-one-wp-migration' );
-
-			if ( defined( 'WP_CLI' ) ) {
-				WP_CLI::error( $decryption_password_error );
-			} else {
-				Ai1wm_Status::backup_is_encrypted( $decryption_password_error );
-				exit;
-			}
-		}
-
-		return $params;
-	}
-}
+	<?php if ( ai1wm_has_compression_type( 'bzip2' ) ) : ?>
+		<li>
+			<label for="ai1wm-compression-type-bzip2">
+				<input type="radio" id="ai1wm-compression-type-bzip2" name="options[compression_type]" value="bzip2" />
+				<?php _e( 'BZip2 (Slower, better compression)', AI1WM_PLUGIN_NAME ); ?>
+				<small style="color: red;"><?php _e( 'new', AI1WM_PLUGIN_NAME ); ?></small>
+			</label>
+		</li>
+	<?php endif; ?>
+<?php endif; ?>

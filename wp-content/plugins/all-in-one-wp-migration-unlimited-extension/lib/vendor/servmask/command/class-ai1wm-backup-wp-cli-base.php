@@ -90,20 +90,33 @@ if ( defined( 'WP_CLI' ) && ! class_exists( 'Ai1wm_Backup_WP_CLI_Base' ) ) {
 			);
 
 			if ( isset( $assoc_args['password'] ) ) {
-				if ( function_exists( 'ai1wm_can_encrypt' ) && ai1wm_can_encrypt() ) {
-					if ( $assoc_args['password'] === true || empty( $assoc_args['password'] ) ) {
-						$assoc_args['password'] = readline( 'Please enter a password to protect this backup: ' );
-					}
-
-					if ( empty( $assoc_args['password'] ) ) {
-						WP_CLI::error( __( 'Encryption password must not be empty.', AI1WM_PLUGIN_NAME ) );
-					}
-
-					$params['options']['encrypt_backups']  = true;
-					$params['options']['encrypt_password'] = $assoc_args['password'];
-				} else {
+				if ( ! ai1wm_can_encrypt() ) {
 					WP_CLI::error( __( 'Your system doesn\'t support encryption.', AI1WM_PLUGIN_NAME ) );
 				}
+
+				if ( is_bool( $assoc_args['password'] ) || empty( $assoc_args['password'] ) ) {
+					$assoc_args['password'] = readline( 'Please enter a password to protect this backup: ' );
+				}
+
+				if ( empty( $assoc_args['password'] ) ) {
+					WP_CLI::error( __( 'Encryption password must not be empty.', AI1WM_PLUGIN_NAME ) );
+				}
+
+				$params['options']['encrypt_backups']  = true;
+				$params['options']['encrypt_password'] = $assoc_args['password'];
+			}
+
+			if ( isset( $assoc_args['compression'] ) ) {
+				if ( is_bool( $assoc_args['compression'] ) || empty( $assoc_args['compression'] ) ) {
+					$assoc_args['compression'] = readline( 'Please enter a compression type to archive this backup (gzip or bzip2): ' );
+				}
+
+				if ( ! ai1wm_has_compression_type( $assoc_args['compression'] ) ) {
+					WP_CLI::error( sprintf( __( 'Your system doesn\'t support %s compression.', AI1WM_PLUGIN_NAME ), $assoc_args['compression'] ) );
+					exit;
+				}
+
+				$params['options']['compression_type'] = strtolower( $assoc_args['compression'] );
 			}
 
 			if ( isset( $assoc_args['exclude-spam-comments'] ) ) {

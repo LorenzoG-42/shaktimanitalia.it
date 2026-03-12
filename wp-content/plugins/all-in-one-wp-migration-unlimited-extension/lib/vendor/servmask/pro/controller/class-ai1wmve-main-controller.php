@@ -211,6 +211,11 @@ if ( ! class_exists( 'Ai1wmve_Main_Controller' ) ) {
 					add_action( 'admin_menu', array( $this, 'ai1wmve_admin_menu' ), 20 );
 				}
 
+				// Add export compression types
+				if ( ! has_action( 'ai1wm_export_compression_types' ) ) {
+					add_action( 'ai1wm_export_compression_types', 'Ai1wmve_Export_Controller::compression_types' );
+				}
+
 				// Add export inactive themes
 				if ( ! has_action( 'ai1wm_export_inactive_themes' ) ) {
 					add_action( 'ai1wm_export_inactive_themes', 'Ai1wmve_Export_Controller::inactive_themes' );
@@ -663,10 +668,10 @@ if ( ! class_exists( 'Ai1wmve_Main_Controller' ) ) {
 			add_action( 'admin_init', array( $this, 'ai1wmve_router' ) );
 			add_action( 'admin_head', array( $this, 'ai1wmve_admin_head' ) );
 
+			add_action( 'cli_init', array( $this, 'ai1wmve_wp_cli' ), 20 );
 			add_action( 'plugins_loaded', array( $this, 'ai1wmve_loaded' ), 20 );
 			add_action( 'plugins_loaded', array( $this, 'ai1wmve_buttons' ), 20 );
 			add_action( 'plugins_loaded', array( $this, 'ai1wm_commands' ), 20 );
-			add_action( 'plugins_loaded', array( $this, 'ai1wmve_wp_cli' ), 20 );
 			add_action( 'plugins_loaded', array( $this, 'wp_cli_extension' ), 30 );
 
 			add_action( 'admin_enqueue_scripts', array( $this, 'ai1wmve_enqueue_export_scripts_and_styles' ), 20 );

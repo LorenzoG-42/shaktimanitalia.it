@@ -33,6 +33,14 @@ if ( ! class_exists( 'Ai1wmve_Export_Controller' ) ) {
 
 	class Ai1wmve_Export_Controller {
 
+		public static function compression_types() {
+			Ai1wm_Template::render(
+				'export/compression-types',
+				array(),
+				AI1WMVE_TEMPLATES_PATH
+			);
+		}
+
 		public static function inactive_themes() {
 			Ai1wm_Template::render(
 				'export/inactive-themes',

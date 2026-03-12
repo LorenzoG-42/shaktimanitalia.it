@@ -94,6 +94,39 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 			</div>
 
+			<?php if ( ai1wm_has_compression_type( 'gzip' ) || ai1wm_has_compression_type( 'bzip2' ) ) : ?>
+				<div class="ai1wm-event-row" v-if="form.type === '<?php echo Ai1wmve_Schedule_Event::TYPE_EXPORT; ?>'">
+					<div class="ai1wm-event-field ai1wm-compression-backups-container">
+						<label class="ai1wm-event-label" for="ai1wm-event-compression">
+							<input type="checkbox" class="ai1wm-event-input" id="ai1wm-event-compression" v-model="compressed"/>
+							<?php _e( 'Compress this backup', AI1WM_PLUGIN_NAME ); ?>
+						</label>
+						<div class="ai1wm-compression-backups-types-toggle" v-if="compressed">
+							<div class="ai1wm-compression-backups-types-container">
+								<?php if ( ai1wm_has_compression_type( 'gzip' ) ) : ?>
+									<div class="ai1wm-input-compression-container">
+										<label for="ai1wm-compression-type-gzip">
+											<input type="radio" id="ai1wm-compression-type-gzip" name="compression_type" value="gzip" v-model="form.compression_type" checked />
+											<?php _e( 'GZip (Fast, good compression)', AI1WM_PLUGIN_NAME ); ?>
+										</label>
+									</div>
+								<?php endif; ?>
+
+								<?php if ( ai1wm_has_compression_type( 'bzip2' ) ) : ?>
+									<div class="ai1wm-input-compression-container">
+										<label for="ai1wm-compression-type-bzip2">
+											<input type="radio" id="ai1wm-compression-type-bzip2" name="compression_type" value="bzip2" v-model="form.compression_type" />
+											<?php _e( 'BZip2 (Slower, better compression)', AI1WM_PLUGIN_NAME ); ?>
+										</label>
+									</div>
+								<?php endif; ?>
+							</div>
+						</div>
+						<input type="hidden" name="compression_type" value="" v-else />
+					</div>
+				</div>
+			<?php endif; ?>
+
 			<div class="ai1wm-event-row" v-if="form.type === '<?php echo Ai1wmve_Schedule_Event::TYPE_EXPORT; ?>'">
 				<div class="ai1wm-event-field ai1wm-event-field-row">
 					<label for="ai1wmve-exclude_files">
@@ -312,7 +345,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 
 		<div class="ai1wm-event-fieldset" style="display: flex; justify-content: flex-end;">
-			<button class="ai1wm-button-green"><?php _e( 'Save', AI1WM_PLUGIN_NAME ); ?></button>
+			<button class="ai1wm-button-green" :disabled="!passwordConfirmed"><?php _e( 'Save', AI1WM_PLUGIN_NAME ); ?></button>
 		</div>
 	</form>
 </script>

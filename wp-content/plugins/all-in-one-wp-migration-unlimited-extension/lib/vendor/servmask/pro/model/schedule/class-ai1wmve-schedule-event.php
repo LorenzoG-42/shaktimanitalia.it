@@ -94,6 +94,8 @@ if ( ! class_exists( 'Ai1wmve_Schedule_Event' ) ) {
 
 		protected $included_db_tables;
 
+		protected $compression_type;
+
 		protected $password;
 
 		protected $incremental = false;
@@ -207,6 +209,7 @@ if ( ! class_exists( 'Ai1wmve_Schedule_Event' ) ) {
 				'excluded_files'     => $this->excluded_files,
 				'excluded_db_tables' => $this->excluded_db_tables,
 				'included_db_tables' => $this->included_db_tables,
+				'compression_type'   => $this->compression_type,
 				'password'           => $this->password(),
 				'incremental'        => $this->incremental,
 				'sites'              => array_map( 'intval', $this->sites ),
@@ -494,6 +497,10 @@ if ( ! class_exists( 'Ai1wmve_Schedule_Event' ) ) {
 				$params['included_db_tables']           = $this->included_db_tables;
 			}
 
+			if ( ! empty( $this->compression_type ) ) {
+				$params['options']['compression_type'] = $this->compression_type;
+			}
+
 			if ( $this->incremental ) {
 				$params['incremental'] = 1;
 			}
@@ -517,11 +524,7 @@ if ( ! class_exists( 'Ai1wmve_Schedule_Event' ) ) {
 		 * @return string
 		 */
 		protected function archive( $blog_id = null ) {
-			return str_replace(
-				'.wpress',
-				sprintf( '-%s.wpress', $this->event_id ),
-				ai1wm_archive_file( $blog_id )
-			);
+			return str_replace( '.wpress', sprintf( '-%s.wpress', $this->event_id ), ai1wm_archive_file( $blog_id ) );
 		}
 	}
 }

@@ -52,6 +52,9 @@ if ( class_exists( 'Ai1wm_Backup_WP_CLI_Base' ) && ! class_exists( 'Ai1wm_Backup
 		 * [--password[=<password>]]
 		 * : Encrypt backup with password
 		 *
+		 * [--compression[=<type>]]
+		 * : Compress backup with the specified type: gzip or bzip2
+		 *
 		 * [--exclude-spam-comments]
 		 * : Do not export spam comments
 		 *

@@ -443,7 +443,7 @@
 
 					// copyBytesToJS(dst ref, src []byte) (int, bool)
 					// Originally copied from upstream Go project, then modified:
-					//   https://github.com/golang/go/blob/3f995c3f3b43033013013e6c7ccc93a9b1411ca9/misc/wasm/wasm_exec.js#L404-L416
+					//   https://github.com/golang/go/blob/a5b2c3e6e287ddeef0dbe2c02c52e1f7f5a2b588/misc/wasm/wasm_exec.js#L404-L416
 					"syscall/js.copyBytesToJS": (ret_addr, dst_ref, src_addr, src_len, src_cap) => {
 						let num_bytes_copied_addr = ret_addr;
 						let returned_status_addr = ret_addr + 4; // Address of returned boolean status variable
