@@ -195,10 +195,44 @@ get_header();
                                 <?php
                                 $attributes = array();
                                 
-                                // Modello (dal titolo o custom field)
-                                $modello = get_post_meta( get_the_ID(), '_modello', true );
-                                if ( $modello ) {
-                                    $attributes[] = array( 'label' => 'MODELLO:', 'value' => $modello );
+                                // Disponibilità
+                                $disponibilita_terms = get_the_terms( get_the_ID(), 'disponibilita' );
+                                if ( $disponibilita_terms && ! is_wp_error( $disponibilita_terms ) ) {
+                                    $attributes[] = array( 
+                                        'label' => 'DISPONIBILITÀ:', 
+                                        'value' => $disponibilita_terms[0]->name,
+                                        'link' => get_term_link( $disponibilita_terms[0] )
+                                    );
+                                }
+                                
+                                // Categoria
+                                $categoria_terms = get_the_terms( get_the_ID(), 'categoria_mezzo' );
+                                if ( $categoria_terms && ! is_wp_error( $categoria_terms ) ) {
+                                    $attributes[] = array( 
+                                        'label' => 'CATEGORIA:', 
+                                        'value' => $categoria_terms[0]->name,
+                                        'link' => get_term_link( $categoria_terms[0] )
+                                    );
+                                }
+                                
+                                // Modello
+                                $modello_terms = get_the_terms( get_the_ID(), 'modello' );
+                                if ( $modello_terms && ! is_wp_error( $modello_terms ) ) {
+                                    $attributes[] = array( 
+                                        'label' => 'MODELLO:', 
+                                        'value' => $modello_terms[0]->name,
+                                        'link' => get_term_link( $modello_terms[0] )
+                                    );
+                                }
+                                
+                                // Versione
+                                $versione_terms = get_the_terms( get_the_ID(), 'versione' );
+                                if ( $versione_terms && ! is_wp_error( $versione_terms ) ) {
+                                    $attributes[] = array( 
+                                        'label' => 'VERSIONE:', 
+                                        'value' => $versione_terms[0]->name,
+                                        'link' => get_term_link( $versione_terms[0] )
+                                    );
                                 }
                                 
                                 // CODE (custom field)
@@ -210,7 +244,31 @@ get_header();
                                 // Marchio
                                 $marchio_terms = get_the_terms( get_the_ID(), 'marchio' );
                                 if ( $marchio_terms && ! is_wp_error( $marchio_terms ) ) {
-                                    $attributes[] = array( 'label' => 'MARCA:', 'value' => $marchio_terms[0]->name );
+                                    $attributes[] = array( 
+                                        'label' => 'MARCA:', 
+                                        'value' => $marchio_terms[0]->name,
+                                        'link' => get_term_link( $marchio_terms[0] )
+                                    );
+                                }
+                                
+                                // Ubicazione
+                                $ubicazione_terms = get_the_terms( get_the_ID(), 'ubicazione' );
+                                if ( $ubicazione_terms && ! is_wp_error( $ubicazione_terms ) ) {
+                                    $attributes[] = array( 
+                                        'label' => 'UBICAZIONE:', 
+                                        'value' => $ubicazione_terms[0]->name,
+                                        'link' => get_term_link( $ubicazione_terms[0] )
+                                    );
+                                }
+                                
+                                // Magazzino (stato_magazzino)
+                                $magazzino_terms = get_the_terms( get_the_ID(), 'stato_magazzino' );
+                                if ( $magazzino_terms && ! is_wp_error( $magazzino_terms ) ) {
+                                    $attributes[] = array( 
+                                        'label' => 'MAGAZZINO:', 
+                                        'value' => $magazzino_terms[0]->name,
+                                        'link' => get_term_link( $magazzino_terms[0] )
+                                    );
                                 }
                                 
                                 // Listino (prezzo)
@@ -237,7 +295,14 @@ get_header();
                                     $bg_color = $count % 2 === 0 ? '#f5f5f5' : '#ffffff';
                                     echo '<div style="display: flex; padding: 12px 20px; background: ' . $bg_color . ';">';
                                     echo '<strong style="min-width: 120px; color: #666; font-size: 14px;">' . esc_html( $attr['label'] ) . '</strong>';
-                                    echo '<span style="color: #333; font-size: 14px;">' . esc_html( $attr['value'] ) . '</span>';
+                                    
+                                    // Se c'è un link, mostra come link
+                                    if ( isset( $attr['link'] ) && ! is_wp_error( $attr['link'] ) ) {
+                                        echo '<a href="' . esc_url( $attr['link'] ) . '" style="color: #0073aa; text-decoration: none; font-size: 14px;">' . esc_html( $attr['value'] ) . '</a>';
+                                    } else {
+                                        echo '<span style="color: #333; font-size: 14px;">' . esc_html( $attr['value'] ) . '</span>';
+                                    }
+                                    
                                     echo '</div>';
                                     $count++;
                                 }
